@@ -25,7 +25,6 @@ namespace KirimNPFileQR.Utilities {
         int ScreenHeight { get; }
         void Exit();
         string GetConfig(string key);
-        string Author { get; }
         List<string> ListDcCanUse { get; }
     }
 
@@ -34,14 +33,11 @@ namespace KirimNPFileQR.Utilities {
         public int ScreenWidth { get; }
         public int ScreenHeight { get; }
 
-        public string Author { get; }
-
         public List<string> ListDcCanUse { get; }
 
         public CApp() {
             ScreenWidth = Screen.PrimaryScreen.WorkingArea.Width;
             ScreenHeight = Screen.PrimaryScreen.WorkingArea.Height;
-            Author = "B. Bias A. Ch. :: bias@indomaret.co.id";
             ListDcCanUse = new List<string> { "HO", "INDUK", "DEPO", "SEWA" };
         }
 
