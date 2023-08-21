@@ -36,7 +36,7 @@ namespace KirimNPFileQR.Panels {
 
         bool timerBusy = false;
 
-        int waitTime = 15 * 60 * 1;
+        int waitTime = 15;
         int countDownSeconds = 0;
 
         public CMainPanel(IApp app, ILogger logger, IDb db, IConfig config) {
@@ -106,10 +106,20 @@ namespace KirimNPFileQR.Panels {
             }
         }
 
-        private void ReStartTimer() {
+        private async void ReStartTimer() {
             if (!tmrCountDown.Enabled && !timerBusy) {
                 timerBusy = true;
                 countDownSeconds = waitTime;
+                SetIdleBusyStatus(false);
+                await Task.Run(() => {
+                    try {
+                        RefreshDataTable();
+                    }
+                    catch (Exception ex) {
+                        _logger.WriteError(ex);
+                    }
+                });
+                SetIdleBusyStatus(true);
                 tmrCountDown.Start();
             }
         }
@@ -119,24 +129,33 @@ namespace KirimNPFileQR.Panels {
             lblCountDown.Text = $"{t.Hours.ToString().PadLeft(2, '0')}:{t.Minutes.ToString().PadLeft(2, '0')}:{t.Seconds.ToString().PadLeft(2, '0')}";
             countDownSeconds--;
             if (countDownSeconds < 0) {
-                SetIdleBusyStatus(false);
                 tmrCountDown.Stop();
+                SetIdleBusyStatus(false);
                 await Task.Run(() => {
                     try {
-                        // --
-                        Thread.Sleep(10000);
                         countDownSeconds = waitTime;
-                        throw new Exception("Coba THrow Error !!");
-                        // --
+                        ProsesNPFile();
                     }
                     catch (Exception ex) {
                         _logger.WriteError(ex);
                     }
                 });
-                timerBusy = false;
                 SetIdleBusyStatus(true);
+                timerBusy = false;
                 ReStartTimer();
             }
+        }
+
+        private void RefreshDataTable() {
+            // TODO ::
+            Thread.Sleep(10000);
+            throw new Exception("Coba Throw Error RefreshDataTable !!");
+        }
+
+        private void ProsesNPFile() {
+            // TODO ::
+            Thread.Sleep(10000);
+            throw new Exception("Coba Throw Error ProsesNPFile !!");
         }
 
     }
