@@ -65,7 +65,7 @@ namespace KirimNPFileQR.Forms {
             sysTrayNotifyIcon.Text = _app.AppName;
             sysTrayNotifyIcon.DoubleClick += SysTray_DoubleClick;
 
-            sysTrayToolStripMenuItemApp.Text = $"{_app.CurrentProcess.Id} (0x{_app.CurrentProcess.MainModule.BaseAddress}) :: BIAS";
+            sysTrayToolStripMenuItemApp.Text = $"{_app.CurrentProcess.Id} (0x{_app.CurrentProcess.MainModule.BaseAddress})";
             sysTrayToolStripMenuItemNICs.Image = SystemIcons.Question.ToBitmap();
             sysTrayToolStripMenuItemDatabases.Image = SystemIcons.Warning.ToBitmap();
         }
@@ -139,7 +139,7 @@ namespace KirimNPFileQR.Forms {
 
         public void SysTray_MenuExit(object sender, EventArgs e) {
             string title = "Good Bye~ (｡>﹏<｡)";
-            string msg = _app.Author + Environment.NewLine + "© 2022 :: IT SD 03";
+            string msg = "© 2023 :: IT S/SD 03";
             MessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
             sysTrayNotifyIcon.Dispose();
             _app.Exit();

@@ -13,6 +13,7 @@
  */
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -32,6 +33,11 @@ namespace KirimNPFileQR.Panels {
         private readonly IConfig _config;
 
         private CMainForm mainForm;
+
+        bool timerBusy = false;
+
+        int waitTime = 15 * 60 * 1;
+        int countDownSeconds = 0;
 
         public CMainPanel(IApp app, ILogger logger, IDb db, IConfig config) {
             _app = app;
@@ -69,17 +75,18 @@ namespace KirimNPFileQR.Panels {
                 dcKode = await _db.GetKodeDc();
                 namaDc = await _db.GetNamaDc();
             });
+
             bool bypassLogin = _config.Get<bool>("BypassLogin", bool.Parse(_app.GetConfig("bypass_login")));
             if (bypassLogin) {
                 _db.LoggedInUsername = "ANONYMOUS";
             }
             userInfo.Text = $".: {dcKode} - {namaDc} :: {_db.LoggedInUsername} :.";
 
-            //
-            // TODO :: Here ...
-            //
+            if (!timerBusy) {
+                SetIdleBusyStatus(true);
+            }
 
-            SetIdleBusyStatus(true);
+            ReStartTimer();
         }
 
         public void SetIdleBusyStatus(bool isIdle) {
@@ -96,6 +103,39 @@ namespace KirimNPFileQR.Panels {
                 else {
                     EnableDisableControl(control.Controls, isIdle);
                 }
+            }
+        }
+
+        private void ReStartTimer() {
+            if (!tmrCountDown.Enabled && !timerBusy) {
+                timerBusy = true;
+                countDownSeconds = waitTime;
+                tmrCountDown.Start();
+            }
+        }
+
+        private async void tmrCountDown_Tick(object sender, EventArgs e) {
+            TimeSpan t = TimeSpan.FromSeconds(countDownSeconds);
+            lblCountDown.Text = $"{t.Hours.ToString().PadLeft(2, '0')}:{t.Minutes.ToString().PadLeft(2, '0')}:{t.Seconds.ToString().PadLeft(2, '0')}";
+            countDownSeconds--;
+            if (countDownSeconds < 0) {
+                SetIdleBusyStatus(false);
+                tmrCountDown.Stop();
+                await Task.Run(() => {
+                    try {
+                        // --
+                        Thread.Sleep(10000);
+                        countDownSeconds = waitTime;
+                        throw new Exception("Coba THrow Error !!");
+                        // --
+                    }
+                    catch (Exception ex) {
+                        _logger.WriteError(ex);
+                    }
+                });
+                timerBusy = false;
+                SetIdleBusyStatus(true);
+                ReStartTimer();
             }
         }
 
