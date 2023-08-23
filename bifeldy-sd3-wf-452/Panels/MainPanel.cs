@@ -13,6 +13,9 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,6 +24,7 @@ using bifeldy_sd3_lib_452.Utilities;
 
 using KirimNPFileQR.Forms;
 using KirimNPFileQR.Handlers;
+using KirimNPFileQR.Models;
 using KirimNPFileQR.Utilities;
 
 namespace KirimNPFileQR.Panels {
@@ -31,19 +35,26 @@ namespace KirimNPFileQR.Panels {
         private readonly ILogger _logger;
         private readonly IDb _db;
         private readonly IConfig _config;
+        private readonly IConverter _converter;
 
         private CMainForm mainForm;
 
         bool timerBusy = false;
 
-        int waitTime = 15;
+        int waitTime = 15 * 60;
         int countDownSeconds = 0;
 
-        public CMainPanel(IApp app, ILogger logger, IDb db, IConfig config) {
+        /* NP* Header */
+
+        private List<MNpHeader> listNpHeader = null;
+        private BindingList<MNpHeader> bindNpHeader = null;
+
+        public CMainPanel(IApp app, ILogger logger, IDb db, IConfig config, IConverter converter) {
             _app = app;
             _logger = logger;
             _db = db;
             _config = config;
+            _converter = converter;
 
             InitializeComponent();
             OnInit();
@@ -55,6 +66,9 @@ namespace KirimNPFileQR.Panels {
 
         private void OnInit() {
             Dock = DockStyle.Fill;
+
+            listNpHeader = new List<MNpHeader>();
+            bindNpHeader = new BindingList<MNpHeader>(listNpHeader);
         }
 
         private void ImgDomar_Click(object sender, EventArgs e) {
@@ -97,7 +111,7 @@ namespace KirimNPFileQR.Panels {
 
         private void EnableDisableControl(ControlCollection controls, bool isIdle) {
             foreach (Control control in controls) {
-                if (control is Button || control is CheckBox || control is DateTimePicker) {
+                if (control is Button || control is CheckBox || control is DateTimePicker || control is DataGridView) {
                     control.Enabled = isIdle;
                 }
                 else {
@@ -111,14 +125,7 @@ namespace KirimNPFileQR.Panels {
                 timerBusy = true;
                 countDownSeconds = waitTime;
                 SetIdleBusyStatus(false);
-                await Task.Run(() => {
-                    try {
-                        RefreshDataTable();
-                    }
-                    catch (Exception ex) {
-                        _logger.WriteError(ex);
-                    }
-                });
+                await RefreshDataTable();
                 SetIdleBusyStatus(true);
                 tmrCountDown.Start();
             }
@@ -130,34 +137,85 @@ namespace KirimNPFileQR.Panels {
             countDownSeconds--;
             if (countDownSeconds < 0) {
                 tmrCountDown.Stop();
+                countDownSeconds = waitTime;
                 SetIdleBusyStatus(false);
-                await Task.Run(() => {
-                    try {
-                        countDownSeconds = waitTime;
-                        ProsesNPFile();
-                    }
-                    catch (Exception ex) {
-                        _logger.WriteError(ex);
-                    }
-                });
+                await ProsesNPFile();
                 SetIdleBusyStatus(true);
                 timerBusy = false;
                 ReStartTimer();
             }
         }
 
-        private void RefreshDataTable() {
-            // TODO ::
-            Thread.Sleep(10000);
-            throw new Exception("Coba Throw Error RefreshDataTable !!");
+        private void dtGrd_DataError(object sender, DataGridViewDataErrorEventArgs e) {
+            // --
         }
 
-        private void ProsesNPFile() {
-            // TODO ::
-            Thread.Sleep(10000);
-            throw new Exception("Coba Throw Error ProsesNPFile !!");
+        private void EnableCustomColumnOnly(DataGridView dtGrdVw, List<string> visibleColumn) {
+            foreach (DataGridViewColumn dtGrdCol in dtGrdVw.Columns) {
+                if (!visibleColumn.Contains(dtGrdCol.Name)) {
+                    dtGrdCol.Visible = chkSemuaKolom.Checked;
+                }
+                if (dtGrdCol.GetType() != typeof(DataGridViewButtonColumn) && dtGrdCol.GetType() != typeof(DataGridViewComboBoxColumn)) {
+                    dtGrdCol.ReadOnly = true;
+                }
+                else {
+                    dtGrdCol.ReadOnly = false;
+                }
+            }
         }
 
+        private async Task RefreshDataTable() {
+            try {
+                listNpHeader.Clear();
+                DataTable dtNpHeader = new DataTable();
+                await Task.Run(async () => {
+                    dtNpHeader = await _db.GetNpHeader();
+                });
+                if (dtNpHeader.Rows.Count > 0) {
+                    List<MNpHeader> lsNpHeader = _converter.DataTableToList<MNpHeader>(dtNpHeader);
+                    foreach (MNpHeader npHeader in lsNpHeader) {
+                        listNpHeader.Add(npHeader);
+                    }
+                    dtGrdNp.DataSource = bindNpHeader;
+                    EnableCustomColumnOnly(dtGrdNp, new List<string> {
+                        "LOG_SEQNO",
+                        "LOG_DCKODE",
+                        "LOG_TOK_KODE",
+                        "LOG_NO_NPB",
+                        "LOG_TGL_NPB",
+                        "LOG_NAMAFILE",
+                        "LOG_ITEM",
+                        "TOK_NAME",
+                        "TOK_KIRIM",
+                        "TOK_EMAIL"
+                    });
+                }
+                bindNpHeader.ResetBindings();
+                dtGrdNp.ClearSelection();
+            }
+            catch (Exception ex) {
+                _logger.WriteError(ex);
+            }
+        }
+
+        private async Task ProsesNPFile() {
+            await Task.Run(() => {
+                try {
+                    // TODO ::
+                    Thread.Sleep(10000);
+                    throw new Exception("Coba Throw Error ProsesNPFile !!");
+                }
+                catch (Exception ex) {
+                    _logger.WriteError(ex);
+                }
+            });
+        }
+
+        private async void btbReFresh_Click(object sender, EventArgs e) {
+            SetIdleBusyStatus(false);
+            await RefreshDataTable();
+            SetIdleBusyStatus(true);
+        }
     }
 
 }

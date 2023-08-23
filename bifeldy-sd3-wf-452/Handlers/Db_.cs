@@ -34,6 +34,7 @@ namespace KirimNPFileQR.Handlers {
         Task<DateTime> OraPg_GetCurrentDate();
         Task<CDbExecProcResult> OraPg_CALL_(string procName);
         Task<string> GetURLWebService(string webType);
+        Task<DataTable> GetNpHeader();
     }
 
     public sealed class CDb : CDbHandler, IDb {
@@ -84,6 +85,32 @@ namespace KirimNPFileQR.Handlers {
                 new List<CDbQueryParamBind> {
                     new CDbQueryParamBind { NAME = "web_type", VALUE = webType }
                 }
+            );
+        }
+
+        public async Task<DataTable> GetNpHeader() {
+            return await OraPg.GetDataTableAsync(
+                $@"
+                    SELECT
+                        a.*,
+                        b.*
+                    FROM
+                        DC_NPBTOKO_LOG a,
+                        DC_TOKO_T b,
+                        DC_TABEL_DC_T c 
+                    WHERE
+                        a.LOG_TOK_KODE = b.TOK_CODE 
+                        AND a.LOG_DCKODE = c.TBL_DC_KODE 
+                        AND b.tok_recid IS NULL
+                        AND b.tok_email IS NOT NULL
+                        AND (
+                            UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
+                            AND UPPER(a.log_stat_rcv) NOT LIKE '%- 00 -%'
+                            AND UPPER(a.log_stat_rcv) NOT LIKE '%- 01 -%'
+                        )
+                    ORDER BY
+                        a.log_tgl_npb DESC
+                "
             );
         }
 

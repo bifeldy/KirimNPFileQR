@@ -27,6 +27,7 @@ namespace KirimNPFileQR.Panels {
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CMainPanel));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.chkSemuaKolom = new System.Windows.Forms.CheckBox();
             this.userInfo = new System.Windows.Forms.Label();
             this.imgDomar = new System.Windows.Forms.PictureBox();
@@ -38,6 +39,7 @@ namespace KirimNPFileQR.Panels {
             this.lblCountDown = new System.Windows.Forms.Label();
             this.tmrCountDown = new System.Windows.Forms.Timer(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.btbReFresh = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.imgDomar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtGrdNp)).BeginInit();
             this.SuspendLayout();
@@ -127,10 +129,19 @@ namespace KirimNPFileQR.Panels {
             this.dtGrdNp.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtGrdNp.Location = new System.Drawing.Point(31, 173);
             this.dtGrdNp.Name = "dtGrdNp";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtGrdNp.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dtGrdNp.RowHeadersVisible = false;
             this.dtGrdNp.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dtGrdNp.Size = new System.Drawing.Size(740, 395);
             this.dtGrdNp.TabIndex = 6;
+            this.dtGrdNp.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dtGrd_DataError);
             // 
             // label1
             // 
@@ -162,10 +173,22 @@ namespace KirimNPFileQR.Panels {
             this.tmrCountDown.Interval = 1000;
             this.tmrCountDown.Tick += new System.EventHandler(this.tmrCountDown_Tick);
             // 
+            // btbReFresh
+            // 
+            this.btbReFresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btbReFresh.Location = new System.Drawing.Point(625, 133);
+            this.btbReFresh.Name = "btbReFresh";
+            this.btbReFresh.Size = new System.Drawing.Size(75, 23);
+            this.btbReFresh.TabIndex = 9;
+            this.btbReFresh.Text = "ReFresh";
+            this.btbReFresh.UseVisualStyleBackColor = true;
+            this.btbReFresh.Click += new System.EventHandler(this.btbReFresh_Click);
+            // 
             // CMainPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.btbReFresh);
             this.Controls.Add(this.lblCountDown);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dtGrdNp);
@@ -198,6 +221,7 @@ namespace KirimNPFileQR.Panels {
         private System.Windows.Forms.Label lblCountDown;
         private System.Windows.Forms.Timer tmrCountDown;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Button btbReFresh;
     }
 
 }
