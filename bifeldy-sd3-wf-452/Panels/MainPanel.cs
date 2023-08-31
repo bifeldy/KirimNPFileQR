@@ -50,7 +50,7 @@ namespace KirimNPFileQR.Panels {
 
         bool timerBusy = false;
 
-        int waitTime = 1 * 60;
+        readonly int waitTime = 1 * 60;
         int countDownSeconds = 0;
 
         /* NP* Header */
@@ -153,9 +153,9 @@ namespace KirimNPFileQR.Panels {
         private async void CheckTableColumn() {
             try {
                 await Task.Run(async () => {
-                    await _db.CheckColumnAlterTable("DC_NPBTOKO_LOG", "KIRIM_EMAIL", "DATE");
-                    await _db.CheckColumnAlterTable("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
-                    await _db.CheckColumnAlterTable("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
+                    await _db.OraPg_AlterTable("DC_NPBTOKO_LOG", "KIRIM_EMAIL", "DATE");
+                    await _db.OraPg_AlterTable("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
+                    await _db.OraPg_AlterTable("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
                 });
                 ReStartTimer();
             }
@@ -175,7 +175,7 @@ namespace KirimNPFileQR.Panels {
             }
         }
 
-        private async void tmrCountDown_Tick(object sender, EventArgs e) {
+        private async void TmrCountDown_Tick(object sender, EventArgs e) {
             TimeSpan t = TimeSpan.FromSeconds(countDownSeconds);
             lblCountDown.Text = $"{t.Hours.ToString().PadLeft(2, '0')}:{t.Minutes.ToString().PadLeft(2, '0')}:{t.Seconds.ToString().PadLeft(2, '0')}";
             countDownSeconds--;
@@ -190,7 +190,7 @@ namespace KirimNPFileQR.Panels {
             }
         }
 
-        private void dtGrd_DataError(object sender, DataGridViewDataErrorEventArgs e) {
+        private void DtGrd_DataError(object sender, DataGridViewDataErrorEventArgs e) {
             // --
         }
 
@@ -367,13 +367,13 @@ namespace KirimNPFileQR.Panels {
             });
         }
 
-        private async void btbReFresh_Click(object sender, EventArgs e) {
+        private async void BtbReFresh_Click(object sender, EventArgs e) {
             SetIdleBusyStatus(false);
             await RefreshDataTable();
             SetIdleBusyStatus(true);
         }
 
-        private void btnOpenFolder_Click(object sender, EventArgs e) {
+        private void BtnOpenFolder_Click(object sender, EventArgs e) {
             Process.Start(new ProcessStartInfo { Arguments = _berkas.BackupFolderPath, FileName = "explorer.exe" });
         }
     }

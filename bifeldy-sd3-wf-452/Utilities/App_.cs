@@ -13,7 +13,6 @@
  */
 
 using System.Collections.Generic;
-using System.Configuration;
 using System.Windows.Forms;
 
 using bifeldy_sd3_lib_452.Utilities;
@@ -24,7 +23,6 @@ namespace KirimNPFileQR.Utilities {
         int ScreenWidth { get; }
         int ScreenHeight { get; }
         void Exit();
-        string GetConfig(string key);
         List<string> ListDcCanUse { get; }
     }
 
@@ -42,10 +40,6 @@ namespace KirimNPFileQR.Utilities {
         }
 
         public void Exit() => Application.Exit();
-
-        public string GetConfig(string key) {
-            return ConfigurationManager.AppSettings[key];
-        }
 
     }
 

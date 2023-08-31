@@ -95,11 +95,9 @@
     <Compile Include="Forms\ReportLaporan.Designer.cs">
       <DependentUpon>ReportLaporan.cs</DependentUpon>
     </Compile>
-    <Compile Include="Handlers\BranchCabang_.cs" />
     <Compile Include="Handlers\Db_.cs" />
     <Compile Include="Models\DC_NPBTOKO_HDR.cs" />
     <Compile Include="Models\DC_NPBTOKO_LOG.cs" />
-    <Compile Include="Models\DC_TABEL_V.cs" />
     <Compile Include="Models\DC_TOKO_T.cs" />
     <Compile Include="Models\NpHeaderDetail.cs" />
     <Compile Include="Models\TextDevider.cs" />

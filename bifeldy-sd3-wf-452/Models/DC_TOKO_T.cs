@@ -16,7 +16,7 @@ using System;
 
 namespace KirimNPFileQR.Models {
 
-    interface DC_TOKO_T {
+    public interface DC_TOKO_T {
         decimal TOK_ID { get; set; }
         string TOK_CODE { get; set; }
         string TOK_NAME { get; set; }

@@ -146,7 +146,7 @@ namespace KirimNPFileQR.Panels {
             this.dtGrdNp.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dtGrdNp.Size = new System.Drawing.Size(740, 350);
             this.dtGrdNp.TabIndex = 6;
-            this.dtGrdNp.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dtGrd_DataError);
+            this.dtGrdNp.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DtGrd_DataError);
             // 
             // label1
             // 
@@ -176,7 +176,7 @@ namespace KirimNPFileQR.Panels {
             // tmrCountDown
             // 
             this.tmrCountDown.Interval = 1000;
-            this.tmrCountDown.Tick += new System.EventHandler(this.tmrCountDown_Tick);
+            this.tmrCountDown.Tick += new System.EventHandler(this.TmrCountDown_Tick);
             // 
             // btbReFresh
             // 
@@ -187,7 +187,7 @@ namespace KirimNPFileQR.Panels {
             this.btbReFresh.TabIndex = 9;
             this.btbReFresh.Text = "ReFresh";
             this.btbReFresh.UseVisualStyleBackColor = true;
-            this.btbReFresh.Click += new System.EventHandler(this.btbReFresh_Click);
+            this.btbReFresh.Click += new System.EventHandler(this.BtbReFresh_Click);
             // 
             // label2
             // 
@@ -244,7 +244,7 @@ namespace KirimNPFileQR.Panels {
             this.btnOpenFolder.TabIndex = 42;
             this.btnOpenFolder.Text = "Buka Folder Backup";
             this.btnOpenFolder.UseVisualStyleBackColor = true;
-            this.btnOpenFolder.Click += new System.EventHandler(this.btnOpenFolder_Click);
+            this.btnOpenFolder.Click += new System.EventHandler(this.BtnOpenFolder_Click);
             // 
             // CMainPanel
             // 

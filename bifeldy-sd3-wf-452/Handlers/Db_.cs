@@ -18,8 +18,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
-using bifeldy_sd3_lib_452.Abstractions;
 using bifeldy_sd3_lib_452.Databases;
+using bifeldy_sd3_lib_452.Handlers;
 using bifeldy_sd3_lib_452.Models;
 
 using KirimNPFileQR.Utilities;
@@ -27,8 +27,6 @@ using KirimNPFileQR.Utilities;
 namespace KirimNPFileQR.Handlers {
 
     public interface IDb : IDbHandler {
-        Task<string> GetURLWebService(string webType);
-        Task<bool> CheckColumnAlterTable(string tableName, string columnName, string columnType);
         Task<DataTable> GetNpLog();
         Task<DataTable> GetNpDetail(decimal log_seqno);
         Task<DataTable> GetNpHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
@@ -41,28 +39,6 @@ namespace KirimNPFileQR.Handlers {
 
         public CDb(IApp app, IOracle oracle, IPostgres postgres, IMsSQL mssql) : base(app, oracle, postgres, mssql) {
             _app = app;
-        }
-
-        public async Task<string> GetURLWebService(string webType) {
-            return await OraPg.ExecScalarAsync<string>(
-                $@"SELECT WEB_URL FROM DC_WEBSERVICE_T WHERE WEB_TYPE = :web_type",
-                new List<CDbQueryParamBind> {
-                    new CDbQueryParamBind { NAME = "web_type", VALUE = webType }
-                }
-            );
-        }
-
-        public async Task<bool> CheckColumnAlterTable(string tableName, string columnName, string columnType) {
-            var cols_dc_npbtoko_log = await OraPg_GetAllColumnTable(tableName);
-            if (!cols_dc_npbtoko_log.Contains(columnName.ToUpper())) {
-                return await OraPg.ExecQueryAsync($@"
-                    ALTER TABLE {tableName}
-                        ADD {(_app.IsUsingPostgres ? "COLUMN" : "(")}
-                            {columnName} {columnType}
-                        {(_app.IsUsingPostgres ? "" : ")")}
-                ");
-            }
-            return false;
         }
 
         public async Task<DataTable> GetNpLog() {
@@ -148,8 +124,8 @@ namespace KirimNPFileQR.Handlers {
         }
 
         public async Task<DataTable> GetNpHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb) {
-            string tblName1 = null;
-            string tblName2 = null;
+            string tblName1;
+            string tblName2;
             switch (log_jenis.ToUpper()) {
                 case "NPB":
                     tblName1 = "cluster_tbbackup";
