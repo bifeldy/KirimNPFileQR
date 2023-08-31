@@ -216,7 +216,11 @@ namespace KirimNPFileQR.Panels {
                     dtNpLog = await _db.GetNpLog();
                 });
                 if (dtNpLog.Rows.Count > 0) {
+                    // Program Not Responding
+                    // Jangan Di Masukkin Ke Thread
                     List<MNpLog> lsNpLog = _converter.DataTableToList<MNpLog>(dtNpLog);
+                    // Sekalian Buat Nahan Window Message Queuenya
+                    // Biar Timer Ke Tunda
                     foreach (MNpLog npLog in lsNpLog) {
                         listNpLog.Add(npLog);
                     }
