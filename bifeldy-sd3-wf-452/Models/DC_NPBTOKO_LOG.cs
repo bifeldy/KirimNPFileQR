@@ -48,6 +48,9 @@ namespace KirimNPFileQR.Models {
         string LOG_CABANG { get; set; }
         decimal LOG_RE_TRY { get; set; }
         string LOG_IP_IISKIRIM { get; set; }
+        DateTime KIRIM_EMAIL { get; set; }
+        string STATUS_KIRIM_EMAIL { get; set; }
+        string KODE_STAT_KRIM_MAIL { get; set; }
     }
 
 }

@@ -16,7 +16,22 @@ using System;
 
 namespace KirimNPFileQR.Models {
 
-    public sealed class MNpHeader : DC_NPBTOKO_LOG, DC_TOKO_T {
+    public sealed class MNpLog : DC_NPBTOKO_LOG, DC_TOKO_T, DC_NPBTOKO_HDR {
+
+        /* DC_NPBTOKO_HDR */
+        public string HDR_DCKODE { get; set; }
+        public decimal HDR_LOG_ALOKASID { get; set; }
+        public string HDR_NOSJ { get; set; }
+        public DateTime HDR_TGLSJ { get; set; }
+        public string HDR_TOK_KODE { get; set; }
+        public decimal HDR_ID { get; set; }
+        public DateTime HDR_TGL { get; set; }
+        public string HDR_KETER { get; set; }
+        public decimal HDR_RECID { get; set; }
+        public string HDR_TYPE { get; set; }
+        public string HDR_JENIS { get; set; }
+        public decimal HDR_TOTREC_NPB { get; set; }
+
         /* DC_NPBTOKO_LOG */
         public string LOG_DCKODE { get; set; }
         public decimal LOG_LOKID { get; set; }
@@ -49,6 +64,10 @@ namespace KirimNPFileQR.Models {
         public string LOG_CABANG { get; set; }
         public decimal LOG_RE_TRY { get; set; }
         public string LOG_IP_IISKIRIM { get; set; }
+        public DateTime KIRIM_EMAIL { get; set; }
+        public string STATUS_KIRIM_EMAIL { get; set; }
+        public string KODE_STAT_KRIM_MAIL { get; set; }
+
         /* DC_TOKO_T */
         public decimal TOK_ID { get; set; }
         public string TOK_CODE { get; set; }
@@ -112,7 +131,10 @@ namespace KirimNPFileQR.Models {
         public string TOK_KIRIM_IGR { get; set; }
     }
 
-    public sealed class MNpDetail {
+    public sealed class MNpHeader {
+        public decimal NOKUNCI { get; set; }
+        public string NORANG { get; set; }
+        public decimal NOSJ { get; set; }
     }
 
 }

@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Threading.Tasks;
 
 using bifeldy_sd3_lib_452.Abstractions;
@@ -28,13 +27,12 @@ using KirimNPFileQR.Utilities;
 namespace KirimNPFileQR.Handlers {
 
     public interface IDb : IDbHandler {
-        Task<DataTable> OraPg_GetDataTable(string sqlQuery);
-        Task<DateTime> OraPg_GetYesterdayDate(int lastDay);
-        Task<DateTime> OraPg_GetCurrentTimestamp();
-        Task<DateTime> OraPg_GetCurrentDate();
-        Task<CDbExecProcResult> OraPg_CALL_(string procName);
         Task<string> GetURLWebService(string webType);
-        Task<DataTable> GetNpHeader();
+        Task<bool> CheckColumnAlterTable(string tableName, string columnName, string columnType);
+        Task<DataTable> GetNpLog();
+        Task<DataTable> GetNpDetail(decimal log_seqno);
+        Task<DataTable> GetNpHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
+        Task UpdateAfterSendEmail(decimal log_seqno);
     }
 
     public sealed class CDb : CDbHandler, IDb {
@@ -45,40 +43,6 @@ namespace KirimNPFileQR.Handlers {
             _app = app;
         }
 
-        public async Task<DataTable> OraPg_GetDataTable(string sqlQuery) {
-            return await OraPg.GetDataTableAsync(sqlQuery);
-        }
-
-        public async Task<DateTime> OraPg_GetYesterdayDate(int lastDay) {
-            return await OraPg.ExecScalarAsync<DateTime>(
-                $@"
-                    SELECT {(_app.IsUsingPostgres ? "CURRENT_DATE" : "TRUNC(SYSDATE)")} - :last_day
-                    {(_app.IsUsingPostgres ? "" : "FROM DUAL")}
-                ",
-                new List<CDbQueryParamBind> {
-                    new CDbQueryParamBind { NAME = "last_day", VALUE = lastDay }
-                }
-            );
-        }
-
-        public async Task<DateTime> OraPg_GetCurrentTimestamp() {
-            return await OraPg.ExecScalarAsync<DateTime>($@"
-                SELECT {(_app.IsUsingPostgres ? "CURRENT_TIMESTAMP" : "SYSDATE FROM DUAL")}
-            ");
-        }
-
-        public async Task<DateTime> OraPg_GetCurrentDate() {
-            return await OraPg.ExecScalarAsync<DateTime>($@"
-                SELECT {(_app.IsUsingPostgres ? "CURRENT_DATE" : "TRUNC(SYSDATE) FROM DUAL")}
-            ");
-        }
-
-        public async Task<CDbExecProcResult> OraPg_CALL_(string procedureName) {
-            return await OraPg.ExecProcedureAsync(procedureName);
-        }
-
-        /* ** */
-
         public async Task<string> GetURLWebService(string webType) {
             return await OraPg.ExecScalarAsync<string>(
                 $@"SELECT WEB_URL FROM DC_WEBSERVICE_T WHERE WEB_TYPE = :web_type",
@@ -88,29 +52,167 @@ namespace KirimNPFileQR.Handlers {
             );
         }
 
-        public async Task<DataTable> GetNpHeader() {
+        public async Task<bool> CheckColumnAlterTable(string tableName, string columnName, string columnType) {
+            var cols_dc_npbtoko_log = await OraPg_GetAllColumnTable(tableName);
+            if (!cols_dc_npbtoko_log.Contains(columnName.ToUpper())) {
+                return await OraPg.ExecQueryAsync($@"
+                    ALTER TABLE {tableName}
+                        ADD {(_app.IsUsingPostgres ? "COLUMN" : "(")}
+                            {columnName} {columnType}
+                        {(_app.IsUsingPostgres ? "" : ")")}
+                ");
+            }
+            return false;
+        }
+
+        public async Task<DataTable> GetNpLog() {
             return await OraPg.GetDataTableAsync(
                 $@"
-                    SELECT
-                        a.*,
-                        b.*
-                    FROM
-                        DC_NPBTOKO_LOG a,
-                        DC_TOKO_T b,
-                        DC_TABEL_DC_T c 
-                    WHERE
-                        a.LOG_TOK_KODE = b.TOK_CODE 
-                        AND a.LOG_DCKODE = c.TBL_DC_KODE 
-                        AND b.tok_recid IS NULL
-                        AND b.tok_email IS NOT NULL
-                        AND (
-                            UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
-                            AND UPPER(a.log_stat_rcv) NOT LIKE '%- 00 -%'
-                            AND UPPER(a.log_stat_rcv) NOT LIKE '%- 01 -%'
-                        )
-                    ORDER BY
-                        a.log_tgl_npb DESC
+                    SELECT *
+                    FROM (
+                        SELECT
+                            d.*, a.*, b.*
+                            /*
+                                d.hdr_nosj,
+                                a.log_seqno,
+                                a.log_dckode,
+                                a.log_tok_kode,
+                                a.log_no_npb,
+                                a.log_tgl_npb,
+                                a.log_namafile,
+                                a.log_item,
+                                a.log_stat_rcv,
+                                a.log_jenis,
+                                b.tok_name,
+                                b.tok_kirim,
+                                b.tok_email
+                            */
+                        FROM
+                            DC_NPBTOKO_LOG a,
+                            DC_TOKO_T b,
+                            DC_TABEL_DC_T c,
+                            DC_NPBTOKO_HDR d
+                        WHERE
+                            a.LOG_TOK_KODE = b.TOK_CODE 
+                            AND a.LOG_DCKODE = c.TBL_DC_KODE
+                            AND a.log_fk_id = d.hdr_id 
+                            AND b.tok_recid IS NULL
+                            AND b.tok_email IS NOT NULL
+                            AND (
+                                a.log_stat_rcv IS NOT NULL
+                                AND UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
+                                AND a.log_stat_rcv NOT LIKE '%- 00 -%'
+                                AND a.log_stat_rcv NOT LIKE '%- 01 -%'
+                            )
+                            AND a.status_kirim_email IS NULL
+                            AND LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
+                        ORDER BY
+                            d.hdr_nosj ASC,
+                            a.log_tgl_npb ASC
+                    ) logs
+                    WHERE ROWNUM <= 60
                 "
+            );
+        }
+
+        public async Task<DataTable> GetNpDetail(decimal log_seqno) {
+            return await OraPg_GetDataTable(
+                $@"
+                    SELECT 
+                        docno,
+                        picno,
+                        pictgl,
+                        prdcd,
+                        sj_qty,
+                        TRUNC(price, 10) AS price,
+                        TRUNC(ppnrp, 10) AS ppnrp,
+	                    TRUNC(hpp, 10) AS hpp,
+	                    keter,
+	                    tanggal1,
+                        tanggal2,
+	                    docno2,
+	                    dus_no,
+	                    tglexp,
+	                    ppn_rate,
+	                    bkp,
+	                    sub_bkp
+                    FROM
+                        dc_npbtoko_file
+                    WHERE 
+                         log_fk_seqno = :log_seqno
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno }
+                }
+            );
+        }
+
+        public async Task<DataTable> GetNpHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb) {
+            string tblName1 = null;
+            string tblName2 = null;
+            switch (log_jenis.ToUpper()) {
+                case "NPB":
+                    tblName1 = "cluster_tbbackup";
+                    tblName2 = "cluster_tbbackup_h";
+                    break;
+                case "NPL":
+                    tblName1 = "cluster_canvas";
+                    tblName2 = "cluster_canvas_h";
+                    break;
+                case "NPR":
+                    tblName1 = "cluster_tbbackuproti";
+                    tblName2 = "cluster_tbbackuproti_h";
+                    break;
+                case "NPX":
+                    tblName1 = "cluster_tbbackupbuah";
+                    tblName2 = "cluster_tbbackupbuah_h";
+                    break;
+                default:
+                    throw new Exception($"Jenis {log_jenis} Belum Tersedia !!");
+            }
+            return await OraPg_GetDataTable(
+                $@"
+                    SELECT
+                        nokunci,
+                        pass || LPAD(TO_CHAR(nonpb), '6', '0') || TO_CHAR(tglnpb, 'ddmmyyyy') as norang,
+                        nosj
+                    FROM
+                        {tblName1}
+                    WHERE
+                        nonpb = :log_no_npb
+                        AND TRUNC(tglnpb) = TRUNC(:log_tgl_npb)
+                    UNION
+                    SELECT
+                        nokunci,
+                        pass || LPAD(TO_CHAR(nonpb), '6', '0') || TO_CHAR(tglnpb, 'ddmmyyyy') as norang,
+                        nosj
+                    FROM
+                        {tblName2}
+                    WHERE
+                        nonpb = :log_no_npb
+                        AND TRUNC(tglnpb) = TRUNC(:log_tgl_npb)
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_no_npb", VALUE = log_no_npb },
+                    new CDbQueryParamBind { NAME = "log_tgl_npb", VALUE = log_tgl_npb }
+                }
+            );
+        }
+
+        public Task UpdateAfterSendEmail(decimal log_seqno) {
+            return OraPg.ExecQueryAsync(
+                $@"
+                    UPDATE DC_NPBTOKO_LOG
+                    SET
+                        KIRIM_EMAIL = {(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")},
+                        STATUS_KIRIM_EMAIL = 'SUKSES',
+                        KODE_STAT_KRIM_MAIL = '00'
+                    WHERE
+                        LOG_SEQNO = :log_seqno
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno }
+                }
             );
         }
 

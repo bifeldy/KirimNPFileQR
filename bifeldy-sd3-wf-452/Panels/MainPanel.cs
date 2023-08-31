@@ -16,7 +16,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Threading;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -36,25 +41,43 @@ namespace KirimNPFileQR.Panels {
         private readonly IDb _db;
         private readonly IConfig _config;
         private readonly IConverter _converter;
+        private readonly IBerkas _berkas;
+        private readonly IStream _stream;
+        private readonly IQrBar _qrBar;
+        private readonly ISurel _surel;
 
         private CMainForm mainForm;
 
         bool timerBusy = false;
 
-        int waitTime = 15 * 60;
+        int waitTime = 1 * 60;
         int countDownSeconds = 0;
 
         /* NP* Header */
 
-        private List<MNpHeader> listNpHeader = null;
-        private BindingList<MNpHeader> bindNpHeader = null;
+        private List<MNpLog> listNpLog = null;
+        private BindingList<MNpLog> bindNpLog = null;
 
-        public CMainPanel(IApp app, ILogger logger, IDb db, IConfig config, IConverter converter) {
+        public CMainPanel(
+            IApp app,
+            ILogger logger,
+            IDb db,
+            IConfig config,
+            IConverter converter,
+            IBerkas berkas,
+            IStream stream,
+            IQrBar qrBar,
+            ISurel surel
+        ) {
             _app = app;
             _logger = logger;
             _db = db;
             _config = config;
             _converter = converter;
+            _berkas = berkas;
+            _stream = stream;
+            _qrBar = qrBar;
+            _surel = surel;
 
             InitializeComponent();
             OnInit();
@@ -67,8 +90,10 @@ namespace KirimNPFileQR.Panels {
         private void OnInit() {
             Dock = DockStyle.Fill;
 
-            listNpHeader = new List<MNpHeader>();
-            bindNpHeader = new BindingList<MNpHeader>(listNpHeader);
+            listNpLog = new List<MNpLog>();
+            bindNpLog = new BindingList<MNpLog>(listNpLog);
+
+            txtBxDaysRetentionFiles.Value = _berkas.MaxOldRetentionDay;
         }
 
         private void ImgDomar_Click(object sender, EventArgs e) {
@@ -100,7 +125,7 @@ namespace KirimNPFileQR.Panels {
                 SetIdleBusyStatus(true);
             }
 
-            ReStartTimer();
+            CheckTableColumn();
         }
 
         public void SetIdleBusyStatus(bool isIdle) {
@@ -117,6 +142,25 @@ namespace KirimNPFileQR.Panels {
                 else {
                     EnableDisableControl(control.Controls, isIdle);
                 }
+            }
+        }
+
+        private void TxtBxDaysRetentionFiles_ValueChanged(object sender, EventArgs e) {
+            _berkas.MaxOldRetentionDay = (int)txtBxDaysRetentionFiles.Value;
+            _config.Set("MaxOldRetentionDay", _berkas.MaxOldRetentionDay);
+        }
+
+        private async void CheckTableColumn() {
+            try {
+                await Task.Run(async () => {
+                    await _db.CheckColumnAlterTable("DC_NPBTOKO_LOG", "KIRIM_EMAIL", "DATE");
+                    await _db.CheckColumnAlterTable("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
+                    await _db.CheckColumnAlterTable("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
+                });
+                ReStartTimer();
+            }
+            catch (Exception ex) {
+                _logger.WriteError(ex);
             }
         }
 
@@ -151,8 +195,9 @@ namespace KirimNPFileQR.Panels {
         }
 
         private void EnableCustomColumnOnly(DataGridView dtGrdVw, List<string> visibleColumn) {
+            List<string> cols = visibleColumn.Select(c => c.ToUpper()).ToList();
             foreach (DataGridViewColumn dtGrdCol in dtGrdVw.Columns) {
-                if (!visibleColumn.Contains(dtGrdCol.Name)) {
+                if (!cols.Contains(dtGrdCol.Name.ToUpper())) {
                     dtGrdCol.Visible = chkSemuaKolom.Checked;
                 }
                 if (dtGrdCol.GetType() != typeof(DataGridViewButtonColumn) && dtGrdCol.GetType() != typeof(DataGridViewComboBoxColumn)) {
@@ -166,18 +211,19 @@ namespace KirimNPFileQR.Panels {
 
         private async Task RefreshDataTable() {
             try {
-                listNpHeader.Clear();
-                DataTable dtNpHeader = new DataTable();
+                listNpLog.Clear();
+                DataTable dtNpLog = new DataTable();
                 await Task.Run(async () => {
-                    dtNpHeader = await _db.GetNpHeader();
+                    dtNpLog = await _db.GetNpLog();
                 });
-                if (dtNpHeader.Rows.Count > 0) {
-                    List<MNpHeader> lsNpHeader = _converter.DataTableToList<MNpHeader>(dtNpHeader);
-                    foreach (MNpHeader npHeader in lsNpHeader) {
-                        listNpHeader.Add(npHeader);
+                if (dtNpLog.Rows.Count > 0) {
+                    List<MNpLog> lsNpLog = _converter.DataTableToList<MNpLog>(dtNpLog);
+                    foreach (MNpLog npLog in lsNpLog) {
+                        listNpLog.Add(npLog);
                     }
-                    dtGrdNp.DataSource = bindNpHeader;
+                    dtGrdNp.DataSource = bindNpLog;
                     EnableCustomColumnOnly(dtGrdNp, new List<string> {
+                        "HDR_NOSJ",
                         "LOG_SEQNO",
                         "LOG_DCKODE",
                         "LOG_TOK_KODE",
@@ -185,12 +231,14 @@ namespace KirimNPFileQR.Panels {
                         "LOG_TGL_NPB",
                         "LOG_NAMAFILE",
                         "LOG_ITEM",
+                        "LOG_STAT_RCV",
+                        "LOG_JENIS",
                         "TOK_NAME",
                         "TOK_KIRIM",
                         "TOK_EMAIL"
                     });
                 }
-                bindNpHeader.ResetBindings();
+                bindNpLog.ResetBindings();
                 dtGrdNp.ClearSelection();
             }
             catch (Exception ex) {
@@ -199,15 +247,118 @@ namespace KirimNPFileQR.Panels {
         }
 
         private async Task ProsesNPFile() {
-            await Task.Run(() => {
-                try {
-                    // TODO ::
-                    Thread.Sleep(10000);
-                    throw new Exception("Coba Throw Error ProsesNPFile !!");
+            await Task.Run(async () => {
+                _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
+                foreach (MNpLog npLog in listNpLog) {
+                    try {
+                        int maxQrChar = 1853;
+                        string zipPassword = "PernahKejepit2XOuch!!";
+                        string lastCharDetail = "*";
+                        string lastCharHeader = "-";
+                        int versionQrHeader = 17;
+                        int versionQrDetail = 25;
+                        // -- Detail
+                        string detailFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_DETAIL";
+                        DataTable dtNpDetail = await _db.GetNpDetail(npLog.LOG_SEQNO);
+                        // -- Detail CSV
+                        if (!_berkas.DataTable2CSV(dtNpDetail, $"{detailFileName}.CSV", "|")) {
+                            throw new Exception($"Gagal Membuat {detailFileName}.CSV");
+                        }
+                        // -- Detail ZIP
+                        _berkas.ZipListFileInFolder(
+                            $"{detailFileName}.ZIP",
+                            new List<string> { $"{detailFileName}.CSV" },
+                            password: zipPassword
+                        );
+                        string detailPathZip = Path.Combine(_berkas.ZipFolderPath, $"{detailFileName}.ZIP");
+                        byte[] detailByteZip = null;
+                        using (MemoryStream ms = _stream.ReadFileAsBinaryByte(detailPathZip)) {
+                            detailByteZip = ms.ToArray();
+                        }
+                        string detailHex = _converter.ByteToString(detailByteZip);
+                        TextDevider txtDvdr = new TextDevider(detailHex, maxQrChar - 9 - 1);
+                        txtDvdr.Devide();
+                        // -- Header
+                        string headerFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_HEADER";
+                        // -- Header CSV
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine("TOKO|KIRIM|GEMBOK|NOSJ|NORANG|JMLPART|JMLRECORD");
+                        DataTable dtNpHeader = await _db.GetNpHeader(npLog.LOG_JENIS, npLog.LOG_NO_NPB, npLog.LOG_TGL_NPB);
+                        MNpHeader npHeader = _converter.DataTableToList<MNpHeader>(dtNpHeader).First();
+                        sb.AppendLine($"{npLog.LOG_TOK_KODE}|{await _db.GetKodeDc()}|{npHeader.NOKUNCI}|{npHeader.NOSJ}|{npHeader.NORANG}|{txtDvdr.JumlahPart}|{dtNpDetail.Rows.Count}");
+                        string headerPathCsv = Path.Combine(_berkas.TempFolderPath, $"{headerFileName}.CSV");
+                        File.WriteAllText(headerPathCsv, sb.ToString());
+                        // -- Header ZIP
+                        _berkas.ZipListFileInFolder(
+                            $"{headerFileName}.ZIP",
+                            new List<string> { $"{headerFileName}.CSV" },
+                            password: zipPassword
+                        );
+                        string headerPathZip = Path.Combine(_berkas.ZipFolderPath, $"{headerFileName}.ZIP");
+                        byte[] headerByteZip = null;
+                        using (MemoryStream ms = _stream.ReadFileAsBinaryByte(headerPathZip)) {
+                            headerByteZip = ms.ToArray();
+                        }
+                        string headerHex = _converter.ByteToString(headerByteZip) + lastCharHeader;
+                        // -- QR
+                        List<string> lsQrPath = new List<string>();
+                        // -- QR Header
+                        Image headerQr = _qrBar.GenerateQrCode(headerHex, version: versionQrHeader);
+                        string headerQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerFileName}.JPG");
+                        headerQr.Save(headerQrImgPath, ImageFormat.Jpeg);
+                        lsQrPath.Add(headerQrImgPath);
+                        // -- QR Detail
+                        int totalQr = txtDvdr.JumlahPart;
+                        for (int i = 0; i < totalQr; i++) {
+                            // 2 Digit Dengan Awal 0
+                            string idx = (i + 1).ToString("0#");
+                            string saltDetailHex = $"{idx}{npHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
+                            string urutan = $"{idx}-{totalQr:0#}";
+                            Image detailQr = _qrBar.GenerateQrCode(saltDetailHex, version: versionQrDetail);
+                            string detailQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailFileName}_{urutan}.JPG");
+                            detailQr.Save(detailQrImgPath, ImageFormat.Jpeg);
+                            lsQrPath.Add(detailQrImgPath);
+                        }
+                        // Email
+                        string title = $"{npLog.HDR_JENIS} TOKO :: {npLog.LOG_TOK_KODE}";
+                        string[] to = new string[] { };
+                        string[] cc = new string[] { };
+                        string[] bcc = new string[] { };
+                        /* WARNING ** SPAM */
+                        if (_app.DebugMode) {
+                            title = "[SIMULASI] " + title;
+                            to = new string[] {
+                                "edwin@indomaret.co.id",
+                                "bias@indomaret.co.id"
+                            };
+                            cc = new string[] {
+                                "benhart@indomaret.co.id",
+                                "nova.nujula@indomaret.co.id",
+                                "teguh.widi@indomaret.co.id",
+                                "chandrianto@indomaret.co.id"
+                            };
+                        }
+                        else {
+                            to = new string[] {
+                                npLog.TOK_EMAIL.Trim()
+                            };
+                        }
+                        await _surel.CreateAndSend(
+                            title,
+                            $"INV :: {npLog.LOG_NO_INV}",
+                            _surel.CreateEmailAddress("sd3@indomaret.co.id", $"[SD3_BOT] 📧 {_app.AppName} v{_app.AppVersion}"),
+                            _surel.CreateEmailAddress(to),
+                            _surel.CreateEmailAddress(cc),
+                            _surel.CreateEmailAddress(bcc),
+                            attachments: _surel.CreateEmailAttachment(lsQrPath.ToArray())
+                        );
+                        await _db.UpdateAfterSendEmail(npLog.LOG_SEQNO);
+                    }
+                    catch (Exception ex) {
+                        _logger.WriteError(ex);
+                    }
                 }
-                catch (Exception ex) {
-                    _logger.WriteError(ex);
-                }
+                _berkas.CleanUp();
             });
         }
 
@@ -215,6 +366,10 @@ namespace KirimNPFileQR.Panels {
             SetIdleBusyStatus(false);
             await RefreshDataTable();
             SetIdleBusyStatus(true);
+        }
+
+        private void btnOpenFolder_Click(object sender, EventArgs e) {
+            Process.Start(new ProcessStartInfo { Arguments = _berkas.BackupFolderPath, FileName = "explorer.exe" });
         }
     }
 
