@@ -152,9 +152,9 @@ namespace KirimNPFileQR.Panels {
         private async void CheckTableColumn() {
             try {
                 await Task.Run(async () => {
-                    await _db.OraPg_AlterTable("DC_NPBTOKO_LOG", "KIRIM_EMAIL", "DATE");
-                    await _db.OraPg_AlterTable("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
-                    await _db.OraPg_AlterTable("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
+                    await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KIRIM_EMAIL", "DATE");
+                    await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
+                    await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
                 });
                 ReStartTimer();
             }
