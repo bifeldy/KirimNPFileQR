@@ -257,6 +257,7 @@ namespace KirimNPFileQR.Panels {
                         string lastCharHeader = "-";
                         int versionQrHeader = 17;
                         int versionQrDetail = 25;
+                        string imageQrLogoPath = Path.Combine(_app.AppLocation, "Images", "domar.gif");
                         // -- Detail
                         string detailFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_DETAIL";
                         DataTable dtNpDetail = await _db.GetNpDetail(npLog.LOG_SEQNO);
@@ -304,19 +305,23 @@ namespace KirimNPFileQR.Panels {
                         List<string> lsQrPath = new List<string>();
                         // -- QR Header
                         Image headerQr = _qrBar.GenerateQrCode(headerHex, version: versionQrHeader);
+                        Image headerQrLogo = _qrBar.AddQrLogo(headerQr, Image.FromFile(imageQrLogoPath));
+                        Image headerQrLogoText = _qrBar.AddQrCaption(headerQrLogo, $"{headerFileName}.JPG");
                         string headerQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerFileName}.JPG");
-                        headerQr.Save(headerQrImgPath, ImageFormat.Jpeg);
+                        headerQrLogoText.Save(headerQrImgPath, ImageFormat.Jpeg);
                         lsQrPath.Add(headerQrImgPath);
                         // -- QR Detail
                         int totalQr = txtDvdr.JumlahPart;
                         for (int i = 0; i < totalQr; i++) {
                             // 2 Digit Dengan Awal 0
-                            string idx = (i + 1).ToString("0#");
+                            string idx = (i + 1).ToString("00#");
                             string saltDetailHex = $"{idx}{npHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
-                            string urutan = $"{idx}-{totalQr:0#}";
+                            string urutan = $"{idx}-{totalQr:00#}";
                             Image detailQr = _qrBar.GenerateQrCode(saltDetailHex, version: versionQrDetail);
+                            Image detailQrLogo = _qrBar.AddQrLogo(detailQr, Image.FromFile(imageQrLogoPath));
+                            Image detailQrLogoText = _qrBar.AddQrCaption(detailQrLogo, $"{detailFileName}_{urutan}.JPG");
                             string detailQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailFileName}_{urutan}.JPG");
-                            detailQr.Save(detailQrImgPath, ImageFormat.Jpeg);
+                            detailQrLogoText.Save(detailQrImgPath, ImageFormat.Jpeg);
                             lsQrPath.Add(detailQrImgPath);
                         }
                         // Email
