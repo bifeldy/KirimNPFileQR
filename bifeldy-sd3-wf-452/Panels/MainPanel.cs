@@ -308,10 +308,10 @@ namespace KirimNPFileQR.Panels {
                         List<string> lsQrPath = new List<string>();
                         // -- QR Header
                         Image headerQr = _qrBar.GenerateQrCode(headerHex, version: versionQrHeader);
-                        Image headerQrLogo = _qrBar.AddQrLogo(headerQr, Image.FromFile(imageQrLogoPath));
-                        Image headerQrLogoText = _qrBar.AddQrCaption(headerQrLogo, $"{headerFileName}.JPG");
+                        // headerQr = _qrBar.AddQrLogo(headerQr, Image.FromFile(imageQrLogoPath));
+                        headerQr = _qrBar.AddQrCaption(headerQr, $"{headerFileName}.JPG");
                         string headerQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerFileName}.JPG");
-                        headerQrLogoText.Save(headerQrImgPath, ImageFormat.Jpeg);
+                        headerQr.Save(headerQrImgPath, ImageFormat.Jpeg);
                         lsQrPath.Add(headerQrImgPath);
                         // -- QR Detail
                         int totalQr = txtDvdr.JumlahPart;
@@ -321,10 +321,10 @@ namespace KirimNPFileQR.Panels {
                             string saltDetailHex = $"{idx}{npHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
                             string urutan = $"{idx}-{totalQr:00#}";
                             Image detailQr = _qrBar.GenerateQrCode(saltDetailHex, version: versionQrDetail);
-                            Image detailQrLogo = _qrBar.AddQrLogo(detailQr, Image.FromFile(imageQrLogoPath));
-                            Image detailQrLogoText = _qrBar.AddQrCaption(detailQrLogo, $"{detailFileName}_{urutan}.JPG");
+                            // detailQr = _qrBar.AddQrLogo(detailQr, Image.FromFile(imageQrLogoPath));
+                            detailQr = _qrBar.AddQrCaption(detailQr, $"{detailFileName}_{urutan}.JPG");
                             string detailQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailFileName}_{urutan}.JPG");
-                            detailQrLogoText.Save(detailQrImgPath, ImageFormat.Jpeg);
+                            detailQr.Save(detailQrImgPath, ImageFormat.Jpeg);
                             lsQrPath.Add(detailQrImgPath);
                         }
                         // Email
