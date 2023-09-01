@@ -124,6 +124,26 @@ namespace KirimNPFileQR.Panels {
                 SetIdleBusyStatus(true);
             }
 
+            //
+            // Testing Buat QR & Baca QR & Bandingin Isi QR
+            //
+            // Image bmp1 = Image.FromFile("D:/_data/Bifeldy/_sources/KirimNPFileQR/bifeldy-sd3-wf-452/bin/Debug/Backup_Files/6379586_NPBG001TRIY20230830152154_DETAIL_01-05.JPG");
+            // string txt1 = _qrBar.ReadTextFromQrBarCode(bmp1);
+            // MessageBox.Show(txt1);
+            // 
+            // Image img1 = _qrBar.GenerateQrCode(txt1);
+            // Image bmp2 = Image.FromFile("D:/_data/Bifeldy/_sources/KirimNPFileQR/bifeldy-sd3-wf-452/Images/domar.gif");
+            // Image img2 = _qrBar.AddQrLogo(img1, bmp2);
+            //
+            // string urutan = $"{1:00#}-{5:00#}";
+            // Image img3 = _qrBar.AddQrCaption(img2, $"6379586_NPBG001TRIY20230830152154_DETAIL_{urutan}.JPG");
+            // img3.Save($"D:/_data/Bifeldy/_sources/KirimNPFileQR/bifeldy-sd3-wf-452/bin/Debug/Backup_Files/6379586_NPBG001TRIY20230830152154_DETAIL_{urutan}_NEW.JPG");
+            // 
+            // Image bmp3 = Image.FromFile($"D:/_data/Bifeldy/_sources/KirimNPFileQR/bifeldy-sd3-wf-452/bin/Debug/Backup_Files/6379586_NPBG001TRIY20230830152154_DETAIL_{urutan}_NEW.JPG");
+            // string txt2 = _qrBar.ReadTextFromQrBarCode(bmp3);
+            // MessageBox.Show((txt1 == txt2).ToString());
+            //
+
             CheckTableColumn();
         }
 
