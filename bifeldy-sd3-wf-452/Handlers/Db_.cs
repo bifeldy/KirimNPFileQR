@@ -29,7 +29,7 @@ namespace KirimNPFileQR.Handlers {
         Task<DataTable> GetNpLog();
         Task<DataTable> GetNpDetail(decimal log_seqno);
         Task<DataTable> GetNpHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
-        Task UpdateAfterSendEmail(decimal log_seqno);
+        Task UpdateAfterSendEmail(decimal log_seqno, string errMessage = null);
     }
 
     public sealed class CDb : CDbHandler, IDb {
@@ -174,14 +174,21 @@ namespace KirimNPFileQR.Handlers {
             );
         }
 
-        public Task UpdateAfterSendEmail(decimal log_seqno) {
+        public Task UpdateAfterSendEmail(decimal log_seqno, string errMessage = null) {
             return OraPg.ExecQueryAsync(
                 $@"
                     UPDATE DC_NPBTOKO_LOG
                     SET
                         KIRIM_EMAIL = {(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")},
-                        STATUS_KIRIM_EMAIL = 'SUKSES',
-                        KODE_STAT_KRIM_MAIL = '00'
+                        {(
+                            string.IsNullOrEmpty(errMessage) ? $@"
+                                STATUS_KIRIM_EMAIL = 'SUKSES',
+                                KODE_STAT_KRIM_MAIL = '00' 
+                            " : $@"
+                                STATUS_KIRIM_EMAIL = '{(errMessage.Length < 100 ? errMessage : errMessage.Substring(0, 99))}',
+                                KODE_STAT_KRIM_MAIL = '-1'
+                            "
+                        )}
                     WHERE
                         LOG_SEQNO = :log_seqno
                 ",

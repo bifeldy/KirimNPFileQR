@@ -363,6 +363,7 @@ namespace KirimNPFileQR.Panels {
                         await _db.UpdateAfterSendEmail(npLog.LOG_SEQNO);
                     }
                     catch (Exception ex) {
+                        await _db.UpdateAfterSendEmail(npLog.LOG_SEQNO, ex.Message);
                         _logger.WriteError(ex);
                     }
                 }
