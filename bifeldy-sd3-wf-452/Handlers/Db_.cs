@@ -79,7 +79,13 @@ namespace KirimNPFileQR.Handlers {
                                 AND a.log_stat_rcv NOT LIKE '%- 00 -%'
                                 AND a.log_stat_rcv NOT LIKE '%- 01 -%'
                             )
-                            AND a.status_kirim_email IS NULL
+                            AND (
+                                a.status_kirim_email IS NULL
+                                OR (
+                                    a.status_kirim_email NOT LIKE '%SUKSES%'
+                                    AND a.kode_stat_krim_mail NOT LIKE '%00%'
+                                )
+                            )
                             AND LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
                         ORDER BY
                             d.hdr_nosj ASC,

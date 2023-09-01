@@ -54,8 +54,11 @@ namespace KirimNPFileQR.Panels {
 
         /* NP* Header */
 
-        private List<MNpLog> listNpLog = null;
-        private BindingList<MNpLog> bindNpLog = null;
+        private List<MNpLog> listNpLogPending = null;
+        private BindingList<MNpLog> bindNpLogPending = null;
+
+        private List<MNpLog> listNpLogGagal = null;
+        private BindingList<MNpLog> bindNpLogGagal = null;
 
         public CMainPanel(
             IApp app,
@@ -89,8 +92,11 @@ namespace KirimNPFileQR.Panels {
         private void OnInit() {
             Dock = DockStyle.Fill;
 
-            listNpLog = new List<MNpLog>();
-            bindNpLog = new BindingList<MNpLog>(listNpLog);
+            listNpLogPending = new List<MNpLog>();
+            bindNpLogPending = new BindingList<MNpLog>(listNpLogPending);
+
+            listNpLogGagal = new List<MNpLog>();
+            bindNpLogGagal = new BindingList<MNpLog>(listNpLogGagal);
 
             txtBxDaysRetentionFiles.Value = _berkas.MaxOldRetentionDay;
         }
@@ -230,7 +236,8 @@ namespace KirimNPFileQR.Panels {
 
         private async Task RefreshDataTable() {
             try {
-                listNpLog.Clear();
+                listNpLogPending.Clear();
+                listNpLogGagal.Clear();
                 DataTable dtNpLog = new DataTable();
                 await Task.Run(async () => {
                     dtNpLog = await _db.GetNpLog();
@@ -242,10 +249,14 @@ namespace KirimNPFileQR.Panels {
                     // Sekalian Buat Nahan Window Message Queuenya
                     // Biar Timer Ke Tunda
                     foreach (MNpLog npLog in lsNpLog) {
-                        listNpLog.Add(npLog);
+                        if (string.IsNullOrEmpty(npLog.STATUS_KIRIM_EMAIL)) {
+                            listNpLogPending.Add(npLog);
+                        }
+                        else {
+                            listNpLogGagal.Add(npLog);
+                        }
                     }
-                    dtGrdNp.DataSource = bindNpLog;
-                    EnableCustomColumnOnly(dtGrdNp, new List<string> {
+                    List<string> columnToShow = new List<string> {
                         "HDR_NOSJ",
                         "LOG_SEQNO",
                         "LOG_DCKODE",
@@ -259,10 +270,16 @@ namespace KirimNPFileQR.Panels {
                         "TOK_NAME",
                         "TOK_KIRIM",
                         "TOK_EMAIL"
-                    });
+                    };
+                    dtGrdNpPending.DataSource = bindNpLogPending;
+                    EnableCustomColumnOnly(dtGrdNpPending, columnToShow);
+                    dtGrdNpGagal.DataSource = bindNpLogGagal;
+                    EnableCustomColumnOnly(dtGrdNpGagal, columnToShow);
                 }
-                bindNpLog.ResetBindings();
-                dtGrdNp.ClearSelection();
+                bindNpLogPending.ResetBindings();
+                dtGrdNpPending.ClearSelection();
+                bindNpLogGagal.ResetBindings();
+                dtGrdNpGagal.ClearSelection();
             }
             catch (Exception ex) {
                 _logger.WriteError(ex);
@@ -272,7 +289,7 @@ namespace KirimNPFileQR.Panels {
         private async Task ProsesNPFile() {
             await Task.Run(async () => {
                 _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
-                foreach (MNpLog npLog in listNpLog) {
+                foreach (MNpLog npLog in listNpLogPending) {
                     try {
                         int maxQrChar = 1853;
                         string zipPassword = "PernahKejepit2XOuch!!";

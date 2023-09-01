@@ -28,13 +28,14 @@ namespace KirimNPFileQR.Panels {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CMainPanel));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.chkSemuaKolom = new System.Windows.Forms.CheckBox();
             this.userInfo = new System.Windows.Forms.Label();
             this.imgDomar = new System.Windows.Forms.PictureBox();
             this.prgrssBrStatus = new System.Windows.Forms.ProgressBar();
             this.lblStatus = new System.Windows.Forms.Label();
             this.appInfo = new System.Windows.Forms.Label();
-            this.dtGrdNp = new System.Windows.Forms.DataGridView();
+            this.dtGrdNpPending = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.lblCountDown = new System.Windows.Forms.Label();
             this.tmrCountDown = new System.Windows.Forms.Timer(this.components);
@@ -44,9 +45,17 @@ namespace KirimNPFileQR.Panels {
             this.txtBxDaysRetentionFiles = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.btnOpenFolder = new System.Windows.Forms.Button();
+            this.tbNp = new System.Windows.Forms.TabControl();
+            this.tbPending = new System.Windows.Forms.TabPage();
+            this.tbGagal = new System.Windows.Forms.TabPage();
+            this.dtGrdNpGagal = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.imgDomar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNp)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpPending)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtBxDaysRetentionFiles)).BeginInit();
+            this.tbNp.SuspendLayout();
+            this.tbPending.SuspendLayout();
+            this.tbGagal.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpGagal)).BeginInit();
             this.SuspendLayout();
             // 
             // chkSemuaKolom
@@ -120,20 +129,18 @@ namespace KirimNPFileQR.Panels {
             this.appInfo.Text = "{{ BoilerPlate-Net452-WinForm }}";
             this.appInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // dtGrdNp
+            // dtGrdNpPending
             // 
-            this.dtGrdNp.AllowUserToAddRows = false;
-            this.dtGrdNp.AllowUserToDeleteRows = false;
-            this.dtGrdNp.AllowUserToOrderColumns = true;
-            this.dtGrdNp.AllowUserToResizeRows = false;
-            this.dtGrdNp.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dtGrdNp.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.dtGrdNp.BackgroundColor = System.Drawing.SystemColors.Control;
-            this.dtGrdNp.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dtGrdNp.Location = new System.Drawing.Point(31, 179);
-            this.dtGrdNp.Name = "dtGrdNp";
+            this.dtGrdNpPending.AllowUserToAddRows = false;
+            this.dtGrdNpPending.AllowUserToDeleteRows = false;
+            this.dtGrdNpPending.AllowUserToOrderColumns = true;
+            this.dtGrdNpPending.AllowUserToResizeRows = false;
+            this.dtGrdNpPending.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dtGrdNpPending.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.dtGrdNpPending.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dtGrdNpPending.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dtGrdNpPending.Location = new System.Drawing.Point(3, 3);
+            this.dtGrdNpPending.Name = "dtGrdNpPending";
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -141,12 +148,12 @@ namespace KirimNPFileQR.Panels {
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtGrdNp.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dtGrdNp.RowHeadersVisible = false;
-            this.dtGrdNp.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dtGrdNp.Size = new System.Drawing.Size(740, 350);
-            this.dtGrdNp.TabIndex = 6;
-            this.dtGrdNp.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DtGrd_DataError);
+            this.dtGrdNpPending.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dtGrdNpPending.RowHeadersVisible = false;
+            this.dtGrdNpPending.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dtGrdNpPending.Size = new System.Drawing.Size(726, 320);
+            this.dtGrdNpPending.TabIndex = 6;
+            this.dtGrdNpPending.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DtGrd_DataError);
             // 
             // label1
             // 
@@ -246,10 +253,71 @@ namespace KirimNPFileQR.Panels {
             this.btnOpenFolder.UseVisualStyleBackColor = true;
             this.btnOpenFolder.Click += new System.EventHandler(this.BtnOpenFolder_Click);
             // 
+            // tbNp
+            // 
+            this.tbNp.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbNp.Controls.Add(this.tbPending);
+            this.tbNp.Controls.Add(this.tbGagal);
+            this.tbNp.Location = new System.Drawing.Point(31, 175);
+            this.tbNp.Name = "tbNp";
+            this.tbNp.SelectedIndex = 0;
+            this.tbNp.Size = new System.Drawing.Size(740, 352);
+            this.tbNp.TabIndex = 43;
+            // 
+            // tbPending
+            // 
+            this.tbPending.Controls.Add(this.dtGrdNpPending);
+            this.tbPending.Location = new System.Drawing.Point(4, 22);
+            this.tbPending.Name = "tbPending";
+            this.tbPending.Padding = new System.Windows.Forms.Padding(3);
+            this.tbPending.Size = new System.Drawing.Size(732, 326);
+            this.tbPending.TabIndex = 0;
+            this.tbPending.Text = "PENDING KIRIM";
+            this.tbPending.UseVisualStyleBackColor = true;
+            // 
+            // tbGagal
+            // 
+            this.tbGagal.Controls.Add(this.dtGrdNpGagal);
+            this.tbGagal.Location = new System.Drawing.Point(4, 22);
+            this.tbGagal.Name = "tbGagal";
+            this.tbGagal.Padding = new System.Windows.Forms.Padding(3);
+            this.tbGagal.Size = new System.Drawing.Size(732, 326);
+            this.tbGagal.TabIndex = 1;
+            this.tbGagal.Text = "GAGAL KIRIM";
+            this.tbGagal.UseVisualStyleBackColor = true;
+            // 
+            // dtGrdNpGagal
+            // 
+            this.dtGrdNpGagal.AllowUserToAddRows = false;
+            this.dtGrdNpGagal.AllowUserToDeleteRows = false;
+            this.dtGrdNpGagal.AllowUserToOrderColumns = true;
+            this.dtGrdNpGagal.AllowUserToResizeRows = false;
+            this.dtGrdNpGagal.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dtGrdNpGagal.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.dtGrdNpGagal.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dtGrdNpGagal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dtGrdNpGagal.Location = new System.Drawing.Point(3, 3);
+            this.dtGrdNpGagal.Name = "dtGrdNpGagal";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtGrdNpGagal.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.dtGrdNpGagal.RowHeadersVisible = false;
+            this.dtGrdNpGagal.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dtGrdNpGagal.Size = new System.Drawing.Size(726, 320);
+            this.dtGrdNpGagal.TabIndex = 7;
+            // 
             // CMainPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.tbNp);
             this.Controls.Add(this.btnOpenFolder);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtBxDaysRetentionFiles);
@@ -257,7 +325,6 @@ namespace KirimNPFileQR.Panels {
             this.Controls.Add(this.btbReFresh);
             this.Controls.Add(this.lblCountDown);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.dtGrdNp);
             this.Controls.Add(this.chkSemuaKolom);
             this.Controls.Add(this.userInfo);
             this.Controls.Add(this.imgDomar);
@@ -268,8 +335,12 @@ namespace KirimNPFileQR.Panels {
             this.Size = new System.Drawing.Size(800, 600);
             this.Load += new System.EventHandler(this.CMainPanel_Load);
             ((System.ComponentModel.ISupportInitialize)(this.imgDomar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNp)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpPending)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtBxDaysRetentionFiles)).EndInit();
+            this.tbNp.ResumeLayout(false);
+            this.tbPending.ResumeLayout(false);
+            this.tbGagal.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpGagal)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -283,7 +354,7 @@ namespace KirimNPFileQR.Panels {
         private System.Windows.Forms.ProgressBar prgrssBrStatus;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Label appInfo;
-        private System.Windows.Forms.DataGridView dtGrdNp;
+        private System.Windows.Forms.DataGridView dtGrdNpPending;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblCountDown;
         private System.Windows.Forms.Timer tmrCountDown;
@@ -293,6 +364,10 @@ namespace KirimNPFileQR.Panels {
         private System.Windows.Forms.NumericUpDown txtBxDaysRetentionFiles;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnOpenFolder;
+        private System.Windows.Forms.TabControl tbNp;
+        private System.Windows.Forms.TabPage tbPending;
+        private System.Windows.Forms.TabPage tbGagal;
+        private System.Windows.Forms.DataGridView dtGrdNpGagal;
     }
 
 }
