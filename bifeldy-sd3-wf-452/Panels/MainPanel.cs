@@ -418,9 +418,12 @@ namespace KirimNPFileQR.Panels {
                                 "bias@indomaret.co.id"
                             };
                             cc = new string[] {
-                                "benhart@indomaret.co.id",
                                 "nova.nujula@indomaret.co.id",
                                 "teguh.widi@indomaret.co.id",
+                                "hanani@indomaret.co.id",
+                                "rofiedmaindra@indomaret.co.id"
+                            };
+                            bcc = new string[] {
                                 "chandrianto@indomaret.co.id"
                             };
                         }
