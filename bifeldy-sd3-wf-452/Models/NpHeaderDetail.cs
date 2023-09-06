@@ -130,7 +130,7 @@ namespace KirimNPFileQR.Models {
         public string TOK_KIRIM_IGR { get; set; }
     }
 
-    public sealed class MNpHeader {
+    public sealed class MNpCreateUlangQrCodeHeader {
         public decimal NOKUNCI { get; set; }
         public string NORANG { get; set; }
         public decimal NOSJ { get; set; }

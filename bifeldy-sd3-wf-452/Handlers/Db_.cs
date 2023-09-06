@@ -29,6 +29,8 @@ namespace KirimNPFileQR.Handlers {
         Task<DataTable> GetNpLog();
         Task<DataTable> GetNpCreateUlangQrCodeDetail(decimal log_seqno);
         Task<DataTable> GetNpCreateUlangQrCodeHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
+        Task<DataTable> GetNpCreateUlangFileNp1(string log_jenis, decimal log_seqno, string tbl_dc_kode);
+        Task<DataTable> GetNpCreateUlangFileNp2(string log_jenis, decimal log_seqno, string log_tok_kode, string log_typefile, DateTime log_tgl_npb);
         Task UpdateAfterSendEmail(decimal log_seqno, string errMessage = null);
     }
 
@@ -179,6 +181,208 @@ namespace KirimNPFileQR.Handlers {
                     new CDbQueryParamBind { NAME = "log_tgl_npb", VALUE = log_tgl_npb }
                 }
             );
+        }
+
+        public async Task<DataTable> GetNpCreateUlangFileNp1(string log_jenis, decimal log_seqno, string log_dckode) {
+            string query = string.Empty;
+            List<CDbQueryParamBind> param = new List<CDbQueryParamBind>();
+            switch (log_jenis.ToUpper()) {
+                case "NPB":
+                    query = $@"
+                        SELECT
+                            recid, rtype, docno, seqno, picno, picnot, pictgl, prdcd, nama, div, qty, sj_qty,
+                            TRUNC (price, 6) price,
+                            TRUNC (gross, 6) gross,
+                            TRUNC (ppnrp, 6) ppnrp,
+                            TRUNC (hpp, 6) hpp,
+                            toko, keter, tanggal1, tanggal2, docno2, lt, rak, bar, kirim, dus_no, tglexp, ppn_rate, bkp, sub_bkp
+                        FROM
+                            dc_npbtoko_file a
+                        WHERE
+                            log_fk_seqno = :log_seqno
+                        ORDER BY
+                            docno ASC,
+                            seqno ASC
+                    ";
+                    param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
+                    break;
+                case "NPL":
+                    query = $@"
+                        SELECT
+                            recid, rtype, docno, seqno, picno, picnot, pictgl, prdcd, nama, div, qty, sj_qty,
+                            TRUNC (price, 6) price,
+                            TRUNC (gross, 6) gross,
+                            TRUNC (ppnrp, 6) ppnrp,
+                            TRUNC (hpp, 6) hpp,
+                            toko, keter, tanggal1, tanggal2, docno2, lt, rak, bar, kirim, dus_no,
+                            tglexp AS tgl_exp,
+                            ppn_rate, bkp, sub_bkp
+                        FROM
+                            dc_npbtoko_file a 
+                        WHERE
+                            log_fk_seqno = :log_seqno
+                        ORDER BY
+                            docno ASC,
+                            seqno ASC
+                    ";
+                    param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
+                    break;
+                case "NPR":
+                    query = $@"
+                        SELECT
+                            RECID, RTYPE, DOCNO, SEQNO, PICNO, PICNOT, PICTGL, PRDCD, NAMA, DIV, QTY, SJ_QTY,
+                            ROUND(PRICE, 3) AS PRICE,
+                            ROUND(GROSS, 3) AS GROSS,
+                            ROUND(PPNRP, 3) AS PPNRP,
+                            ROUND(HPP, 3) AS HPP,
+                            TOKO, KETER, TANGGAL1, TANGGAL2, DOCNO2, LT, RAK, BAR, KIRIM, DUS_NO, PPN_RATE, BKP, SUB_BKP
+                        FROM
+                            DC_NPBTOKO_FILE
+                        WHERE
+                            LOG_FK_SEQNO = :log_seqno
+                    ";
+                    param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
+                    break;
+                case "NPX":
+                    query = $@"
+                        SELECT
+                            a.recid, a.rtype, a.docno, a.seqno, a.picno, a.picnot, a.pictgl, a.prdcd, a.nama, div, a.qty,
+                            a.sj_qty, a.price, a.gross, a.ppnrp, a.hpp, a.toko, a.keter, tanggal1, a.tanggal2, a.docno2,
+                            a.lt, a.rak, a.bar, a.kirim, a.dus_no, PPN_RATE, BKP, SUB_BKP, a.nl_qty
+                        FROM
+                            dc_npbtoko_file a, dc_barang_dc_v b, dc_barang_t d
+                        WHERE
+                            a.prdcd = b.mbr_fk_pluid
+                            AND a.prdcd = d.mbr_pluid
+                            AND b.tbl_dc_kode = :log_dckode
+                            AND log_fk_seqno = :log_seqno
+                            AND (a.sj_qty <> 0)
+                            AND (a.sj_qty IS NOT NULL)
+                        ORDER BY
+                            a.prdcd ASC
+                    ";
+                    param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
+                    param.Add(new CDbQueryParamBind { NAME = "log_dckode", VALUE = log_dckode });
+                    break;
+                default:
+                    throw new Exception($"Jenis {log_jenis} Belum Tersedia !!");
+            }
+            return await OraPg_GetDataTable(query, param);
+        }
+
+        public async Task<DataTable> GetNpCreateUlangFileNp2(string log_jenis, decimal log_seqno, string log_tok_kode, string log_typefile, DateTime log_tgl_npb) {
+            string query = string.Empty;
+            List<CDbQueryParamBind> param = new List<CDbQueryParamBind>();
+            switch (log_jenis.ToUpper()) {
+                case "NPB": // RPB
+                    query = $@"
+                        SELECT
+                            docno AS DocNo,
+                            tanggal1 AS doc_date,
+                            toko,
+                            kirim AS gudang,
+                            COUNT(*) AS item,
+                            SUM(sj_qty) AS qty, 
+                            TRUNC(SUM(gross), 6) AS gross,
+                            NULL AS koli,
+                            NULL AS kubikasi,
+                            NULL AS LPG
+                        FROM
+                            dc_npbtoko_file a
+                        WHERE
+                            log_fk_seqno = :log_seqno
+                        GROUP BY
+                            docno ASC,
+                            tanggal1 ASC,
+                            toko ASC,
+                            kirim ASC
+                    ";
+                    param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
+                    break;
+                case "NPL": // RPL
+                    query = $@"
+                        SELECT
+                            docno AS DocNo,
+                            tanggal1 AS doc_date,
+                            toko,
+                            kirim AS gudang,
+                            COUNT(*) AS item,
+                            SUM(sj_qty) AS qty,
+                            TRUNC(SUM(gross), 6) AS gross,
+                            NULL AS koli,
+                            NULL AS kubikasi,
+                            NULL AS LPG
+                        FROM
+                            dc_npbtoko_file a
+                        WHERE
+                            log_fk_seqno = :log_seqno
+                        GROUP BY
+                            docno ASC,
+                            tanggal1 ASC,
+                            toko ASC,
+                            kirim ASC
+                    ";
+                    param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
+                    break;
+                case "NPR": // XPR
+                    query = $@"
+                        SELECT
+                            LOG_NO_NPB AS DOCNO,
+                            TO_CHAR(LOG_TGL_NPB, 'dd-MM-yyyy') AS DOC_DATE,
+                            LOG_TOK_KODE AS TOKO,
+                            LOG_DCKODE AS GUDANG,
+                            LOG_ITEM AS ITEM,
+                            LOG_QTY AS QTY,
+                            ROUND(LOG_GROSS, 3) AS GROSS,
+                            ROUND(LOG_KUBIKASI, 3) AS KUBIKASI,
+                            NULL AS LPG
+                        FROM
+                            DC_NPBTOKO_LOG
+                        WHERE
+                            LOG_TOK_KODE = :log_tok_kode
+                            AND TRUNC(LOG_TGL_NPB) = TO_DATE(:log_tgl_npb, 'dd/MM/yyyy')
+                            AND LOG_TYPEFILE = :log_typefile
+                            AND LOG_JENIS = :log_jenis
+                            AND LOG_SEQNO = :log_seqno
+                    ";
+                    param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
+                    param.Add(new CDbQueryParamBind { NAME = "log_tok_kode", VALUE = log_tok_kode });
+                    param.Add(new CDbQueryParamBind { NAME = "log_jenis", VALUE = log_jenis });
+                    param.Add(new CDbQueryParamBind { NAME = "log_typefile", VALUE = log_typefile });
+                    param.Add(new CDbQueryParamBind { NAME = "log_tgl_npb", VALUE = $"{log_tgl_npb:dd/MM/yyyy}" });
+                    break;
+                case "NPX": // RPX
+                    query = $@"
+                        SELECT
+                            log_no_npb AS docno,
+                            TO_CHAR(log_tgl_npb, 'dd-MM-yyyy') AS doc_date,
+                            log_tok_kode AS toko,
+                            log_dckode AS gudang,
+                            log_item AS item,
+                            log_qty AS qty,
+                            TRUNC(log_gross, 7) AS gross,
+                            log_kubikasi AS kubikasi,
+                            NULL AS lpg
+                        FROM
+                            dc_npbtoko_log
+                        WHERE
+                            log_tok_kode = :log_tok_kode
+                            AND TRUNC(LOG_TGL_NPB) = TO_DATE(:log_tgl_npb, 'dd/MM/yyyy')
+                            AND LOG_TYPEFILE = :log_typefile
+                            AND LOG_JENIS = :log_jenis
+                            AND log_no_npb IS NOT NULL
+                            AND LOG_SEQNO = :log_seqno
+                    ";
+                    param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
+                    param.Add(new CDbQueryParamBind { NAME = "log_tok_kode", VALUE = log_tok_kode });
+                    param.Add(new CDbQueryParamBind { NAME = "log_jenis", VALUE = log_jenis });
+                    param.Add(new CDbQueryParamBind { NAME = "log_typefile", VALUE = log_typefile });
+                    param.Add(new CDbQueryParamBind { NAME = "log_tgl_npb", VALUE = $"{log_tgl_npb:dd/MM/yyyy}" });
+                    break;
+                default:
+                    throw new Exception($"Jenis {log_jenis} Belum Tersedia !!");
+            }
+            return await OraPg_GetDataTable(query, param);
         }
 
         public Task UpdateAfterSendEmail(decimal log_seqno, string errMessage = null) {

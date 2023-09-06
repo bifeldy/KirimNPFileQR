@@ -304,72 +304,107 @@ namespace KirimNPFileQR.Panels {
                         int versionQrDetail = 25;
                         // string imageQrLogoPath = Path.Combine(_app.AppLocation, "Images", "domar.gif");
                         List<string> lsAttachmentPath = new List<string>();
+
+                        /* ** Create Ulang Qr Code ** */
+
                         // -- Detail
-                        string detailFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_DETAIL";
-                        DataTable dtNpDetail = await _db.GetNpCreateUlangQrCodeDetail(npLog.LOG_SEQNO);
-                        // -- Detail CSV -- Create Ulang Qr Code
-                        if (!_berkas.DataTable2CSV(dtNpDetail, $"{detailFileName}.CSV", "|")) {
-                            throw new Exception($"Gagal Membuat {detailFileName}.CSV");
+                        string detailCreateUlangQrCodeFileName = $"{npLog.LOG_NAMAFILE}_DETAIL";
+                        DataTable dtNpCreateUlangQrCodeDetail = await _db.GetNpCreateUlangQrCodeDetail(npLog.LOG_SEQNO);
+                        // -- Detail CSV
+                        if (!_berkas.DataTable2CSV(dtNpCreateUlangQrCodeDetail, $"{detailCreateUlangQrCodeFileName}.CSV", "|")) {
+                            throw new Exception($"Gagal Membuat {detailCreateUlangQrCodeFileName}.CSV");
                         }
-                        // -- Detail ZIP -- Create Ulang Qr Code
+                        // -- Detail ZIP
                         _berkas.ZipListFileInFolder(
-                            $"{detailFileName}.ZIP",
-                            new List<string> { $"{detailFileName}.CSV" },
+                            $"{detailCreateUlangQrCodeFileName}.ZIP",
+                            new List<string> { $"{detailCreateUlangQrCodeFileName}.CSV" },
                             password: zipPassword
                         );
-                        string detailPathZip = Path.Combine(_berkas.ZipFolderPath, $"{detailFileName}.ZIP");
-                        lsAttachmentPath.Add(detailPathZip);
-                        byte[] detailByteZip = null;
-                        using (MemoryStream ms = _stream.ReadFileAsBinaryByte(detailPathZip)) {
-                            detailByteZip = ms.ToArray();
+                        string detailCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{detailCreateUlangQrCodeFileName}.ZIP");
+                        byte[] detailCreateUlangQrCodeByteZip = null;
+                        using (MemoryStream ms = _stream.ReadFileAsBinaryByte(detailCreateUlangQrCodePathZip)) {
+                            detailCreateUlangQrCodeByteZip = ms.ToArray();
                         }
-                        string detailHex = _converter.ByteToString(detailByteZip);
-                        TextDevider txtDvdr = new TextDevider(detailHex, maxQrChar - 9 - 1);
+                        string detailCreateUlangQrCodeHex = _converter.ByteToString(detailCreateUlangQrCodeByteZip);
+                        TextDevider txtDvdr = new TextDevider(detailCreateUlangQrCodeHex, maxQrChar - 9 - 1);
                         txtDvdr.Devide();
                         // -- Header
-                        string headerFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_HEADER";
-                        // -- Header CSV -- Create Ulang Qr Code
+                        string headerCreateUlangQrCodeFileName = $"{npLog.LOG_NAMAFILE}_HEADER";
+                        // -- Header CSV
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine("TOKO|KIRIM|GEMBOK|NOSJ|NORANG|JMLPART|JMLRECORD");
-                        DataTable dtNpHeader = await _db.GetNpCreateUlangQrCodeHeader(npLog.LOG_JENIS, npLog.LOG_NO_NPB, npLog.LOG_TGL_NPB);
-                        MNpHeader npHeader = _converter.DataTableToList<MNpHeader>(dtNpHeader).First();
-                        sb.AppendLine($"{npLog.LOG_TOK_KODE}|{await _db.GetKodeDc()}|{npHeader.NOKUNCI}|{npHeader.NOSJ}|{npHeader.NORANG}|{txtDvdr.JumlahPart}|{dtNpDetail.Rows.Count}");
-                        string headerPathCsv = Path.Combine(_berkas.TempFolderPath, $"{headerFileName}.CSV");
-                        File.WriteAllText(headerPathCsv, sb.ToString());
-                        // -- Header ZIP -- Create Ulang Qr Code
+                        DataTable dtNpCreateUlangQrCodeHeader = await _db.GetNpCreateUlangQrCodeHeader(npLog.LOG_JENIS, npLog.LOG_NO_NPB, npLog.LOG_TGL_NPB);
+                        MNpCreateUlangQrCodeHeader npCreateUlangQrCodeHeader = _converter.DataTableToList<MNpCreateUlangQrCodeHeader>(dtNpCreateUlangQrCodeHeader).First();
+                        sb.AppendLine($"{npLog.LOG_TOK_KODE}|{await _db.GetKodeDc()}|{npCreateUlangQrCodeHeader.NOKUNCI}|{npCreateUlangQrCodeHeader.NOSJ}|{npCreateUlangQrCodeHeader.NORANG}|{txtDvdr.JumlahPart}|{dtNpCreateUlangQrCodeDetail.Rows.Count}");
+                        string headerCreateUlangQrCodePathCsv = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.CSV");
+                        File.WriteAllText(headerCreateUlangQrCodePathCsv, sb.ToString());
+                        // -- Header ZIP
                         _berkas.ZipListFileInFolder(
-                            $"{headerFileName}.ZIP",
-                            new List<string> { $"{headerFileName}.CSV" },
+                            $"{headerCreateUlangQrCodeFileName}.ZIP",
+                            new List<string> { $"{headerCreateUlangQrCodeFileName}.CSV" },
                             password: zipPassword
                         );
-                        string headerPathZip = Path.Combine(_berkas.ZipFolderPath, $"{headerFileName}.ZIP");
-                        lsAttachmentPath.Add(headerPathZip);
-                        byte[] headerByteZip = null;
-                        using (MemoryStream ms = _stream.ReadFileAsBinaryByte(headerPathZip)) {
-                            headerByteZip = ms.ToArray();
+                        string headerCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{headerCreateUlangQrCodeFileName}.ZIP");
+                        byte[] headerCreateUlangQrCodeByteZip = null;
+                        using (MemoryStream ms = _stream.ReadFileAsBinaryByte(headerCreateUlangQrCodePathZip)) {
+                            headerCreateUlangQrCodeByteZip = ms.ToArray();
                         }
-                        string headerHex = _converter.ByteToString(headerByteZip) + lastCharHeader;
+                        string headerCreateUlangQrCodeHex = _converter.ByteToString(headerCreateUlangQrCodeByteZip) + lastCharHeader;
                         // -- QR Header
-                        Image headerQr = _qrBar.GenerateQrCode(headerHex, version: versionQrHeader);
-                        // headerQr = _qrBar.AddQrLogo(headerQr, Image.FromFile(imageQrLogoPath));
-                        headerQr = _qrBar.AddQrCaption(headerQr, $"{headerFileName}.JPG");
-                        string headerQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerFileName}.JPG");
-                        headerQr.Save(headerQrImgPath, ImageFormat.Jpeg);
-                        lsAttachmentPath.Add(headerQrImgPath);
+                        Image headerCreateUlangQrCodeQr = _qrBar.GenerateQrCode(headerCreateUlangQrCodeHex, version: versionQrHeader);
+                        // headerCreateUlangQrCodeQr = _qrBar.AddQrLogo(headerCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
+                        headerCreateUlangQrCodeQr = _qrBar.AddQrCaption(headerCreateUlangQrCodeQr, $"{headerCreateUlangQrCodeFileName}.JPG");
+                        string headerCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.JPG");
+                        headerCreateUlangQrCodeQr.Save(headerCreateUlangQrCodeQrImgPath, ImageFormat.Jpeg);
+                        lsAttachmentPath.Add(headerCreateUlangQrCodeQrImgPath);
                         // -- QR Detail
                         int totalQr = txtDvdr.JumlahPart;
                         for (int i = 0; i < totalQr; i++) {
                             // 2 Digit Dengan Awal 0
                             string idx = (i + 1).ToString("00#");
-                            string saltDetailHex = $"{idx}{npHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
+                            string saltDetailHex = $"{idx}{npCreateUlangQrCodeHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
                             string urutan = $"{idx}-{totalQr:00#}";
-                            Image detailQr = _qrBar.GenerateQrCode(saltDetailHex, version: versionQrDetail);
-                            // detailQr = _qrBar.AddQrLogo(detailQr, Image.FromFile(imageQrLogoPath));
-                            detailQr = _qrBar.AddQrCaption(detailQr, $"{detailFileName}_{urutan}.JPG");
-                            string detailQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailFileName}_{urutan}.JPG");
-                            detailQr.Save(detailQrImgPath, ImageFormat.Jpeg);
-                            lsAttachmentPath.Add(detailQrImgPath);
+                            Image detailCreateUlangQrCodeQr = _qrBar.GenerateQrCode(saltDetailHex, version: versionQrDetail);
+                            // detailCreateUlangQrCodeQr = _qrBar.AddQrLogo(detailCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
+                            detailCreateUlangQrCodeQr = _qrBar.AddQrCaption(detailCreateUlangQrCodeQr, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
+                            string detailCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
+                            detailCreateUlangQrCodeQr.Save(detailCreateUlangQrCodeQrImgPath, ImageFormat.Jpeg);
+                            lsAttachmentPath.Add(detailCreateUlangQrCodeQrImgPath);
                         }
+
+                        /* ** Create Ulang File NP ** */
+
+                        // -- File1 CSV -- Sama Sesuai Log
+                        string createUlangFileNp1 = npLog.LOG_NAMAFILE;
+                        DataTable dtNpCreateUlangFileNp1 = await _db.GetNpCreateUlangFileNp1(npLog.LOG_JENIS, npLog.LOG_SEQNO, npLog.LOG_DCKODE);
+                        if (!_berkas.DataTable2CSV(dtNpCreateUlangFileNp1, $"{createUlangFileNp1}.CSV", "|")) {
+                            throw new Exception($"Gagal Membuat {createUlangFileNp1}.CSV");
+                        }
+                        // -- File2 CSV -- Beda Huruf Depan
+                        string createUlangFileNp2 = npLog.LOG_NAMAFILE;
+                        if (npLog.LOG_NAMAFILE == "NPR") {
+                            createUlangFileNp2 = 'X' + createUlangFileNp2.Substring(1);
+                        }
+                        else {
+                            createUlangFileNp2 = 'R' + createUlangFileNp2.Substring(1);
+                        }
+                        DataTable dtNpCreateUlangFileNp2 = await _db.GetNpCreateUlangFileNp2(npLog.LOG_JENIS, npLog.LOG_SEQNO, npLog.LOG_TOK_KODE, npLog.LOG_TYPEFILE, npLog.LOG_TGL_NPB);
+                        if (!_berkas.DataTable2CSV(dtNpCreateUlangFileNp2, $"{createUlangFileNp2}.CSV", "|")) {
+                            throw new Exception($"Gagal Membuat {createUlangFileNp2}.CSV");
+                        }
+                        // -- File3 ZIP
+                        _berkas.ZipListFileInFolder(
+                            $"{createUlangFileNp1}.ZIP",
+                            new List<string> {
+                                $"{createUlangFileNp1}.CSV",
+                                $"{createUlangFileNp2}.CSV"
+                            }
+                        );
+                        string createUlangFileNp1Path = Path.Combine(_berkas.ZipFolderPath, $"{createUlangFileNp1}.ZIP");
+                        lsAttachmentPath.Add(createUlangFileNp1Path);
+
+                        /* ** Kirim Email ** */
+
                         // Email
                         string title = $"{npLog.HDR_JENIS} TOKO :: {npLog.LOG_TOK_KODE}";
                         string[] to = new string[] { };
