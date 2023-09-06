@@ -303,6 +303,7 @@ namespace KirimNPFileQR.Panels {
                         int versionQrHeader = 17;
                         int versionQrDetail = 25;
                         string imageQrLogoPath = Path.Combine(_app.AppLocation, "Images", "domar.gif");
+                        List<string> lsAttachmentPath = new List<string>();
                         // -- Detail
                         string detailFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_DETAIL";
                         DataTable dtNpDetail = await _db.GetNpDetail(npLog.LOG_SEQNO);
@@ -317,6 +318,7 @@ namespace KirimNPFileQR.Panels {
                             password: zipPassword
                         );
                         string detailPathZip = Path.Combine(_berkas.ZipFolderPath, $"{detailFileName}.ZIP");
+                        lsAttachmentPath.Add(detailPathZip);
                         byte[] detailByteZip = null;
                         using (MemoryStream ms = _stream.ReadFileAsBinaryByte(detailPathZip)) {
                             detailByteZip = ms.ToArray();
@@ -341,20 +343,19 @@ namespace KirimNPFileQR.Panels {
                             password: zipPassword
                         );
                         string headerPathZip = Path.Combine(_berkas.ZipFolderPath, $"{headerFileName}.ZIP");
+                        lsAttachmentPath.Add(headerPathZip);
                         byte[] headerByteZip = null;
                         using (MemoryStream ms = _stream.ReadFileAsBinaryByte(headerPathZip)) {
                             headerByteZip = ms.ToArray();
                         }
                         string headerHex = _converter.ByteToString(headerByteZip) + lastCharHeader;
-                        // -- QR
-                        List<string> lsQrPath = new List<string>();
                         // -- QR Header
                         Image headerQr = _qrBar.GenerateQrCode(headerHex, version: versionQrHeader);
                         // headerQr = _qrBar.AddQrLogo(headerQr, Image.FromFile(imageQrLogoPath));
                         headerQr = _qrBar.AddQrCaption(headerQr, $"{headerFileName}.JPG");
                         string headerQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerFileName}.JPG");
                         headerQr.Save(headerQrImgPath, ImageFormat.Jpeg);
-                        lsQrPath.Add(headerQrImgPath);
+                        lsAttachmentPath.Add(headerQrImgPath);
                         // -- QR Detail
                         int totalQr = txtDvdr.JumlahPart;
                         for (int i = 0; i < totalQr; i++) {
@@ -367,7 +368,7 @@ namespace KirimNPFileQR.Panels {
                             detailQr = _qrBar.AddQrCaption(detailQr, $"{detailFileName}_{urutan}.JPG");
                             string detailQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailFileName}_{urutan}.JPG");
                             detailQr.Save(detailQrImgPath, ImageFormat.Jpeg);
-                            lsQrPath.Add(detailQrImgPath);
+                            lsAttachmentPath.Add(detailQrImgPath);
                         }
                         // Email
                         string title = $"{npLog.HDR_JENIS} TOKO :: {npLog.LOG_TOK_KODE}";
@@ -400,7 +401,7 @@ namespace KirimNPFileQR.Panels {
                             _surel.CreateEmailAddress(to),
                             _surel.CreateEmailAddress(cc),
                             _surel.CreateEmailAddress(bcc),
-                            attachments: _surel.CreateEmailAttachment(lsQrPath.ToArray())
+                            attachments: _surel.CreateEmailAttachment(lsAttachmentPath.ToArray())
                         );
                         await _db.UpdateAfterSendEmail(npLog.LOG_SEQNO);
                     }
