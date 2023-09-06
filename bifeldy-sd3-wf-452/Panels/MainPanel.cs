@@ -424,6 +424,7 @@ namespace KirimNPFileQR.Panels {
                                 "rofiedmaindra@indomaret.co.id"
                             };
                             bcc = new string[] {
+                                "bayu.agastiya@indomaret.co.id",
                                 "chandrianto@indomaret.co.id"
                             };
                         }
