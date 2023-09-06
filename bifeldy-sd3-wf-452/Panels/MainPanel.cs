@@ -307,11 +307,11 @@ namespace KirimNPFileQR.Panels {
                         // -- Detail
                         string detailFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_DETAIL";
                         DataTable dtNpDetail = await _db.GetNpCreateUlangQrCodeDetail(npLog.LOG_SEQNO);
-                        // -- Detail CSV
+                        // -- Detail CSV -- Create Ulang Qr Code
                         if (!_berkas.DataTable2CSV(dtNpDetail, $"{detailFileName}.CSV", "|")) {
                             throw new Exception($"Gagal Membuat {detailFileName}.CSV");
                         }
-                        // -- Detail ZIP
+                        // -- Detail ZIP -- Create Ulang Qr Code
                         _berkas.ZipListFileInFolder(
                             $"{detailFileName}.ZIP",
                             new List<string> { $"{detailFileName}.CSV" },
@@ -328,7 +328,7 @@ namespace KirimNPFileQR.Panels {
                         txtDvdr.Devide();
                         // -- Header
                         string headerFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_HEADER";
-                        // -- Header CSV
+                        // -- Header CSV -- Create Ulang Qr Code
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine("TOKO|KIRIM|GEMBOK|NOSJ|NORANG|JMLPART|JMLRECORD");
                         DataTable dtNpHeader = await _db.GetNpCreateUlangQrCodeHeader(npLog.LOG_JENIS, npLog.LOG_NO_NPB, npLog.LOG_TGL_NPB);
@@ -336,7 +336,7 @@ namespace KirimNPFileQR.Panels {
                         sb.AppendLine($"{npLog.LOG_TOK_KODE}|{await _db.GetKodeDc()}|{npHeader.NOKUNCI}|{npHeader.NOSJ}|{npHeader.NORANG}|{txtDvdr.JumlahPart}|{dtNpDetail.Rows.Count}");
                         string headerPathCsv = Path.Combine(_berkas.TempFolderPath, $"{headerFileName}.CSV");
                         File.WriteAllText(headerPathCsv, sb.ToString());
-                        // -- Header ZIP
+                        // -- Header ZIP -- Create Ulang Qr Code
                         _berkas.ZipListFileInFolder(
                             $"{headerFileName}.ZIP",
                             new List<string> { $"{headerFileName}.CSV" },
