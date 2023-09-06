@@ -302,7 +302,7 @@ namespace KirimNPFileQR.Panels {
                         string lastCharHeader = "-";
                         int versionQrHeader = 17;
                         int versionQrDetail = 25;
-                        string imageQrLogoPath = Path.Combine(_app.AppLocation, "Images", "domar.gif");
+                        // string imageQrLogoPath = Path.Combine(_app.AppLocation, "Images", "domar.gif");
                         List<string> lsAttachmentPath = new List<string>();
                         // -- Detail
                         string detailFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_DETAIL";
