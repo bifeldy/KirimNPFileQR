@@ -49,6 +49,7 @@ namespace KirimNPFileQR.Panels {
             this.tbPending = new System.Windows.Forms.TabPage();
             this.tbGagal = new System.Windows.Forms.TabPage();
             this.dtGrdNpGagal = new System.Windows.Forms.DataGridView();
+            this.chkKirimSemuaNp = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.imgDomar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpPending)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtBxDaysRetentionFiles)).BeginInit();
@@ -313,10 +314,22 @@ namespace KirimNPFileQR.Panels {
             this.dtGrdNpGagal.Size = new System.Drawing.Size(726, 320);
             this.dtGrdNpGagal.TabIndex = 7;
             // 
+            // chkKirimSemuaNp
+            // 
+            this.chkKirimSemuaNp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkKirimSemuaNp.AutoSize = true;
+            this.chkKirimSemuaNp.Location = new System.Drawing.Point(572, 92);
+            this.chkKirimSemuaNp.Name = "chkKirimSemuaNp";
+            this.chkKirimSemuaNp.Size = new System.Drawing.Size(194, 17);
+            this.chkKirimSemuaNp.TabIndex = 44;
+            this.chkKirimSemuaNp.Text = "Paksa Kirim Ulang Lagi Yang Gagal";
+            this.chkKirimSemuaNp.UseVisualStyleBackColor = true;
+            // 
             // CMainPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.chkKirimSemuaNp);
             this.Controls.Add(this.tbNp);
             this.Controls.Add(this.btnOpenFolder);
             this.Controls.Add(this.label2);
@@ -368,6 +381,7 @@ namespace KirimNPFileQR.Panels {
         private System.Windows.Forms.TabPage tbPending;
         private System.Windows.Forms.TabPage tbGagal;
         private System.Windows.Forms.DataGridView dtGrdNpGagal;
+        private System.Windows.Forms.CheckBox chkKirimSemuaNp;
     }
 
 }

@@ -287,9 +287,14 @@ namespace KirimNPFileQR.Panels {
         }
 
         private async Task ProsesNPFile() {
+            bool kirimUlangGagal = chkKirimSemuaNp.Checked;
             await Task.Run(async () => {
                 _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
-                foreach (MNpLog npLog in listNpLogPending) {
+                List<MNpLog> listNpLog = listNpLogPending;
+                if (kirimUlangGagal) {
+                    listNpLog.AddRange(listNpLogGagal);
+                }
+                foreach (MNpLog npLog in listNpLog) {
                     try {
                         int maxQrChar = 1853;
                         string zipPassword = "PernahKejepit2XOuch!!";
@@ -406,6 +411,7 @@ namespace KirimNPFileQR.Panels {
                 }
                 _berkas.CleanUp();
             });
+            chkKirimSemuaNp.Checked = false;
         }
 
         private async void BtbReFresh_Click(object sender, EventArgs e) {
