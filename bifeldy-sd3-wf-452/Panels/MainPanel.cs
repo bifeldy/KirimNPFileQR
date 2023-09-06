@@ -306,7 +306,7 @@ namespace KirimNPFileQR.Panels {
                         List<string> lsAttachmentPath = new List<string>();
                         // -- Detail
                         string detailFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_DETAIL";
-                        DataTable dtNpDetail = await _db.GetNpDetail(npLog.LOG_SEQNO);
+                        DataTable dtNpDetail = await _db.GetNpCreateUlangQrCodeDetail(npLog.LOG_SEQNO);
                         // -- Detail CSV
                         if (!_berkas.DataTable2CSV(dtNpDetail, $"{detailFileName}.CSV", "|")) {
                             throw new Exception($"Gagal Membuat {detailFileName}.CSV");
@@ -331,7 +331,7 @@ namespace KirimNPFileQR.Panels {
                         // -- Header CSV
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine("TOKO|KIRIM|GEMBOK|NOSJ|NORANG|JMLPART|JMLRECORD");
-                        DataTable dtNpHeader = await _db.GetNpHeader(npLog.LOG_JENIS, npLog.LOG_NO_NPB, npLog.LOG_TGL_NPB);
+                        DataTable dtNpHeader = await _db.GetNpCreateUlangQrCodeHeader(npLog.LOG_JENIS, npLog.LOG_NO_NPB, npLog.LOG_TGL_NPB);
                         MNpHeader npHeader = _converter.DataTableToList<MNpHeader>(dtNpHeader).First();
                         sb.AppendLine($"{npLog.LOG_TOK_KODE}|{await _db.GetKodeDc()}|{npHeader.NOKUNCI}|{npHeader.NOSJ}|{npHeader.NORANG}|{txtDvdr.JumlahPart}|{dtNpDetail.Rows.Count}");
                         string headerPathCsv = Path.Combine(_berkas.TempFolderPath, $"{headerFileName}.CSV");

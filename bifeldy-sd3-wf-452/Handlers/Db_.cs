@@ -27,8 +27,8 @@ namespace KirimNPFileQR.Handlers {
 
     public interface IDb : IDbHandler {
         Task<DataTable> GetNpLog();
-        Task<DataTable> GetNpDetail(decimal log_seqno);
-        Task<DataTable> GetNpHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
+        Task<DataTable> GetNpCreateUlangQrCodeDetail(decimal log_seqno);
+        Task<DataTable> GetNpCreateUlangQrCodeHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
         Task UpdateAfterSendEmail(decimal log_seqno, string errMessage = null);
     }
 
@@ -86,7 +86,8 @@ namespace KirimNPFileQR.Handlers {
                                     AND a.kode_stat_krim_mail NOT LIKE '%00%'
                                 )
                             )
-                            AND LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
+                            AND a.LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
+                            AND a.LOG_TYPEFILE = 'WEB'
                         ORDER BY
                             d.hdr_nosj ASC,
                             a.log_tgl_npb ASC
@@ -96,7 +97,7 @@ namespace KirimNPFileQR.Handlers {
             );
         }
 
-        public async Task<DataTable> GetNpDetail(decimal log_seqno) {
+        public async Task<DataTable> GetNpCreateUlangQrCodeDetail(decimal log_seqno) {
             return await OraPg_GetDataTable(
                 $@"
                     SELECT 
@@ -128,7 +129,7 @@ namespace KirimNPFileQR.Handlers {
             );
         }
 
-        public async Task<DataTable> GetNpHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb) {
+        public async Task<DataTable> GetNpCreateUlangQrCodeHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb) {
             string tblName1;
             string tblName2;
             switch (log_jenis.ToUpper()) {
