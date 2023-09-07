@@ -292,10 +292,10 @@ namespace KirimNPFileQR.Handlers {
                         WHERE
                             log_fk_seqno = :log_seqno
                         GROUP BY
-                            docno ASC,
-                            tanggal1 ASC,
-                            toko ASC,
-                            kirim ASC
+                            docno,
+                            tanggal1,
+                            toko,
+                            kirim
                     ";
                     param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
                     break;
@@ -317,10 +317,10 @@ namespace KirimNPFileQR.Handlers {
                         WHERE
                             log_fk_seqno = :log_seqno
                         GROUP BY
-                            docno ASC,
-                            tanggal1 ASC,
-                            toko ASC,
-                            kirim ASC
+                            docno,
+                            tanggal1,
+                            toko,
+                            kirim
                     ";
                     param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
                     break;

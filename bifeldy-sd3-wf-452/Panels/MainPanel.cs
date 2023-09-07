@@ -308,7 +308,7 @@ namespace KirimNPFileQR.Panels {
                         /* ** Create Ulang Qr Code ** */
 
                         // -- Detail
-                        string detailCreateUlangQrCodeFileName = $"{npLog.LOG_NAMAFILE}_DETAIL";
+                        string detailCreateUlangQrCodeFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_DETAIL";
                         DataTable dtNpCreateUlangQrCodeDetail = await _db.GetNpCreateUlangQrCodeDetail(npLog.LOG_SEQNO);
                         // -- Detail CSV
                         if (!_berkas.DataTable2CSV(dtNpCreateUlangQrCodeDetail, $"{detailCreateUlangQrCodeFileName}.CSV", "|")) {
@@ -329,7 +329,7 @@ namespace KirimNPFileQR.Panels {
                         TextDevider txtDvdr = new TextDevider(detailCreateUlangQrCodeHex, maxQrChar - 9 - 1);
                         txtDvdr.Devide();
                         // -- Header
-                        string headerCreateUlangQrCodeFileName = $"{npLog.LOG_NAMAFILE}_HEADER";
+                        string headerCreateUlangQrCodeFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_HEADER";
                         // -- Header CSV
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine("TOKO|KIRIM|GEMBOK|NOSJ|NORANG|JMLPART|JMLRECORD");
@@ -375,7 +375,7 @@ namespace KirimNPFileQR.Panels {
                         /* ** Create Ulang File NP ** */
 
                         // -- File1 CSV -- Sama Sesuai Log
-                        string createUlangFileNp1 = npLog.LOG_NAMAFILE;
+                        string createUlangFileNp1 = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}";
                         DataTable dtNpCreateUlangFileNp1 = await _db.GetNpCreateUlangFileNp1(npLog.LOG_JENIS, npLog.LOG_SEQNO, npLog.LOG_DCKODE);
                         if (!_berkas.DataTable2CSV(dtNpCreateUlangFileNp1, $"{createUlangFileNp1}.CSV", "|")) {
                             throw new Exception($"Gagal Membuat {createUlangFileNp1}.CSV");
@@ -383,10 +383,10 @@ namespace KirimNPFileQR.Panels {
                         // -- File2 CSV -- Beda Huruf Depan
                         string createUlangFileNp2 = npLog.LOG_NAMAFILE;
                         if (npLog.LOG_NAMAFILE == "NPR") {
-                            createUlangFileNp2 = 'X' + createUlangFileNp2.Substring(1);
+                            createUlangFileNp2 = npLog.LOG_SEQNO + "_X" + createUlangFileNp2.Substring(1);
                         }
                         else {
-                            createUlangFileNp2 = 'R' + createUlangFileNp2.Substring(1);
+                            createUlangFileNp2 = npLog.LOG_SEQNO + "_R" + createUlangFileNp2.Substring(1);
                         }
                         DataTable dtNpCreateUlangFileNp2 = await _db.GetNpCreateUlangFileNp2(npLog.LOG_JENIS, npLog.LOG_SEQNO, npLog.LOG_TOK_KODE, npLog.LOG_TYPEFILE, npLog.LOG_TGL_NPB);
                         if (!_berkas.DataTable2CSV(dtNpCreateUlangFileNp2, $"{createUlangFileNp2}.CSV", "|")) {
