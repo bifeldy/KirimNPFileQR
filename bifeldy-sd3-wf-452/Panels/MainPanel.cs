@@ -21,6 +21,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -140,7 +141,7 @@ namespace KirimNPFileQR.Panels {
             // Image img1 = _qrBar.GenerateQrCode(txt1);
             // Image bmp2 = Image.FromFile("D:/_data/Bifeldy/_sources/KirimNPFileQR/bifeldy-sd3-wf-452/Images/domar.gif");
             // Image img2 = _qrBar.AddQrLogo(img1, bmp2);
-            //
+            // 
             // string urutan = $"{1:00#}-{5:00#}";
             // Image img3 = _qrBar.AddQrCaption(img2, $"6379586_NPBG001TRIY20230830152154_DETAIL_{urutan}.JPG");
             // img3.Save($"D:/_data/Bifeldy/_sources/KirimNPFileQR/bifeldy-sd3-wf-452/bin/Debug/Backup_Files/6379586_NPBG001TRIY20230830152154_DETAIL_{urutan}_NEW.JPG");
@@ -238,14 +239,14 @@ namespace KirimNPFileQR.Panels {
             try {
                 listNpLogPending.Clear();
                 listNpLogGagal.Clear();
-                DataTable dtNpLog = new DataTable();
+                DataTable dtNpLogHeader = new DataTable();
                 await Task.Run(async () => {
-                    dtNpLog = await _db.GetNpLog();
+                    dtNpLogHeader = await _db.GetNpLogHeader();
                 });
-                if (dtNpLog.Rows.Count > 0) {
+                if (dtNpLogHeader.Rows.Count > 0) {
                     // Program Not Responding
                     // Jangan Di Masukkin Ke Thread
-                    List<MNpLog> lsNpLog = _converter.DataTableToList<MNpLog>(dtNpLog);
+                    List<MNpLog> lsNpLog = _converter.DataTableToList<MNpLog>(dtNpLogHeader);
                     // Sekalian Buat Nahan Window Message Queuenya
                     // Biar Timer Ke Tunda
                     foreach (MNpLog npLog in lsNpLog) {
@@ -257,23 +258,17 @@ namespace KirimNPFileQR.Panels {
                         }
                     }
                     List<string> columnToShow = new List<string> {
-                        "HDR_NOSJ",
-                        "LOG_SEQNO",
                         "LOG_DCKODE",
                         "LOG_TOK_KODE",
-                        "LOG_NO_NPB",
-                        "LOG_TGL_NPB",
                         "LOG_NAMAFILE",
-                        "LOG_ITEM",
-                        "LOG_STAT_RCV",
-                        "LOG_JENIS",
                         "TOK_NAME",
                         "TOK_KIRIM",
-                        "TOK_EMAIL"
+                        "TOK_EMAIL",
+                        "LOG_TYPEFILE",
+                        "LOG_JENIS"
                     };
                     dtGrdNpPending.DataSource = bindNpLogPending;
                     EnableCustomColumnOnly(dtGrdNpPending, columnToShow);
-                    columnToShow.Add("STATUS_KIRIM_EMAIL");
                     dtGrdNpGagal.DataSource = bindNpLogGagal;
                     EnableCustomColumnOnly(dtGrdNpGagal, columnToShow);
                 }
@@ -291,111 +286,129 @@ namespace KirimNPFileQR.Panels {
             bool kirimUlangGagal = chkKirimSemuaNp.Checked;
             await Task.Run(async () => {
                 _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
-                List<MNpLog> listNpLog = listNpLogPending;
+                List<MNpLog> listNpLogHeader = listNpLogPending;
                 if (kirimUlangGagal) {
-                    listNpLog.AddRange(listNpLogGagal);
+                    listNpLogHeader.AddRange(listNpLogGagal);
                 }
-                foreach (MNpLog npLog in listNpLog) {
+
+                int maxQrChar = 1853;
+                string zipPassword = "PernahKejepit2XOuch!!";
+                string lastCharDetail = "*";
+                string lastCharHeader = "-";
+                int versionQrHeader = 17;
+                int versionQrDetail = 25;
+                // string imageQrLogoPath = Path.Combine(_app.AppLocation, "Images", "domar.gif");
+
+                List<decimal> lsLogSeqNo = new List<decimal>();
+
+                foreach (MNpLog npLogHeader in listNpLogHeader) {
                     try {
-                        int maxQrChar = 1853;
-                        string zipPassword = "PernahKejepit2XOuch!!";
-                        string lastCharDetail = "*";
-                        string lastCharHeader = "-";
-                        int versionQrHeader = 17;
-                        int versionQrDetail = 25;
-                        // string imageQrLogoPath = Path.Combine(_app.AppLocation, "Images", "domar.gif");
+                        lsLogSeqNo.Clear();
                         List<string> lsAttachmentPath = new List<string>();
+
+                        DataTable dtNpLogDetail = await _db.GetNpLogDetail(npLogHeader.LOG_NAMAFILE);
+                        List<MNpLog> lsNpLogDetail = _converter.DataTableToList<MNpLog>(dtNpLogDetail);
+                        if (lsNpLogDetail.Count <= 0) {
+                            throw new Exception($"Data {npLogHeader.LOG_NAMAFILE} Tidak Tersedia / Sudah Sukses Dari Service Sebelumnya");
+                        }
 
                         /* ** Create Ulang Qr Code ** */
 
-                        // -- Detail
-                        string detailCreateUlangQrCodeFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_DETAIL";
-                        DataTable dtNpCreateUlangQrCodeDetail = await _db.GetNpCreateUlangQrCodeDetail(npLog.LOG_SEQNO);
-                        // -- Detail CSV
-                        if (!_berkas.DataTable2CSV(dtNpCreateUlangQrCodeDetail, $"{detailCreateUlangQrCodeFileName}.CSV", "|")) {
-                            throw new Exception($"Gagal Membuat {detailCreateUlangQrCodeFileName}.CSV");
-                        }
-                        // -- Detail ZIP
-                        _berkas.ZipListFileInFolder(
-                            $"{detailCreateUlangQrCodeFileName}.ZIP",
-                            new List<string> { $"{detailCreateUlangQrCodeFileName}.CSV" },
-                            password: zipPassword
-                        );
-                        string detailCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{detailCreateUlangQrCodeFileName}.ZIP");
-                        byte[] detailCreateUlangQrCodeByteZip = null;
-                        using (MemoryStream ms = _stream.ReadFileAsBinaryByte(detailCreateUlangQrCodePathZip)) {
-                            detailCreateUlangQrCodeByteZip = ms.ToArray();
-                        }
-                        string detailCreateUlangQrCodeHex = _converter.ByteToString(detailCreateUlangQrCodeByteZip);
-                        TextDevider txtDvdr = new TextDevider(detailCreateUlangQrCodeHex, maxQrChar - 9 - 1);
-                        txtDvdr.Devide();
-                        // -- Header
-                        string headerCreateUlangQrCodeFileName = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}_HEADER";
-                        // -- Header CSV
-                        StringBuilder sb = new StringBuilder();
-                        sb.AppendLine("TOKO|KIRIM|GEMBOK|NOSJ|NORANG|JMLPART|JMLRECORD");
-                        DataTable dtNpCreateUlangQrCodeHeader = await _db.GetNpCreateUlangQrCodeHeader(npLog.LOG_JENIS, npLog.LOG_NO_NPB, npLog.LOG_TGL_NPB);
-                        MNpCreateUlangQrCodeHeader npCreateUlangQrCodeHeader = _converter.DataTableToList<MNpCreateUlangQrCodeHeader>(dtNpCreateUlangQrCodeHeader).First();
-                        sb.AppendLine($"{npLog.LOG_TOK_KODE}|{await _db.GetKodeDc()}|{npCreateUlangQrCodeHeader.NOKUNCI}|{npCreateUlangQrCodeHeader.NOSJ}|{npCreateUlangQrCodeHeader.NORANG}|{txtDvdr.JumlahPart}|{dtNpCreateUlangQrCodeDetail.Rows.Count}");
-                        string headerCreateUlangQrCodePathCsv = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.CSV");
-                        File.WriteAllText(headerCreateUlangQrCodePathCsv, sb.ToString());
-                        // -- Header ZIP
-                        _berkas.ZipListFileInFolder(
-                            $"{headerCreateUlangQrCodeFileName}.ZIP",
-                            new List<string> { $"{headerCreateUlangQrCodeFileName}.CSV" },
-                            password: zipPassword
-                        );
-                        string headerCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{headerCreateUlangQrCodeFileName}.ZIP");
-                        byte[] headerCreateUlangQrCodeByteZip = null;
-                        using (MemoryStream ms = _stream.ReadFileAsBinaryByte(headerCreateUlangQrCodePathZip)) {
-                            headerCreateUlangQrCodeByteZip = ms.ToArray();
-                        }
-                        string headerCreateUlangQrCodeHex = _converter.ByteToString(headerCreateUlangQrCodeByteZip) + lastCharHeader;
-                        // -- QR Header
-                        Image headerCreateUlangQrCodeQr = _qrBar.GenerateQrCode(headerCreateUlangQrCodeHex, version: versionQrHeader);
-                        // headerCreateUlangQrCodeQr = _qrBar.AddQrLogo(headerCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
-                        headerCreateUlangQrCodeQr = _qrBar.AddQrCaption(headerCreateUlangQrCodeQr, $"{headerCreateUlangQrCodeFileName}.JPG");
-                        string headerCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.JPG");
-                        headerCreateUlangQrCodeQr.Save(headerCreateUlangQrCodeQrImgPath, ImageFormat.Jpeg);
-                        lsAttachmentPath.Add(headerCreateUlangQrCodeQrImgPath);
-                        // -- QR Detail
-                        int totalQr = txtDvdr.JumlahPart;
-                        for (int i = 0; i < totalQr; i++) {
-                            // 2 Digit Dengan Awal 0
-                            string idx = (i + 1).ToString("0#");
-                            string saltDetailHex = $"{idx}{npCreateUlangQrCodeHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
-                            string urutan = $"{idx}-{totalQr:0#}";
-                            Image detailCreateUlangQrCodeQr = _qrBar.GenerateQrCode(saltDetailHex, version: versionQrDetail);
-                            // detailCreateUlangQrCodeQr = _qrBar.AddQrLogo(detailCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
-                            detailCreateUlangQrCodeQr = _qrBar.AddQrCaption(detailCreateUlangQrCodeQr, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
-                            string detailCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
-                            detailCreateUlangQrCodeQr.Save(detailCreateUlangQrCodeQrImgPath, ImageFormat.Jpeg);
-                            lsAttachmentPath.Add(detailCreateUlangQrCodeQrImgPath);
+                        foreach (MNpLog npLogDetail in lsNpLogDetail) {
+                            if (!lsLogSeqNo.Contains(npLogDetail.LOG_SEQNO)) {
+                                lsLogSeqNo.Add(npLogDetail.LOG_SEQNO);
+                            }
+
+                            // -- Detail
+                            string detailCreateUlangQrCodeFileName = $"{npLogDetail.LOG_SEQNO}_{npLogDetail.LOG_NAMAFILE}_DETAIL";
+                            DataTable dtNpCreateUlangQrCodeDetail = await _db.GetNpCreateUlangQrCodeDetail(npLogDetail.LOG_SEQNO);
+                            // -- Detail CSV
+                            if (!_berkas.DataTable2CSV(dtNpCreateUlangQrCodeDetail, $"{detailCreateUlangQrCodeFileName}.CSV", "|")) {
+                                throw new Exception($"Gagal Membuat {detailCreateUlangQrCodeFileName}.CSV");
+                            }
+                            // -- Detail ZIP
+                            _berkas.ZipListFileInFolder(
+                                $"{detailCreateUlangQrCodeFileName}.ZIP",
+                                new List<string> { $"{detailCreateUlangQrCodeFileName}.CSV" },
+                                password: zipPassword
+                            );
+                            string detailCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{detailCreateUlangQrCodeFileName}.ZIP");
+                            byte[] detailCreateUlangQrCodeByteZip = null;
+                            using (MemoryStream ms = _stream.ReadFileAsBinaryByte(detailCreateUlangQrCodePathZip)) {
+                                detailCreateUlangQrCodeByteZip = ms.ToArray();
+                            }
+                            string detailCreateUlangQrCodeHex = _converter.ByteToString(detailCreateUlangQrCodeByteZip);
+                            TextDevider txtDvdr = new TextDevider(detailCreateUlangQrCodeHex, maxQrChar - 9 - 1);
+                            txtDvdr.Devide();
+                            // -- Header
+                            string headerCreateUlangQrCodeFileName = $"{npLogDetail.LOG_SEQNO}_{npLogDetail.LOG_NAMAFILE}_HEADER";
+                            // -- Header CSV
+                            StringBuilder sb = new StringBuilder();
+                            sb.AppendLine("TOKO|KIRIM|GEMBOK|NOSJ|NORANG|JMLPART|JMLRECORD");
+                            DataTable dtNpCreateUlangQrCodeHeader = await _db.GetNpCreateUlangQrCodeHeader(npLogDetail.LOG_JENIS, npLogDetail.LOG_NO_NPB, npLogDetail.LOG_TGL_NPB);
+                            MNpCreateUlangQrCodeHeader npCreateUlangQrCodeHeader = _converter.DataTableToList<MNpCreateUlangQrCodeHeader>(dtNpCreateUlangQrCodeHeader).First();
+                            sb.AppendLine($"{npLogDetail.LOG_TOK_KODE}|{await _db.GetKodeDc()}|{npCreateUlangQrCodeHeader.NOKUNCI}|{npCreateUlangQrCodeHeader.NOSJ}|{npCreateUlangQrCodeHeader.NORANG}|{txtDvdr.JumlahPart}|{dtNpCreateUlangQrCodeDetail.Rows.Count}");
+                            string headerCreateUlangQrCodePathCsv = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.CSV");
+                            File.WriteAllText(headerCreateUlangQrCodePathCsv, sb.ToString());
+                            // -- Header ZIP
+                            _berkas.ZipListFileInFolder(
+                                $"{headerCreateUlangQrCodeFileName}.ZIP",
+                                new List<string> { $"{headerCreateUlangQrCodeFileName}.CSV" },
+                                password: zipPassword
+                            );
+                            string headerCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{headerCreateUlangQrCodeFileName}.ZIP");
+                            byte[] headerCreateUlangQrCodeByteZip = null;
+                            using (MemoryStream ms = _stream.ReadFileAsBinaryByte(headerCreateUlangQrCodePathZip)) {
+                                headerCreateUlangQrCodeByteZip = ms.ToArray();
+                            }
+                            string headerCreateUlangQrCodeHex = _converter.ByteToString(headerCreateUlangQrCodeByteZip) + lastCharHeader;
+                            // -- QR Header
+                            Image headerCreateUlangQrCodeQr = _qrBar.GenerateQrCode(headerCreateUlangQrCodeHex, version: versionQrHeader);
+                            // headerCreateUlangQrCodeQr = _qrBar.AddQrLogo(headerCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
+                            headerCreateUlangQrCodeQr = _qrBar.AddQrCaption(headerCreateUlangQrCodeQr, $"{headerCreateUlangQrCodeFileName}.JPG");
+                            string headerCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.JPG");
+                            headerCreateUlangQrCodeQr.Save(headerCreateUlangQrCodeQrImgPath, ImageFormat.Jpeg);
+                            lsAttachmentPath.Add(headerCreateUlangQrCodeQrImgPath);
+                            // -- QR Detail
+                            int totalQr = txtDvdr.JumlahPart;
+                            for (int i = 0; i < totalQr; i++) {
+                                // 2 Digit Dengan Awal 0
+                                string idx = (i + 1).ToString("0#");
+                                string saltDetailHex = $"{idx}{npCreateUlangQrCodeHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
+                                string urutan = $"{idx}-{totalQr:0#}";
+                                Image detailCreateUlangQrCodeQr = _qrBar.GenerateQrCode(saltDetailHex, version: versionQrDetail);
+                                // detailCreateUlangQrCodeQr = _qrBar.AddQrLogo(detailCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
+                                detailCreateUlangQrCodeQr = _qrBar.AddQrCaption(detailCreateUlangQrCodeQr, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
+                                string detailCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
+                                detailCreateUlangQrCodeQr.Save(detailCreateUlangQrCodeQrImgPath, ImageFormat.Jpeg);
+                                lsAttachmentPath.Add(detailCreateUlangQrCodeQrImgPath);
+                            }
                         }
 
                         /* ** Create Ulang File NP ** */
 
                         // -- File1 CSV -- Sama Sesuai Log
-                        string createUlangFileNp1 = $"{npLog.LOG_SEQNO}_{npLog.LOG_NAMAFILE}";
-                        DataTable dtNpCreateUlangFileNp1 = await _db.GetNpCreateUlangFileNp1(npLog.LOG_JENIS, npLog.LOG_SEQNO, npLog.LOG_DCKODE);
+                        string createUlangFileNp1 = npLogHeader.LOG_NAMAFILE;
+                        DataTable dtNpCreateUlangFileNp1 = await _db.GetNpCreateUlangFileNp1(npLogHeader.LOG_JENIS, lsLogSeqNo.ToArray(), npLogHeader.LOG_DCKODE);
                         if (!_berkas.DataTable2CSV(dtNpCreateUlangFileNp1, $"{createUlangFileNp1}.CSV", "|")) {
                             throw new Exception($"Gagal Membuat {createUlangFileNp1}.CSV");
                         }
                         // -- File2 CSV -- Beda Huruf Depan
-                        string createUlangFileNp2 = npLog.LOG_NAMAFILE;
-                        if (npLog.LOG_NAMAFILE == "NPR") {
-                            createUlangFileNp2 = npLog.LOG_SEQNO + "_X" + createUlangFileNp2.Substring(1);
+                        string createUlangFileNp2 = npLogHeader.LOG_NAMAFILE;
+                        if (npLogHeader.LOG_JENIS == "NPR") {
+                            createUlangFileNp2 = "X" + createUlangFileNp2.Substring(1);
                         }
                         else {
-                            createUlangFileNp2 = npLog.LOG_SEQNO + "_R" + createUlangFileNp2.Substring(1);
+                            createUlangFileNp2 = "R" + createUlangFileNp2.Substring(1);
                         }
-                        DataTable dtNpCreateUlangFileNp2 = await _db.GetNpCreateUlangFileNp2(npLog.LOG_JENIS, npLog.LOG_SEQNO, npLog.LOG_TOK_KODE, npLog.LOG_TYPEFILE, npLog.LOG_TGL_NPB);
+                        DataTable dtNpCreateUlangFileNp2 = await _db.GetNpCreateUlangFileNp2(npLogHeader.LOG_JENIS, lsLogSeqNo.ToArray(), npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_TYPEFILE);
                         if (!_berkas.DataTable2CSV(dtNpCreateUlangFileNp2, $"{createUlangFileNp2}.CSV", "|")) {
                             throw new Exception($"Gagal Membuat {createUlangFileNp2}.CSV");
                         }
-                        // -- File3 ZIP
+
+                        // -- File3 CSV ZIP
                         _berkas.ZipListFileInFolder(
-                            $"{createUlangFileNp1}.ZIP",
+                            $"{npLogHeader.LOG_NAMAFILE}.ZIP",
                             new List<string> {
                                 $"{createUlangFileNp1}.CSV",
                                 $"{createUlangFileNp2}.CSV"
@@ -406,8 +419,12 @@ namespace KirimNPFileQR.Panels {
 
                         /* ** Kirim Email ** */
 
+                        if (lsAttachmentPath.Count <= 0) {
+                            throw new Exception("Data Attachment E-Mail Tidak Tersedia");
+                        }
+
                         // Email
-                        string title = $"{npLog.HDR_JENIS} TOKO :: {npLog.LOG_TOK_KODE}";
+                        string title = $"{npLogHeader.LOG_JENIS} TOKO :: {npLogHeader.LOG_TOK_KODE}";
                         string[] to = new string[] { };
                         string[] cc = new string[] { };
                         string[] bcc = new string[] { };
@@ -431,23 +448,28 @@ namespace KirimNPFileQR.Panels {
                         }
                         else {
                             to = new string[] {
-                                npLog.TOK_EMAIL.Trim()
+                                npLogHeader.TOK_EMAIL.Trim()
                             };
                         }
                         await _surel.CreateAndSend(
                             title,
-                            $"INV :: {npLog.LOG_NO_INV}",
+                            $"{npLogHeader.LOG_TOK_KODE} :: {npLogHeader.TOK_NAME}",
                             _surel.CreateEmailAddress("sd3@indomaret.co.id", $"[SD3_BOT] 📧 {_app.AppName} v{_app.AppVersion}"),
                             _surel.CreateEmailAddress(to),
                             _surel.CreateEmailAddress(cc),
                             _surel.CreateEmailAddress(bcc),
                             attachments: _surel.CreateEmailAttachment(lsAttachmentPath.ToArray())
                         );
-                        await _db.UpdateAfterSendEmail(npLog.LOG_SEQNO);
+                        await _db.UpdateAfterSendEmail(lsLogSeqNo.ToArray());
                     }
                     catch (Exception ex) {
-                        await _db.UpdateAfterSendEmail(npLog.LOG_SEQNO, ex.Message);
+                        if (lsLogSeqNo.Count > 0) {
+                            await _db.UpdateAfterSendEmail(lsLogSeqNo.ToArray(), ex.Message);
+                        }
                         _logger.WriteError(ex);
+                    }
+                    finally {
+                        Thread.Sleep(250);
                     }
                 }
                 _berkas.CleanUp();

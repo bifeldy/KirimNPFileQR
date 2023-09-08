@@ -26,12 +26,13 @@ using KirimNPFileQR.Utilities;
 namespace KirimNPFileQR.Handlers {
 
     public interface IDb : IDbHandler {
-        Task<DataTable> GetNpLog();
+        Task<DataTable> GetNpLogHeader();
+        Task<DataTable> GetNpLogDetail(string log_namafile);
         Task<DataTable> GetNpCreateUlangQrCodeDetail(decimal log_seqno);
         Task<DataTable> GetNpCreateUlangQrCodeHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
-        Task<DataTable> GetNpCreateUlangFileNp1(string log_jenis, decimal log_seqno, string tbl_dc_kode);
-        Task<DataTable> GetNpCreateUlangFileNp2(string log_jenis, decimal log_seqno, string log_tok_kode, string log_typefile, DateTime log_tgl_npb);
-        Task UpdateAfterSendEmail(decimal log_seqno, string errMessage = null);
+        Task<DataTable> GetNpCreateUlangFileNp1(string log_jenis, decimal[] log_seqno, string tbl_dc_kode);
+        Task<DataTable> GetNpCreateUlangFileNp2(string log_jenis, decimal[] log_seqno, string log_tok_kode, string log_typefile);
+        Task UpdateAfterSendEmail(decimal[] log_seqno, string errMessage = null);
     }
 
     public sealed class CDb : CDbHandler, IDb {
@@ -42,157 +43,201 @@ namespace KirimNPFileQR.Handlers {
             _app = app;
         }
 
-        public async Task<DataTable> GetNpLog() {
+        public async Task<DataTable> GetNpLogHeader() {
             return await OraPg.GetDataTableAsync(
                 $@"
-                    SELECT *
-                    FROM (
-                        SELECT
-
-                            /* DC_NPBTOKO_HDR */
-                            d.HDR_DCKODE,
-                            d.HDR_LOG_ALOKASID,
-                            d.HDR_NOSJ,
-                            d.HDR_TGLSJ,
-                            d.HDR_TOK_KODE,
-                            d.HDR_ID,
-                            d.HDR_TGL,
-                            d.HDR_KETER,
-                            d.HDR_RECID,
-                            d.HDR_TYPE,
-                            d.HDR_JENIS,
-                            d.HDR_TOTREC_NPB,
-
-                            /* DC_NPBTOKO_LOG */
-                            a.LOG_DCKODE,
-                            a.LOG_LOKID,
-                            a.LOG_ALOKASIID,
-                            a.LOG_TOK_KODE,
-                            a.LOG_NO_NPB,
-                            a.LOG_TGL_NPB,
-                            a.LOG_NO_INV,
-                            a.LOG_TGL_INV,
-                            a.LOG_HDRID,
-                            a.LOG_ITEM,
-                            a.LOG_QTY,
-                            ROUND(a.LOG_GROSS, 6) LOG_GROSS,
-                            a.LOG_KOLI,
-                            a.LOG_KUBIKASI,
-                            a.LOG_SEQNO,
-                            a.LOG_STAT_CREATE,
-                            a.LOG_STAT_SEND,
-                            a.LOG_STAT_RCV,
-                            a.LOG_NAMAFILE,
-                            a.LOG_FK_ID,
-                            a.LOG_TYPEFILE,
-                            a.LOG_JENIS,
-                            a.LOG_STAT_GET,
-                            a.LOG_STAT_PROSES,
-                            a.LOG_NOBPB,
-                            a.LOG_JML_ITEMBPB,
-                            a.LOG_KIRIM,
-                            a.LOG_IP_WEBREKAP,
-                            a.LOG_CABANG,
-                            a.LOG_RE_TRY,
-                            a.LOG_IP_IISKIRIM,
-                            a.KIRIM_EMAIL,
-                            a.STATUS_KIRIM_EMAIL,
-                            a.KODE_STAT_KRIM_MAIL,
-
-                            /* DC_TOKO_T */
-                            b.TOK_ID,
-                            b.TOK_CODE,
-                            b.TOK_NAME,
-                            b.TOK_KIRIM,
-                            b.TOK_JENIS_TOKO,
-                            b.TOK_TGL_BUKA,
-                            b.TOK_TGL_TUTUP,
-                            b.TOK_RECID,
-                            b.TOK_UPDREC_ID,
-                            b.TOK_UPDREC_DATE,
-                            b.TOK_TGL_PKM,
-                            b.TOK_BMGR_CODE,
-                            b.TOK_BMGR_NAME,
-                            b.TOK_AMGR_CODE,
-                            b.TOK_AMGR_NAME,
-                            b.TOK_ASPV_CODE,
-                            b.TOK_ASPV_NAME,
-                            b.TOK_TYPE_TOKO,
-                            b.TOK_KATEGORI,
-                            b.TOK_ALAMAT,
-                            b.TOK_TELP_1,
-                            b.TOK_FREKKIRIM_HARI,
-                            b.TOK_JADWAL_BUAH,
-                            b.TOK_JADWAL_ELPIJI,
-                            b.TOK_TYPE_RAK,
-                            b.TOK_JARAKDC_KM,
-                            b.TOK_KOTA,
-                            b.TOK_KODE_POS,
-                            b.TOK_FAX_1,
-                            b.TOK_PKP,
-                            b.TOK_NPWP,
-                            b.TOK_SKP,
-                            b.TOK_TGL_SKP,
-                            b.TOK_FLAG_REGULER,
-                            b.TOK_MARKUP,
-                            b.TOK_CID_CODE,
-                            b.TOK_TGL_BERLAKU,
-                            b.TOK_OLD_CODE,
-                            b.TOK_NEW_CODE,
-                            b.TOK_CABANG,
-                            b.TOK_KIRIM_KONV,
-                            b.TOK_JADWAL_KONV,
-                            b.TOK_KIRIM_BUAH,
-                            b.TOK_KIRIM_LPG,
-                            b.TOK_KIRIM_SEKUNDER,
-                            b.TOK_TGLSEK_AWAL,
-                            b.TOK_TGLSEK_AKHIR,
-                            b.TOK_TGL_8DIGIT,
-                            b.TOK_8DIGIT,
-                            b.TOK_IMOBILE,
-                            b.TOK_EMAIL,
-                            b.TOK_KODEPOS,
-                            b.TOK_EVENT,
-                            b.TOK_TGL_REOPENING,
-                            b.TOK_PERDA,
-                            b.TOK_TGL_AWAL_PERDA,
-                            b.TOK_TGL_AKHIR_PERDA,
-                            b.TOK_KIRIM_WH,
-                            b.TOK_TGL_MULTIRATES,
-                            b.TOK_KIRIM_IGR
-
-                        FROM
-                            DC_NPBTOKO_LOG a,
-                            DC_TOKO_T b,
-                            DC_TABEL_DC_T c,
-                            DC_NPBTOKO_HDR d
-                        WHERE
-                            a.LOG_TOK_KODE = b.TOK_CODE 
-                            AND a.LOG_DCKODE = c.TBL_DC_KODE
-                            AND a.log_fk_id = d.hdr_id 
-                            AND b.tok_recid IS NULL
-                            AND b.tok_email IS NOT NULL
-                            AND (
-                                a.log_stat_rcv IS NOT NULL
-                                AND UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
-                                AND a.log_stat_rcv NOT LIKE '%- 00 -%'
+                    SELECT
+                    DISTINCT
+                        a.log_dckode,
+                        a.log_tok_kode,
+                        a.log_namafile,
+                        b.tok_name,
+                        b.tok_kirim,
+                        b.tok_email,
+                        a.LOG_TYPEFILE,
+                        a.LOG_JENIS
+                    FROM
+                        DC_NPBTOKO_LOG a,
+                        DC_TOKO_T b,
+                        DC_TABEL_DC_T c,
+                        DC_NPBTOKO_HDR d
+                    WHERE
+                        a.LOG_TOK_KODE = b.TOK_CODE 
+                        AND a.LOG_DCKODE = c.TBL_DC_KODE
+                        AND a.log_fk_id = d.hdr_id 
+                        AND b.tok_recid IS NULL
+                        AND b.tok_email IS NOT NULL
+                        AND (
+                            UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
+                            OR (
+                                a.log_stat_rcv NOT LIKE '%- 00 -%'
                                 AND a.log_stat_rcv NOT LIKE '%- 01 -%'
                             )
-                            AND (
-                                a.status_kirim_email IS NULL
-                                OR (
-                                    a.status_kirim_email NOT LIKE '%SUKSES%'
-                                    AND a.kode_stat_krim_mail NOT LIKE '%00%'
-                                )
+                        )
+                        AND (
+                            a.status_kirim_email IS NULL
+                            OR (
+                                a.status_kirim_email NOT LIKE '%SUKSES%'
+                                AND a.kode_stat_krim_mail NOT LIKE '%00%'
                             )
-                            AND a.LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
-                            AND a.LOG_TYPEFILE = 'WEB'
-                        ORDER BY
-                            d.hdr_nosj ASC,
-                            a.log_tgl_npb ASC
-                    ) logs
-                    WHERE ROWNUM <= 60
+                        )
+                        AND a.LOG_TYPEFILE = 'WEB'
+                        AND a.LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
                 "
+            );
+        }
+
+        public async Task<DataTable> GetNpLogDetail(string log_namafile) {
+            return await OraPg.GetDataTableAsync(
+                $@"
+                    SELECT
+
+                        /* DC_NPBTOKO_HDR */
+                        d.HDR_DCKODE,
+                        d.HDR_LOG_ALOKASID,
+                        d.HDR_NOSJ,
+                        d.HDR_TGLSJ,
+                        d.HDR_TOK_KODE,
+                        d.HDR_ID,
+                        d.HDR_TGL,
+                        d.HDR_KETER,
+                        d.HDR_RECID,
+                        d.HDR_TYPE,
+                        d.HDR_JENIS,
+                        d.HDR_TOTREC_NPB,
+
+                        /* DC_NPBTOKO_LOG */
+                        a.LOG_DCKODE,
+                        a.LOG_LOKID,
+                        a.LOG_ALOKASIID,
+                        a.LOG_TOK_KODE,
+                        a.LOG_NO_NPB,
+                        a.LOG_TGL_NPB,
+                        a.LOG_NO_INV,
+                        a.LOG_TGL_INV,
+                        a.LOG_HDRID,
+                        a.LOG_ITEM,
+                        a.LOG_QTY,
+                        ROUND(a.LOG_GROSS, 6) LOG_GROSS,
+                        a.LOG_KOLI,
+                        a.LOG_KUBIKASI,
+                        a.LOG_SEQNO,
+                        a.LOG_STAT_CREATE,
+                        a.LOG_STAT_SEND,
+                        a.LOG_STAT_RCV,
+                        a.LOG_NAMAFILE,
+                        a.LOG_FK_ID,
+                        a.LOG_TYPEFILE,
+                        a.LOG_JENIS,
+                        a.LOG_STAT_GET,
+                        a.LOG_STAT_PROSES,
+                        a.LOG_NOBPB,
+                        a.LOG_JML_ITEMBPB,
+                        a.LOG_KIRIM,
+                        a.LOG_IP_WEBREKAP,
+                        a.LOG_CABANG,
+                        a.LOG_RE_TRY,
+                        a.LOG_IP_IISKIRIM,
+                        a.KIRIM_EMAIL,
+                        a.STATUS_KIRIM_EMAIL,
+                        a.KODE_STAT_KRIM_MAIL,
+
+                        /* DC_TOKO_T */
+                        b.TOK_ID,
+                        b.TOK_CODE,
+                        b.TOK_NAME,
+                        b.TOK_KIRIM,
+                        b.TOK_JENIS_TOKO,
+                        b.TOK_TGL_BUKA,
+                        b.TOK_TGL_TUTUP,
+                        b.TOK_RECID,
+                        b.TOK_UPDREC_ID,
+                        b.TOK_UPDREC_DATE,
+                        b.TOK_TGL_PKM,
+                        b.TOK_BMGR_CODE,
+                        b.TOK_BMGR_NAME,
+                        b.TOK_AMGR_CODE,
+                        b.TOK_AMGR_NAME,
+                        b.TOK_ASPV_CODE,
+                        b.TOK_ASPV_NAME,
+                        b.TOK_TYPE_TOKO,
+                        b.TOK_KATEGORI,
+                        b.TOK_ALAMAT,
+                        b.TOK_TELP_1,
+                        b.TOK_FREKKIRIM_HARI,
+                        b.TOK_JADWAL_BUAH,
+                        b.TOK_JADWAL_ELPIJI,
+                        b.TOK_TYPE_RAK,
+                        b.TOK_JARAKDC_KM,
+                        b.TOK_KOTA,
+                        b.TOK_KODE_POS,
+                        b.TOK_FAX_1,
+                        b.TOK_PKP,
+                        b.TOK_NPWP,
+                        b.TOK_SKP,
+                        b.TOK_TGL_SKP,
+                        b.TOK_FLAG_REGULER,
+                        b.TOK_MARKUP,
+                        b.TOK_CID_CODE,
+                        b.TOK_TGL_BERLAKU,
+                        b.TOK_OLD_CODE,
+                        b.TOK_NEW_CODE,
+                        b.TOK_CABANG,
+                        b.TOK_KIRIM_KONV,
+                        b.TOK_JADWAL_KONV,
+                        b.TOK_KIRIM_BUAH,
+                        b.TOK_KIRIM_LPG,
+                        b.TOK_KIRIM_SEKUNDER,
+                        b.TOK_TGLSEK_AWAL,
+                        b.TOK_TGLSEK_AKHIR,
+                        b.TOK_TGL_8DIGIT,
+                        b.TOK_8DIGIT,
+                        b.TOK_IMOBILE,
+                        b.TOK_EMAIL,
+                        b.TOK_KODEPOS,
+                        b.TOK_EVENT,
+                        b.TOK_TGL_REOPENING,
+                        b.TOK_PERDA,
+                        b.TOK_TGL_AWAL_PERDA,
+                        b.TOK_TGL_AKHIR_PERDA,
+                        b.TOK_KIRIM_WH,
+                        b.TOK_TGL_MULTIRATES,
+                        b.TOK_KIRIM_IGR
+
+                    FROM
+                        DC_NPBTOKO_LOG a,
+                        DC_TOKO_T b,
+                        DC_TABEL_DC_T c,
+                        DC_NPBTOKO_HDR d
+                    WHERE
+                        a.LOG_TOK_KODE = b.TOK_CODE 
+                        AND a.LOG_DCKODE = c.TBL_DC_KODE
+                        AND a.log_fk_id = d.hdr_id 
+                        AND b.tok_recid IS NULL
+                        AND b.tok_email IS NOT NULL
+                        AND (
+                            a.log_stat_rcv IS NOT NULL
+                            AND UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
+                            AND a.log_stat_rcv NOT LIKE '%- 00 -%'
+                            AND a.log_stat_rcv NOT LIKE '%- 01 -%'
+                        )
+                        AND (
+                            a.status_kirim_email IS NULL
+                            OR (
+                                a.status_kirim_email NOT LIKE '%SUKSES%'
+                                AND a.kode_stat_krim_mail NOT LIKE '%00%'
+                            )
+                        )
+                        AND a.LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
+                        AND a.LOG_TYPEFILE = 'WEB'
+                        AND log_namafile = :log_namafile
+                    ORDER BY
+                        d.hdr_nosj ASC,
+                        a.log_tgl_npb ASC
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_namafile", VALUE = log_namafile }
+                }
             );
         }
 
@@ -280,7 +325,7 @@ namespace KirimNPFileQR.Handlers {
             );
         }
 
-        public async Task<DataTable> GetNpCreateUlangFileNp1(string log_jenis, decimal log_seqno, string log_dckode) {
+        public async Task<DataTable> GetNpCreateUlangFileNp1(string log_jenis, decimal[] log_seqno, string log_dckode) {
             string query = string.Empty;
             List<CDbQueryParamBind> param = new List<CDbQueryParamBind>();
             switch (log_jenis.ToUpper()) {
@@ -296,7 +341,7 @@ namespace KirimNPFileQR.Handlers {
                         FROM
                             dc_npbtoko_file a
                         WHERE
-                            log_fk_seqno = :log_seqno
+                            log_fk_seqno IN (:log_seqno)
                         ORDER BY
                             docno ASC,
                             seqno ASC
@@ -317,7 +362,7 @@ namespace KirimNPFileQR.Handlers {
                         FROM
                             dc_npbtoko_file a 
                         WHERE
-                            log_fk_seqno = :log_seqno
+                            log_fk_seqno IN (:log_seqno)
                         ORDER BY
                             docno ASC,
                             seqno ASC
@@ -336,7 +381,7 @@ namespace KirimNPFileQR.Handlers {
                         FROM
                             DC_NPBTOKO_FILE
                         WHERE
-                            LOG_FK_SEQNO = :log_seqno
+                            LOG_FK_SEQNO IN (:log_seqno)
                     ";
                     param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
                     break;
@@ -355,7 +400,7 @@ namespace KirimNPFileQR.Handlers {
                             a.prdcd = b.mbr_fk_pluid
                             AND a.prdcd = d.mbr_pluid
                             AND b.tbl_dc_kode = :log_dckode
-                            AND log_fk_seqno = :log_seqno
+                            AND log_fk_seqno IN (:log_seqno)
                             AND (a.sj_qty <> 0)
                             AND (a.sj_qty IS NOT NULL)
                         ORDER BY
@@ -370,7 +415,7 @@ namespace KirimNPFileQR.Handlers {
             return await OraPg_GetDataTable(query, param);
         }
 
-        public async Task<DataTable> GetNpCreateUlangFileNp2(string log_jenis, decimal log_seqno, string log_tok_kode, string log_typefile, DateTime log_tgl_npb) {
+        public async Task<DataTable> GetNpCreateUlangFileNp2(string log_jenis, decimal[] log_seqno, string log_tok_kode, string log_typefile) {
             string query = string.Empty;
             List<CDbQueryParamBind> param = new List<CDbQueryParamBind>();
             switch (log_jenis.ToUpper()) {
@@ -390,7 +435,7 @@ namespace KirimNPFileQR.Handlers {
                         FROM
                             dc_npbtoko_file a
                         WHERE
-                            log_fk_seqno = :log_seqno
+                            log_fk_seqno IN (:log_seqno)
                         GROUP BY
                             docno,
                             tanggal1,
@@ -415,7 +460,7 @@ namespace KirimNPFileQR.Handlers {
                         FROM
                             dc_npbtoko_file a
                         WHERE
-                            log_fk_seqno = :log_seqno
+                            log_fk_seqno IN (:log_seqno)
                         GROUP BY
                             docno,
                             tanggal1,
@@ -440,16 +485,14 @@ namespace KirimNPFileQR.Handlers {
                             DC_NPBTOKO_LOG
                         WHERE
                             LOG_TOK_KODE = :log_tok_kode
-                            AND TRUNC(LOG_TGL_NPB) = TO_DATE(:log_tgl_npb, 'dd/MM/yyyy')
                             AND LOG_TYPEFILE = :log_typefile
                             AND LOG_JENIS = :log_jenis
-                            AND LOG_SEQNO = :log_seqno
+                            AND LOG_SEQNO IN (:log_seqno)
                     ";
                     param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
                     param.Add(new CDbQueryParamBind { NAME = "log_tok_kode", VALUE = log_tok_kode });
                     param.Add(new CDbQueryParamBind { NAME = "log_jenis", VALUE = log_jenis });
                     param.Add(new CDbQueryParamBind { NAME = "log_typefile", VALUE = log_typefile });
-                    param.Add(new CDbQueryParamBind { NAME = "log_tgl_npb", VALUE = $"{log_tgl_npb:dd/MM/yyyy}" });
                     break;
                 case "NPX": // RPX
                     query = $@"
@@ -467,17 +510,15 @@ namespace KirimNPFileQR.Handlers {
                             dc_npbtoko_log
                         WHERE
                             log_tok_kode = :log_tok_kode
-                            AND TRUNC(LOG_TGL_NPB) = TO_DATE(:log_tgl_npb, 'dd/MM/yyyy')
                             AND LOG_TYPEFILE = :log_typefile
                             AND LOG_JENIS = :log_jenis
                             AND log_no_npb IS NOT NULL
-                            AND LOG_SEQNO = :log_seqno
+                            AND LOG_SEQNO IN (:log_seqno)
                     ";
                     param.Add(new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno });
                     param.Add(new CDbQueryParamBind { NAME = "log_tok_kode", VALUE = log_tok_kode });
                     param.Add(new CDbQueryParamBind { NAME = "log_jenis", VALUE = log_jenis });
                     param.Add(new CDbQueryParamBind { NAME = "log_typefile", VALUE = log_typefile });
-                    param.Add(new CDbQueryParamBind { NAME = "log_tgl_npb", VALUE = $"{log_tgl_npb:dd/MM/yyyy}" });
                     break;
                 default:
                     throw new Exception($"Jenis {log_jenis} Belum Tersedia !!");
@@ -485,7 +526,7 @@ namespace KirimNPFileQR.Handlers {
             return await OraPg_GetDataTable(query, param);
         }
 
-        public Task UpdateAfterSendEmail(decimal log_seqno, string errMessage = null) {
+        public Task UpdateAfterSendEmail(decimal[] log_seqno, string errMessage = null) {
             return OraPg.ExecQueryAsync(
                 $@"
                     UPDATE DC_NPBTOKO_LOG
@@ -501,7 +542,7 @@ namespace KirimNPFileQR.Handlers {
                             "
                         )}
                     WHERE
-                        LOG_SEQNO = :log_seqno
+                        LOG_SEQNO IN (:log_seqno)
                 ",
                 new List<CDbQueryParamBind> {
                     new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno }
