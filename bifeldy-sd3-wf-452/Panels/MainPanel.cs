@@ -273,6 +273,7 @@ namespace KirimNPFileQR.Panels {
                     };
                     dtGrdNpPending.DataSource = bindNpLogPending;
                     EnableCustomColumnOnly(dtGrdNpPending, columnToShow);
+                    columnToShow.Add("STATUS_KIRIM_EMAIL");
                     dtGrdNpGagal.DataSource = bindNpLogGagal;
                     EnableCustomColumnOnly(dtGrdNpGagal, columnToShow);
                 }
@@ -361,9 +362,9 @@ namespace KirimNPFileQR.Panels {
                         int totalQr = txtDvdr.JumlahPart;
                         for (int i = 0; i < totalQr; i++) {
                             // 2 Digit Dengan Awal 0
-                            string idx = (i + 1).ToString("00#");
+                            string idx = (i + 1).ToString("0#");
                             string saltDetailHex = $"{idx}{npCreateUlangQrCodeHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
-                            string urutan = $"{idx}-{totalQr:00#}";
+                            string urutan = $"{idx}-{totalQr:0#}";
                             Image detailCreateUlangQrCodeQr = _qrBar.GenerateQrCode(saltDetailHex, version: versionQrDetail);
                             // detailCreateUlangQrCodeQr = _qrBar.AddQrLogo(detailCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
                             detailCreateUlangQrCodeQr = _qrBar.AddQrCaption(detailCreateUlangQrCodeQr, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
