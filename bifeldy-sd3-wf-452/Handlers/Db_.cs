@@ -110,16 +110,16 @@ namespace KirimNPFileQR.Handlers {
                         sj_qty,
                         TRUNC(price, 10) AS price,
                         TRUNC(ppnrp, 10) AS ppnrp,
-	                    TRUNC(hpp, 10) AS hpp,
-	                    keter,
-	                    tanggal1,
+                        TRUNC(hpp, 10) AS hpp,
+                        keter,
+                        tanggal1,
                         tanggal2,
-	                    docno2,
-	                    dus_no,
-	                    tglexp,
-	                    ppn_rate,
-	                    bkp,
-	                    sub_bkp
+                        docno2,
+                        dus_no,
+                        tglexp,
+                        ppn_rate,
+                        bkp,
+                        sub_bkp
                     FROM
                         dc_npbtoko_file
                     WHERE 
