@@ -131,9 +131,9 @@ namespace KirimNPFileQR.Models {
     }
 
     public sealed class MNpCreateUlangQrCodeHeader {
-        public decimal NOKUNCI { get; set; }
+        public string NOKUNCI { get; set; }
         public string NORANG { get; set; }
-        public decimal NOSJ { get; set; }
+        public string NOSJ { get; set; }
     }
 
 }
