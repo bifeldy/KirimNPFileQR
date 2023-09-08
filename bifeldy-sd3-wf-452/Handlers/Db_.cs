@@ -48,22 +48,119 @@ namespace KirimNPFileQR.Handlers {
                     SELECT *
                     FROM (
                         SELECT
-                            d.*, a.*, b.*
-                            /*
-                                d.hdr_nosj,
-                                a.log_seqno,
-                                a.log_dckode,
-                                a.log_tok_kode,
-                                a.log_no_npb,
-                                a.log_tgl_npb,
-                                a.log_namafile,
-                                a.log_item,
-                                a.log_stat_rcv,
-                                a.log_jenis,
-                                b.tok_name,
-                                b.tok_kirim,
-                                b.tok_email
-                            */
+
+                            /* DC_NPBTOKO_HDR */
+                            d.HDR_DCKODE,
+                            d.HDR_LOG_ALOKASID,
+                            d.HDR_NOSJ,
+                            d.HDR_TGLSJ,
+                            d.HDR_TOK_KODE,
+                            d.HDR_ID,
+                            d.HDR_TGL,
+                            d.HDR_KETER,
+                            d.HDR_RECID,
+                            d.HDR_TYPE,
+                            d.HDR_JENIS,
+                            d.HDR_TOTREC_NPB,
+
+                            /* DC_NPBTOKO_LOG */
+                            a.LOG_DCKODE,
+                            a.LOG_LOKID,
+                            a.LOG_ALOKASIID,
+                            a.LOG_TOK_KODE,
+                            a.LOG_NO_NPB,
+                            a.LOG_TGL_NPB,
+                            a.LOG_NO_INV,
+                            a.LOG_TGL_INV,
+                            a.LOG_HDRID,
+                            a.LOG_ITEM,
+                            a.LOG_QTY,
+                            ROUND(a.LOG_GROSS, 6) LOG_GROSS,
+                            a.LOG_KOLI,
+                            a.LOG_KUBIKASI,
+                            a.LOG_SEQNO,
+                            a.LOG_STAT_CREATE,
+                            a.LOG_STAT_SEND,
+                            a.LOG_STAT_RCV,
+                            a.LOG_NAMAFILE,
+                            a.LOG_FK_ID,
+                            a.LOG_TYPEFILE,
+                            a.LOG_JENIS,
+                            a.LOG_STAT_GET,
+                            a.LOG_STAT_PROSES,
+                            a.LOG_NOBPB,
+                            a.LOG_JML_ITEMBPB,
+                            a.LOG_KIRIM,
+                            a.LOG_IP_WEBREKAP,
+                            a.LOG_CABANG,
+                            a.LOG_RE_TRY,
+                            a.LOG_IP_IISKIRIM,
+                            a.KIRIM_EMAIL,
+                            a.STATUS_KIRIM_EMAIL,
+                            a.KODE_STAT_KRIM_MAIL,
+
+                            /* DC_TOKO_T */
+                            b.TOK_ID,
+                            b.TOK_CODE,
+                            b.TOK_NAME,
+                            b.TOK_KIRIM,
+                            b.TOK_JENIS_TOKO,
+                            b.TOK_TGL_BUKA,
+                            b.TOK_TGL_TUTUP,
+                            b.TOK_RECID,
+                            b.TOK_UPDREC_ID,
+                            b.TOK_UPDREC_DATE,
+                            b.TOK_TGL_PKM,
+                            b.TOK_BMGR_CODE,
+                            b.TOK_BMGR_NAME,
+                            b.TOK_AMGR_CODE,
+                            b.TOK_AMGR_NAME,
+                            b.TOK_ASPV_CODE,
+                            b.TOK_ASPV_NAME,
+                            b.TOK_TYPE_TOKO,
+                            b.TOK_KATEGORI,
+                            b.TOK_ALAMAT,
+                            b.TOK_TELP_1,
+                            b.TOK_FREKKIRIM_HARI,
+                            b.TOK_JADWAL_BUAH,
+                            b.TOK_JADWAL_ELPIJI,
+                            b.TOK_TYPE_RAK,
+                            b.TOK_JARAKDC_KM,
+                            b.TOK_KOTA,
+                            b.TOK_KODE_POS,
+                            b.TOK_FAX_1,
+                            b.TOK_PKP,
+                            b.TOK_NPWP,
+                            b.TOK_SKP,
+                            b.TOK_TGL_SKP,
+                            b.TOK_FLAG_REGULER,
+                            b.TOK_MARKUP,
+                            b.TOK_CID_CODE,
+                            b.TOK_TGL_BERLAKU,
+                            b.TOK_OLD_CODE,
+                            b.TOK_NEW_CODE,
+                            b.TOK_CABANG,
+                            b.TOK_KIRIM_KONV,
+                            b.TOK_JADWAL_KONV,
+                            b.TOK_KIRIM_BUAH,
+                            b.TOK_KIRIM_LPG,
+                            b.TOK_KIRIM_SEKUNDER,
+                            b.TOK_TGLSEK_AWAL,
+                            b.TOK_TGLSEK_AKHIR,
+                            b.TOK_TGL_8DIGIT,
+                            b.TOK_8DIGIT,
+                            b.TOK_IMOBILE,
+                            b.TOK_EMAIL,
+                            b.TOK_KODEPOS,
+                            b.TOK_EVENT,
+                            b.TOK_TGL_REOPENING,
+                            b.TOK_PERDA,
+                            b.TOK_TGL_AWAL_PERDA,
+                            b.TOK_TGL_AKHIR_PERDA,
+                            b.TOK_KIRIM_WH,
+                            b.TOK_TGL_MULTIRATES,
+                            b.TOK_KIRIM_IGR
+
                         FROM
                             DC_NPBTOKO_LOG a,
                             DC_TOKO_T b,
@@ -108,9 +205,9 @@ namespace KirimNPFileQR.Handlers {
                         pictgl,
                         prdcd,
                         sj_qty,
-                        TRUNC(price, 10) AS price,
-                        TRUNC(ppnrp, 10) AS ppnrp,
-                        TRUNC(hpp, 10) AS hpp,
+                        ROUND(price, 6) AS price,
+                        ROUND(ppnrp, 6) AS ppnrp,
+                        ROUND(hpp, 6) AS hpp,
                         keter,
                         tanggal1,
                         tanggal2,
@@ -191,10 +288,10 @@ namespace KirimNPFileQR.Handlers {
                     query = $@"
                         SELECT
                             recid, rtype, docno, seqno, picno, picnot, pictgl, prdcd, nama, div, qty, sj_qty,
-                            TRUNC (price, 6) price,
-                            TRUNC (gross, 6) gross,
-                            TRUNC (ppnrp, 6) ppnrp,
-                            TRUNC (hpp, 6) hpp,
+                            ROUND(price, 6) price,
+                            ROUND(gross, 6) gross,
+                            ROUND(ppnrp, 6) ppnrp,
+                            ROUND(hpp, 6) hpp,
                             toko, keter, tanggal1, tanggal2, docno2, lt, rak, bar, kirim, dus_no, tglexp, ppn_rate, bkp, sub_bkp
                         FROM
                             dc_npbtoko_file a
@@ -210,10 +307,10 @@ namespace KirimNPFileQR.Handlers {
                     query = $@"
                         SELECT
                             recid, rtype, docno, seqno, picno, picnot, pictgl, prdcd, nama, div, qty, sj_qty,
-                            TRUNC (price, 6) price,
-                            TRUNC (gross, 6) gross,
-                            TRUNC (ppnrp, 6) ppnrp,
-                            TRUNC (hpp, 6) hpp,
+                            ROUND(price, 6) price,
+                            ROUND(gross, 6) gross,
+                            ROUND(ppnrp, 6) ppnrp,
+                            ROUND(hpp, 6) hpp,
                             toko, keter, tanggal1, tanggal2, docno2, lt, rak, bar, kirim, dus_no,
                             tglexp AS tgl_exp,
                             ppn_rate, bkp, sub_bkp
@@ -231,10 +328,10 @@ namespace KirimNPFileQR.Handlers {
                     query = $@"
                         SELECT
                             RECID, RTYPE, DOCNO, SEQNO, PICNO, PICNOT, PICTGL, PRDCD, NAMA, DIV, QTY, SJ_QTY,
-                            ROUND(PRICE, 3) AS PRICE,
-                            ROUND(GROSS, 3) AS GROSS,
-                            ROUND(PPNRP, 3) AS PPNRP,
-                            ROUND(HPP, 3) AS HPP,
+                            ROUND(PRICE, 6) AS PRICE,
+                            ROUND(GROSS, 6) AS GROSS,
+                            ROUND(PPNRP, 6) AS PPNRP,
+                            ROUND(HPP, 6) AS HPP,
                             TOKO, KETER, TANGGAL1, TANGGAL2, DOCNO2, LT, RAK, BAR, KIRIM, DUS_NO, PPN_RATE, BKP, SUB_BKP
                         FROM
                             DC_NPBTOKO_FILE
@@ -246,9 +343,12 @@ namespace KirimNPFileQR.Handlers {
                 case "NPX":
                     query = $@"
                         SELECT
-                            a.recid, a.rtype, a.docno, a.seqno, a.picno, a.picnot, a.pictgl, a.prdcd, a.nama, div, a.qty,
-                            a.sj_qty, a.price, a.gross, a.ppnrp, a.hpp, a.toko, a.keter, tanggal1, a.tanggal2, a.docno2,
-                            a.lt, a.rak, a.bar, a.kirim, a.dus_no, PPN_RATE, BKP, SUB_BKP, a.nl_qty
+                            a.recid, a.rtype, a.docno, a.seqno, a.picno, a.picnot, a.pictgl, a.prdcd, a.nama, div, a.qty, a.sj_qty,
+                            ROUND(price, 6) price,
+                            ROUND(gross, 6) gross,
+                            ROUND(ppnrp, 6) ppnrp,
+                            ROUND(hpp, 6) hpp,
+                            a.toko, a.keter, tanggal1, a.tanggal2, a.docno2, a.lt, a.rak, a.bar, a.kirim, a.dus_no, PPN_RATE, BKP, SUB_BKP, a.nl_qty
                         FROM
                             dc_npbtoko_file a, dc_barang_dc_v b, dc_barang_t d
                         WHERE
@@ -283,7 +383,7 @@ namespace KirimNPFileQR.Handlers {
                             kirim AS gudang,
                             COUNT(*) AS item,
                             SUM(sj_qty) AS qty, 
-                            TRUNC(SUM(gross), 6) AS gross,
+                            ROUND(SUM(gross), 6) AS gross,
                             NULL AS koli,
                             NULL AS kubikasi,
                             NULL AS LPG
@@ -308,7 +408,7 @@ namespace KirimNPFileQR.Handlers {
                             kirim AS gudang,
                             COUNT(*) AS item,
                             SUM(sj_qty) AS qty,
-                            TRUNC(SUM(gross), 6) AS gross,
+                            ROUND(SUM(gross), 6) AS gross,
                             NULL AS koli,
                             NULL AS kubikasi,
                             NULL AS LPG
@@ -333,8 +433,8 @@ namespace KirimNPFileQR.Handlers {
                             LOG_DCKODE AS GUDANG,
                             LOG_ITEM AS ITEM,
                             LOG_QTY AS QTY,
-                            ROUND(LOG_GROSS, 3) AS GROSS,
-                            ROUND(LOG_KUBIKASI, 3) AS KUBIKASI,
+                            ROUND(LOG_GROSS, 6) AS GROSS,
+                            ROUND(LOG_KUBIKASI, 6) AS KUBIKASI,
                             NULL AS LPG
                         FROM
                             DC_NPBTOKO_LOG
@@ -360,7 +460,7 @@ namespace KirimNPFileQR.Handlers {
                             log_dckode AS gudang,
                             log_item AS item,
                             log_qty AS qty,
-                            TRUNC(log_gross, 7) AS gross,
+                            ROUND(log_gross, 6) AS gross,
                             log_kubikasi AS kubikasi,
                             NULL AS lpg
                         FROM
