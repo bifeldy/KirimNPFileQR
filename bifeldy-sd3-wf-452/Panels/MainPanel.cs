@@ -150,6 +150,15 @@ namespace KirimNPFileQR.Panels {
             // string txt2 = _qrBar.ReadTextFromQrBarCode(bmp3);
             // MessageBox.Show((txt1 == txt2).ToString());
             //
+            // string tulisan = "COBA GAMBAR PAKAI BACKGROUND";
+            // Image img1 = _qrBar.GenerateQrCode(tulisan, 512, 5);
+            // Image img2 = Image.FromFile("C:/Users/Bifeldy/Downloads/ji.jpg");
+            // Image img3 = Image.FromFile("D:/Dokumen/Kantor/KirimNPFileQR/bifeldy-sd3-wf-452/Images/domar.ico");
+            // Image img4 = _qrBar.AddBackground(img1, img2);
+            // Image img5 = _qrBar.AddQrLogo(img4, img3);
+            // Image img6 = _qrBar.AddQrCaption(img5, tulisan);
+            // img6.Save("C:/Users/Bifeldy/Downloads/_coba.jpg");
+            //
 
             CheckTableColumn();
         }
