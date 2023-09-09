@@ -84,6 +84,7 @@ namespace KirimNPFileQR.Panels {
 
             InitializeComponent();
             OnInit();
+            TestingQr();
         }
 
         public Label LabelStatus => lblStatus;
@@ -131,6 +132,10 @@ namespace KirimNPFileQR.Panels {
                 SetIdleBusyStatus(true);
             }
 
+            CheckTableColumn();
+        }
+
+        private void TestingQr() {
             //
             // Testing Buat QR & Baca QR & Bandingin Isi QR
             //
@@ -150,17 +155,20 @@ namespace KirimNPFileQR.Panels {
             // string txt2 = _qrBar.ReadTextFromQrBarCode(bmp3);
             // MessageBox.Show((txt1 == txt2).ToString());
             //
-            // string tulisan = "COBA GAMBAR PAKAI BACKGROUND";
-            // Image img1 = _qrBar.GenerateQrCode(tulisan, 512, 5);
-            // Image img2 = Image.FromFile("C:/Users/Bifeldy/Downloads/ji.jpg");
-            // Image img3 = Image.FromFile("D:/Dokumen/Kantor/KirimNPFileQR/bifeldy-sd3-wf-452/Images/domar.ico");
-            // Image img4 = _qrBar.AddBackground(img1, img2);
-            // Image img5 = _qrBar.AddQrLogo(img4, img3);
-            // Image img6 = _qrBar.AddQrCaption(img5, tulisan);
+            // string txt1 = "COBA GAMBAR PAKAI BACKGROUND";
+            // for(int i = 0; i < 20; i++) {
+            //     txt1 += " :: COBA GAMBAR PAKAI BACKGROUND";
+            // }
+            // Image img1 = Image.FromFile("C:/Users/Bifeldy/Downloads/Tobu - Infectious 0-30 screenshot.png");
+            // Image img2 = Image.FromFile("D:/Dokumen/Kantor/KirimNPFileQR/bifeldy-sd3-wf-452/Images/domar.ico");
+            // Image img3 = _qrBar.GenerateQrCode(txt1, 40);
+            // Image img4 = _qrBar.AddBackground(img3, img1);
+            // Image img5 = _qrBar.AddQrLogo(img4, img2);
+            // Image img6 = _qrBar.AddQrCaption(img5, txt1);
             // img6.Save("C:/Users/Bifeldy/Downloads/_coba.jpg");
+            // string txt2 = _qrBar.ReadTextFromQrBarCode(img6);
+            // MessageBox.Show((txt1 == txt2).ToString());
             //
-
-            CheckTableColumn();
         }
 
         public void SetIdleBusyStatus(bool isIdle) {
