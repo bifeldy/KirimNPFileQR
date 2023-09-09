@@ -380,7 +380,7 @@ namespace KirimNPFileQR.Panels {
                             }
                             string headerCreateUlangQrCodeHex = _converter.ByteToString(headerCreateUlangQrCodeByteZip) + lastCharHeader;
                             // -- QR Header
-                            Image headerCreateUlangQrCodeQr = _qrBar.GenerateQrCode(headerCreateUlangQrCodeHex, version: versionQrHeader);
+                            Image headerCreateUlangQrCodeQr = _qrBar.GenerateQrCodeSquare(headerCreateUlangQrCodeHex, versionQrHeader);
                             // headerCreateUlangQrCodeQr = _qrBar.AddQrLogo(headerCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
                             headerCreateUlangQrCodeQr = _qrBar.AddQrCaption(headerCreateUlangQrCodeQr, $"{headerCreateUlangQrCodeFileName}.JPG");
                             string headerCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.JPG");
@@ -393,7 +393,7 @@ namespace KirimNPFileQR.Panels {
                                 string idx = (i + 1).ToString("0#");
                                 string saltDetailHex = $"{idx}{npCreateUlangQrCodeHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
                                 string urutan = $"{idx}-{totalQr:0#}";
-                                Image detailCreateUlangQrCodeQr = _qrBar.GenerateQrCode(saltDetailHex, version: versionQrDetail);
+                                Image detailCreateUlangQrCodeQr = _qrBar.GenerateQrCodeDots(saltDetailHex, versionQrDetail);
                                 // detailCreateUlangQrCodeQr = _qrBar.AddQrLogo(detailCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
                                 detailCreateUlangQrCodeQr = _qrBar.AddQrCaption(detailCreateUlangQrCodeQr, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
                                 string detailCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
