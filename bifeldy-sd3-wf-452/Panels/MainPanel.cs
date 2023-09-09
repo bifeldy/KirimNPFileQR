@@ -143,7 +143,7 @@ namespace KirimNPFileQR.Panels {
             // string txt1 = _qrBar.ReadTextFromQrBarCode(bmp1);
             // MessageBox.Show(txt1);
             // 
-            // Image img1 = _qrBar.GenerateQrCode(txt1);
+            // Image img1 = _qrBar.GenerateQrCodeDots(txt1);
             // Image bmp2 = Image.FromFile("D:/_data/Bifeldy/_sources/KirimNPFileQR/bifeldy-sd3-wf-452/Images/domar.gif");
             // Image img2 = _qrBar.AddQrLogo(img1, bmp2);
             // 
@@ -161,7 +161,7 @@ namespace KirimNPFileQR.Panels {
             // }
             // Image img1 = Image.FromFile("C:/Users/Bifeldy/Downloads/Tobu - Infectious 0-30 screenshot.png");
             // Image img2 = Image.FromFile("D:/Dokumen/Kantor/KirimNPFileQR/bifeldy-sd3-wf-452/Images/domar.ico");
-            // Image img3 = _qrBar.GenerateQrCode(txt1, 40);
+            // Image img3 = _qrBar.GenerateQrCodeDots(txt1, 40);
             // Image img4 = _qrBar.AddBackground(img3, img1);
             // Image img5 = _qrBar.AddQrLogo(img4, img2);
             // Image img6 = _qrBar.AddQrCaption(img5, txt1);
@@ -380,7 +380,7 @@ namespace KirimNPFileQR.Panels {
                             }
                             string headerCreateUlangQrCodeHex = _converter.ByteToString(headerCreateUlangQrCodeByteZip) + lastCharHeader;
                             // -- QR Header
-                            Image headerCreateUlangQrCodeQr = _qrBar.GenerateQrCodeSquare(headerCreateUlangQrCodeHex, versionQrHeader);
+                            Image headerCreateUlangQrCodeQr = _qrBar.GenerateQrCodeDots(headerCreateUlangQrCodeHex, versionQrHeader);
                             // headerCreateUlangQrCodeQr = _qrBar.AddQrLogo(headerCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
                             headerCreateUlangQrCodeQr = _qrBar.AddQrCaption(headerCreateUlangQrCodeQr, $"{headerCreateUlangQrCodeFileName}.JPG");
                             string headerCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.JPG");
