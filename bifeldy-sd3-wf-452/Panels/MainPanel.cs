@@ -157,16 +157,16 @@ namespace KirimNPFileQR.Panels {
             //
             // string txt1 = "COBA GAMBAR PAKAI BACKGROUND";
             // for(int i = 0; i < 20; i++) {
-            //     txt1 += " :: COBA GAMBAR PAKAI BACKGROUND";
+            //     txt1 += $"{Environment.NewLine} :: COBA GAMBAR PAKAI BACKGROUND";
             // }
-            // Image img1 = Image.FromFile("C:/Users/Bifeldy/Downloads/Tobu - Infectious 0-30 screenshot.png");
-            // Image img2 = Image.FromFile("D:/Dokumen/Kantor/KirimNPFileQR/bifeldy-sd3-wf-452/Images/domar.ico");
-            // Image img3 = _qrBar.GenerateQrCodeDots(txt1, 40);
-            // Image img4 = _qrBar.AddBackground(img3, img1);
-            // Image img5 = _qrBar.AddQrLogo(img4, img2);
-            // Image img6 = _qrBar.AddQrCaption(img5, txt1);
-            // img6.Save("C:/Users/Bifeldy/Downloads/_coba.jpg");
-            // string txt2 = _qrBar.ReadTextFromQrBarCode(img6);
+            // Image img1 = Image.FromFile("C:/Users/USER/Downloads/ji.jpg");
+            // Image img2 = Image.FromFile(Path.Combine(_app.AppLocation, "Images", "domar.ico"));
+            // Image img3 = _qrBar.GenerateQrCodeDots(txt1);
+            // img3 = _qrBar.AddBackground(img3, img1);
+            // img3 = _qrBar.AddQrLogo(img3, img2);
+            // img3 = _qrBar.AddQrCaption(img3, txt1);
+            // img3.Save("C:/Users/USER/Downloads/_coba.jpg");
+            // string txt2 = _qrBar.ReadTextFromQrBarCode(img3);
             // MessageBox.Show((txt1 == txt2).ToString());
             //
         }
