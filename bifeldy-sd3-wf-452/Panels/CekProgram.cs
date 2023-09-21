@@ -25,16 +25,19 @@ namespace KirimNPFileQR.Panels {
 
     public sealed partial class CCekProgram : UserControl {
 
+        private readonly IUpdater _updater;
+        private readonly IConfig _config;
+
         private readonly IApp _app;
         private readonly IDb _db;
-        private readonly IConfig _config;
 
         private CMainForm mainForm;
 
-        public CCekProgram(IApp app, IDb db, IConfig config) {
+        public CCekProgram(IUpdater updater, IConfig config, IApp app, IDb db) {
+            _updater = updater;
+            _config = config;
             _app = app;
             _db = db;
-            _config = config;
 
             InitializeComponent();
             OnInit();
@@ -76,13 +79,23 @@ namespace KirimNPFileQR.Panels {
                     await Task.Run(async () => {
                         responseCekProgram = await _db.CekVersi();
                     });
-                    if (responseCekProgram == "OKE") {
-                        bool bypassLogin = _config.Get<bool>("BypassLogin", bool.Parse(_app.GetConfig("bypass_login")));
-                        if (bypassLogin) {
-                            ShowMainPanel();
-                        }
-                        else {
-                            ShowLoginPanel();
+                    if (responseCekProgram.ToUpper() == "OKE") {
+                        ShowLoginPanel();
+                    }
+                    else if (responseCekProgram.ToUpper().Contains("VERSI")) {
+                        loadingInformation.Text = "Memperbarui Otomatis ...";
+                        bool updated = false;
+                        await Task.Run(() => {
+                            updated = _updater.CheckUpdater();
+                        });
+                        if (!updated) {
+                            MessageBox.Show(
+                                "Gagal Update Otomatis" + Environment.NewLine + "Silahkan Hubungi IT SSD 03 Untuk Ambil Program Baru" + Environment.NewLine + Environment.NewLine + responseCekProgram,
+                                "Program Checker",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
+                            _app.Exit();
                         }
                     }
                     else {
@@ -109,41 +122,19 @@ namespace KirimNPFileQR.Panels {
 
             // Create & Show `Login` Panel
             try {
+                CLogin login = CProgram.Bifeldyz.ResolveClass<CLogin>();
                 if (!mainForm.PanelContainer.Controls.ContainsKey("CLogin")) {
-                    mainForm.PanelContainer.Controls.Add(CProgram.Bifeldyz.ResolveClass<CLogin>());
+                    mainForm.PanelContainer.Controls.Add(login);
                 }
                 mainForm.PanelContainer.Controls["CLogin"].BringToFront();
-            }
-            catch (Exception ex) {
-                MessageBox.Show(ex.Message, "Terjadi Kesalahan! (｡>﹏<｡)", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void ShowMainPanel() {
-
-            // Change Window Size & Position To Middle Screen
-            mainForm.Width = 800;
-            mainForm.Height = 600;
-            mainForm.SetDesktopLocation((_app.ScreenWidth - mainForm.Width) / 2, (_app.ScreenHeight - mainForm.Height) / 2);
-
-            // Change Panel To Fully Windowed Mode And Go To `MainPanel`
-            mainForm.HideLogo();
-            mainForm.PanelContainer.Dock = DockStyle.Fill;
-
-            // Create & Show `MainPanel`
-            try {
-                if (!mainForm.PanelContainer.Controls.ContainsKey("CMainPanel")) {
-                    mainForm.PanelContainer.Controls.Add(CProgram.Bifeldyz.ResolveClass<CMainPanel>());
+                bool bypassLogin = _config.Get<bool>("BypassLogin", bool.Parse(_app.GetConfig("bypass_login")));
+                if (bypassLogin) {
+                    login.ProcessLogin();
                 }
-                mainForm.PanelContainer.Controls["CMainPanel"].BringToFront();
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message, "Terjadi Kesalahan! (｡>﹏<｡)", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            // Remove All Other Unused Panels
-            mainForm.PanelContainer.Controls.RemoveByKey("CDbSelector");
-            mainForm.PanelContainer.Controls.RemoveByKey("CCekProgram");
         }
 
     }

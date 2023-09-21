@@ -121,11 +121,6 @@ namespace KirimNPFileQR.Panels {
                 dcKode = await _db.GetKodeDc();
                 namaDc = await _db.GetNamaDc();
             });
-
-            bool bypassLogin = _config.Get<bool>("BypassLogin", bool.Parse(_app.GetConfig("bypass_login")));
-            if (bypassLogin) {
-                _db.LoggedInUsername = "ANONYMOUS";
-            }
             userInfo.Text = $".: {dcKode} - {namaDc} :: {_db.LoggedInUsername} :.";
 
             if (!timerBusy) {
