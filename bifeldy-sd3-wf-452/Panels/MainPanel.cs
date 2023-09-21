@@ -84,7 +84,6 @@ namespace KirimNPFileQR.Panels {
 
             InitializeComponent();
             OnInit();
-            TestingQr();
         }
 
         public Label LabelStatus => lblStatus;
@@ -126,6 +125,8 @@ namespace KirimNPFileQR.Panels {
             if (!timerBusy) {
                 SetIdleBusyStatus(true);
             }
+
+            // TestingQr();
 
             CheckTableColumn();
         }
