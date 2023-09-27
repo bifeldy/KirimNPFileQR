@@ -35,7 +35,7 @@ namespace KirimNPFileQR.Panels {
             this.prgrssBrStatus = new System.Windows.Forms.ProgressBar();
             this.lblStatus = new System.Windows.Forms.Label();
             this.appInfo = new System.Windows.Forms.Label();
-            this.dtGrdNpPending = new System.Windows.Forms.DataGridView();
+            this.dtGrdNpPendingQrEmail = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.lblCountDown = new System.Windows.Forms.Label();
             this.tmrCountDown = new System.Windows.Forms.Timer(this.components);
@@ -48,15 +48,15 @@ namespace KirimNPFileQR.Panels {
             this.tbNp = new System.Windows.Forms.TabControl();
             this.tbPending = new System.Windows.Forms.TabPage();
             this.tbGagal = new System.Windows.Forms.TabPage();
-            this.dtGrdNpGagal = new System.Windows.Forms.DataGridView();
+            this.dtGrdNpGagalQrEmail = new System.Windows.Forms.DataGridView();
             this.chkKirimSemuaNp = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.imgDomar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpPending)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpPendingQrEmail)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtBxDaysRetentionFiles)).BeginInit();
             this.tbNp.SuspendLayout();
             this.tbPending.SuspendLayout();
             this.tbGagal.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpGagal)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpGagalQrEmail)).BeginInit();
             this.SuspendLayout();
             // 
             // chkSemuaKolom
@@ -130,18 +130,18 @@ namespace KirimNPFileQR.Panels {
             this.appInfo.Text = "{{ BoilerPlate-Net452-WinForm }}";
             this.appInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // dtGrdNpPending
+            // dtGrdNpPendingQrEmail
             // 
-            this.dtGrdNpPending.AllowUserToAddRows = false;
-            this.dtGrdNpPending.AllowUserToDeleteRows = false;
-            this.dtGrdNpPending.AllowUserToOrderColumns = true;
-            this.dtGrdNpPending.AllowUserToResizeRows = false;
-            this.dtGrdNpPending.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.dtGrdNpPending.BackgroundColor = System.Drawing.SystemColors.Control;
-            this.dtGrdNpPending.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dtGrdNpPending.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dtGrdNpPending.Location = new System.Drawing.Point(3, 3);
-            this.dtGrdNpPending.Name = "dtGrdNpPending";
+            this.dtGrdNpPendingQrEmail.AllowUserToAddRows = false;
+            this.dtGrdNpPendingQrEmail.AllowUserToDeleteRows = false;
+            this.dtGrdNpPendingQrEmail.AllowUserToOrderColumns = true;
+            this.dtGrdNpPendingQrEmail.AllowUserToResizeRows = false;
+            this.dtGrdNpPendingQrEmail.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dtGrdNpPendingQrEmail.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.dtGrdNpPendingQrEmail.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dtGrdNpPendingQrEmail.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dtGrdNpPendingQrEmail.Location = new System.Drawing.Point(3, 3);
+            this.dtGrdNpPendingQrEmail.Name = "dtGrdNpPendingQrEmail";
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -149,12 +149,12 @@ namespace KirimNPFileQR.Panels {
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtGrdNpPending.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dtGrdNpPending.RowHeadersVisible = false;
-            this.dtGrdNpPending.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dtGrdNpPending.Size = new System.Drawing.Size(726, 320);
-            this.dtGrdNpPending.TabIndex = 6;
-            this.dtGrdNpPending.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DtGrd_DataError);
+            this.dtGrdNpPendingQrEmail.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dtGrdNpPendingQrEmail.RowHeadersVisible = false;
+            this.dtGrdNpPendingQrEmail.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dtGrdNpPendingQrEmail.Size = new System.Drawing.Size(726, 320);
+            this.dtGrdNpPendingQrEmail.TabIndex = 6;
+            this.dtGrdNpPendingQrEmail.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DtGrd_DataError);
             // 
             // label1
             // 
@@ -269,7 +269,7 @@ namespace KirimNPFileQR.Panels {
             // 
             // tbPending
             // 
-            this.tbPending.Controls.Add(this.dtGrdNpPending);
+            this.tbPending.Controls.Add(this.dtGrdNpPendingQrEmail);
             this.tbPending.Location = new System.Drawing.Point(4, 22);
             this.tbPending.Name = "tbPending";
             this.tbPending.Padding = new System.Windows.Forms.Padding(3);
@@ -280,7 +280,7 @@ namespace KirimNPFileQR.Panels {
             // 
             // tbGagal
             // 
-            this.tbGagal.Controls.Add(this.dtGrdNpGagal);
+            this.tbGagal.Controls.Add(this.dtGrdNpGagalQrEmail);
             this.tbGagal.Location = new System.Drawing.Point(4, 22);
             this.tbGagal.Name = "tbGagal";
             this.tbGagal.Padding = new System.Windows.Forms.Padding(3);
@@ -289,18 +289,18 @@ namespace KirimNPFileQR.Panels {
             this.tbGagal.Text = "GAGAL KIRIM";
             this.tbGagal.UseVisualStyleBackColor = true;
             // 
-            // dtGrdNpGagal
+            // dtGrdNpGagalQrEmail
             // 
-            this.dtGrdNpGagal.AllowUserToAddRows = false;
-            this.dtGrdNpGagal.AllowUserToDeleteRows = false;
-            this.dtGrdNpGagal.AllowUserToOrderColumns = true;
-            this.dtGrdNpGagal.AllowUserToResizeRows = false;
-            this.dtGrdNpGagal.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.dtGrdNpGagal.BackgroundColor = System.Drawing.SystemColors.Control;
-            this.dtGrdNpGagal.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dtGrdNpGagal.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dtGrdNpGagal.Location = new System.Drawing.Point(3, 3);
-            this.dtGrdNpGagal.Name = "dtGrdNpGagal";
+            this.dtGrdNpGagalQrEmail.AllowUserToAddRows = false;
+            this.dtGrdNpGagalQrEmail.AllowUserToDeleteRows = false;
+            this.dtGrdNpGagalQrEmail.AllowUserToOrderColumns = true;
+            this.dtGrdNpGagalQrEmail.AllowUserToResizeRows = false;
+            this.dtGrdNpGagalQrEmail.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dtGrdNpGagalQrEmail.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.dtGrdNpGagalQrEmail.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dtGrdNpGagalQrEmail.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dtGrdNpGagalQrEmail.Location = new System.Drawing.Point(3, 3);
+            this.dtGrdNpGagalQrEmail.Name = "dtGrdNpGagalQrEmail";
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -308,11 +308,11 @@ namespace KirimNPFileQR.Panels {
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtGrdNpGagal.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this.dtGrdNpGagal.RowHeadersVisible = false;
-            this.dtGrdNpGagal.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dtGrdNpGagal.Size = new System.Drawing.Size(726, 320);
-            this.dtGrdNpGagal.TabIndex = 7;
+            this.dtGrdNpGagalQrEmail.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.dtGrdNpGagalQrEmail.RowHeadersVisible = false;
+            this.dtGrdNpGagalQrEmail.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dtGrdNpGagalQrEmail.Size = new System.Drawing.Size(726, 320);
+            this.dtGrdNpGagalQrEmail.TabIndex = 7;
             // 
             // chkKirimSemuaNp
             // 
@@ -348,12 +348,12 @@ namespace KirimNPFileQR.Panels {
             this.Size = new System.Drawing.Size(800, 600);
             this.Load += new System.EventHandler(this.CMainPanel_Load);
             ((System.ComponentModel.ISupportInitialize)(this.imgDomar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpPending)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpPendingQrEmail)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtBxDaysRetentionFiles)).EndInit();
             this.tbNp.ResumeLayout(false);
             this.tbPending.ResumeLayout(false);
             this.tbGagal.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpGagal)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpGagalQrEmail)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -367,7 +367,7 @@ namespace KirimNPFileQR.Panels {
         private System.Windows.Forms.ProgressBar prgrssBrStatus;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Label appInfo;
-        private System.Windows.Forms.DataGridView dtGrdNpPending;
+        private System.Windows.Forms.DataGridView dtGrdNpPendingQrEmail;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblCountDown;
         private System.Windows.Forms.Timer tmrCountDown;
@@ -380,7 +380,7 @@ namespace KirimNPFileQR.Panels {
         private System.Windows.Forms.TabControl tbNp;
         private System.Windows.Forms.TabPage tbPending;
         private System.Windows.Forms.TabPage tbGagal;
-        private System.Windows.Forms.DataGridView dtGrdNpGagal;
+        private System.Windows.Forms.DataGridView dtGrdNpGagalQrEmail;
         private System.Windows.Forms.CheckBox chkKirimSemuaNp;
     }
 

@@ -55,11 +55,11 @@ namespace KirimNPFileQR.Panels {
 
         /* NP* Header */
 
-        private List<MNpLog> listNpLogPending = null;
-        private BindingList<MNpLog> bindNpLogPending = null;
+        private List<MNpLog> listNpLogPendingQrEmail = null;
+        private BindingList<MNpLog> bindNpLogPendingQrEmail = null;
 
-        private List<MNpLog> listNpLogGagal = null;
-        private BindingList<MNpLog> bindNpLogGagal = null;
+        private List<MNpLog> listNpLogGagalQrEmail = null;
+        private BindingList<MNpLog> bindNpLogGagalQrEmail = null;
 
         public CMainPanel(
             IApp app,
@@ -93,11 +93,11 @@ namespace KirimNPFileQR.Panels {
         private void OnInit() {
             Dock = DockStyle.Fill;
 
-            listNpLogPending = new List<MNpLog>();
-            bindNpLogPending = new BindingList<MNpLog>(listNpLogPending);
+            listNpLogPendingQrEmail = new List<MNpLog>();
+            bindNpLogPendingQrEmail = new BindingList<MNpLog>(listNpLogPendingQrEmail);
 
-            listNpLogGagal = new List<MNpLog>();
-            bindNpLogGagal = new BindingList<MNpLog>(listNpLogGagal);
+            listNpLogGagalQrEmail = new List<MNpLog>();
+            bindNpLogGagalQrEmail = new BindingList<MNpLog>(listNpLogGagalQrEmail);
 
             txtBxDaysRetentionFiles.Value = _berkas.MaxOldRetentionDay;
         }
@@ -249,9 +249,13 @@ namespace KirimNPFileQR.Panels {
         }
 
         private async Task RefreshDataTable() {
+            await RefreshNPFileQrEmail();
+        }
+
+        private async Task RefreshNPFileQrEmail() {
             try {
-                listNpLogPending.Clear();
-                listNpLogGagal.Clear();
+                listNpLogPendingQrEmail.Clear();
+                listNpLogGagalQrEmail.Clear();
                 DataTable dtNpLogHeader = new DataTable();
                 await Task.Run(async () => {
                     dtNpLogHeader = await _db.GetNpLogHeader();
@@ -264,10 +268,10 @@ namespace KirimNPFileQR.Panels {
                     // Biar Timer Ke Tunda
                     foreach (MNpLog npLog in lsNpLog) {
                         if (string.IsNullOrEmpty(npLog.STATUS_KIRIM_EMAIL)) {
-                            listNpLogPending.Add(npLog);
+                            listNpLogPendingQrEmail.Add(npLog);
                         }
                         else {
-                            listNpLogGagal.Add(npLog);
+                            listNpLogGagalQrEmail.Add(npLog);
                         }
                     }
                     List<string> columnToShow = new List<string> {
@@ -280,15 +284,15 @@ namespace KirimNPFileQR.Panels {
                         "LOG_TYPEFILE",
                         "LOG_JENIS"
                     };
-                    dtGrdNpPending.DataSource = bindNpLogPending;
-                    EnableCustomColumnOnly(dtGrdNpPending, columnToShow);
-                    dtGrdNpGagal.DataSource = bindNpLogGagal;
-                    EnableCustomColumnOnly(dtGrdNpGagal, columnToShow);
+                    dtGrdNpPendingQrEmail.DataSource = bindNpLogPendingQrEmail;
+                    EnableCustomColumnOnly(dtGrdNpPendingQrEmail, columnToShow);
+                    dtGrdNpGagalQrEmail.DataSource = bindNpLogGagalQrEmail;
+                    EnableCustomColumnOnly(dtGrdNpGagalQrEmail, columnToShow);
                 }
-                bindNpLogPending.ResetBindings();
-                dtGrdNpPending.ClearSelection();
-                bindNpLogGagal.ResetBindings();
-                dtGrdNpGagal.ClearSelection();
+                bindNpLogPendingQrEmail.ResetBindings();
+                dtGrdNpPendingQrEmail.ClearSelection();
+                bindNpLogGagalQrEmail.ResetBindings();
+                dtGrdNpGagalQrEmail.ClearSelection();
             }
             catch (Exception ex) {
                 _logger.WriteError(ex);
@@ -299,9 +303,9 @@ namespace KirimNPFileQR.Panels {
             bool kirimUlangGagal = chkKirimSemuaNp.Checked;
             await Task.Run(async () => {
                 _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
-                List<MNpLog> listNpLogHeader = listNpLogPending;
+                List<MNpLog> listNpLogHeader = listNpLogPendingQrEmail;
                 if (kirimUlangGagal) {
-                    listNpLogHeader.AddRange(listNpLogGagal);
+                    listNpLogHeader.AddRange(listNpLogGagalQrEmail);
                 }
 
                 int maxQrChar = 1853;
