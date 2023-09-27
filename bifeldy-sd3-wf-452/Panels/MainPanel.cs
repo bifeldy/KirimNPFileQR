@@ -48,14 +48,14 @@ namespace KirimNPFileQR.Panels {
 
         private CMainForm mainForm;
 
-        SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
-        bool timerBusy = false;
+        private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
+        private bool timerBusy = false;
 
-        readonly int waitTimeQrEmail = 15 * 60;
-        int countDownSecondsQrEmail = 0;
+        private readonly int waitTimeQrEmail = 15 * 60;
+        private int countDownSecondsQrEmail = 0;
 
-        readonly int waitTimeJsonByte = 60 * 60;
-        int countDownSecondsJsonByte = 0;
+        private readonly int waitTimeJsonByte = 60 * 60;
+        private int countDownSecondsJsonByte = 0;
 
         /* NP* Header */
 
