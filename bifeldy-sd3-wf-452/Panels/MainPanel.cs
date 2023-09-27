@@ -222,7 +222,7 @@ namespace KirimNPFileQR.Panels {
                 tmrCountDown.Stop();
                 countDownSeconds = waitTime;
                 SetIdleBusyStatus(false);
-                await ProsesNPFile();
+                await ProsesNPFileQrEmail();
                 SetIdleBusyStatus(true);
                 timerBusy = false;
                 ReStartTimer();
@@ -295,7 +295,7 @@ namespace KirimNPFileQR.Panels {
             }
         }
 
-        private async Task ProsesNPFile() {
+        private async Task ProsesNPFileQrEmail() {
             bool kirimUlangGagal = chkKirimSemuaNp.Checked;
             await Task.Run(async () => {
                 _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
