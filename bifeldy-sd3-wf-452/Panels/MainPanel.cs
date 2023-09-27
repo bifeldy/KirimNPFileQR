@@ -47,12 +47,15 @@ namespace KirimNPFileQR.Panels {
         private readonly ISurel _surel;
 
         private CMainForm mainForm;
-        
-        Mutex mut = new Mutex();
+
+        SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
         bool timerBusy = false;
 
-        readonly int waitTimeQrEmail = 1 * 60;
+        readonly int waitTimeQrEmail = 15 * 60;
         int countDownSecondsQrEmail = 0;
+
+        readonly int waitTimeJsonByte = 60 * 60;
+        int countDownSecondsJsonByte = 0;
 
         /* NP* Header */
 
@@ -61,6 +64,9 @@ namespace KirimNPFileQR.Panels {
 
         private List<MNpLog> listNpLogGagalQrEmail = null;
         private BindingList<MNpLog> bindNpLogGagalQrEmail = null;
+
+        private List<MNpLog> listNpLogPendingJsonByte = null;
+        private BindingList<MNpLog> bindNpLogPendingJsonByte = null;
 
         public CMainPanel(
             IApp app,
@@ -99,6 +105,9 @@ namespace KirimNPFileQR.Panels {
 
             listNpLogGagalQrEmail = new List<MNpLog>();
             bindNpLogGagalQrEmail = new BindingList<MNpLog>(listNpLogGagalQrEmail);
+
+            listNpLogPendingJsonByte = new List<MNpLog>();
+            bindNpLogPendingJsonByte = new BindingList<MNpLog>(listNpLogPendingJsonByte);
 
             txtBxDaysRetentionFiles.Value = _berkas.MaxOldRetentionDay;
         }
@@ -213,11 +222,16 @@ namespace KirimNPFileQR.Panels {
                 countDownSecondsQrEmail = waitTimeQrEmail;
                 tmrQrEmail.Start();
             }
+            if (!tmrJsonByte.Enabled) {
+                await RefreshDataTableJsonByte();
+                countDownSecondsJsonByte = waitTimeJsonByte;
+                tmrJsonByte.Start();
+            }
         }
 
         private async void TmrQrEmail_Tick(object sender, EventArgs e) {
             TimeSpan t = TimeSpan.FromSeconds(countDownSecondsQrEmail);
-            lblCountDown.Text = $"{t.Hours.ToString().PadLeft(2, '0')}:{t.Minutes.ToString().PadLeft(2, '0')}:{t.Seconds.ToString().PadLeft(2, '0')}";
+            lblCountDownQrEmail.Text = $"{t.Hours.ToString().PadLeft(2, '0')}:{t.Minutes.ToString().PadLeft(2, '0')}:{t.Seconds.ToString().PadLeft(2, '0')}";
             countDownSecondsQrEmail--;
             if (countDownSecondsQrEmail < 0) {
                 tmrQrEmail.Stop();
@@ -227,6 +241,21 @@ namespace KirimNPFileQR.Panels {
                 countDownSecondsQrEmail = waitTimeQrEmail;
                 SetIdleBusyStatus(true);
                 tmrQrEmail.Start();
+            }
+        }
+
+        private async void TmrJsonByte_Tick(object sender, EventArgs e) {
+            TimeSpan t = TimeSpan.FromSeconds(countDownSecondsJsonByte);
+            lblCountDownJsonByte.Text = $"{t.Hours.ToString().PadLeft(2, '0')}:{t.Minutes.ToString().PadLeft(2, '0')}:{t.Seconds.ToString().PadLeft(2, '0')}";
+            countDownSecondsJsonByte--;
+            if (countDownSecondsJsonByte< 0) {
+                tmrJsonByte.Stop();
+                SetIdleBusyStatus(false);
+                await ProsesNPFileJsonByte();
+                await RefreshDataTableJsonByte();
+                countDownSecondsJsonByte= waitTimeJsonByte;
+                SetIdleBusyStatus(true);
+                tmrJsonByte.Start();
             }
         }
 
@@ -296,12 +325,47 @@ namespace KirimNPFileQR.Panels {
             }
         }
 
+        private async Task RefreshDataTableJsonByte() {
+            try {
+                listNpLogPendingJsonByte.Clear();
+                DataTable dtNpLogHeader = new DataTable();
+                await Task.Run(async () => {
+                    dtNpLogHeader = await _db.GetNpLogHeaderJsonByte();
+                });
+                if (dtNpLogHeader.Rows.Count > 0) {
+                    // Program Not Responding
+                    // Jangan Di Masukkin Ke Thread
+                    List<MNpLog> lsNpLog = _converter.DataTableToList<MNpLog>(dtNpLogHeader);
+                    // Sekalian Buat Nahan Window Message Queuenya
+                    // Biar Timer Ke Tunda
+                    foreach (MNpLog npLog in lsNpLog) {
+                        listNpLogPendingJsonByte.Add(npLog);
+                    }
+                    List<string> columnToShow = new List<string> {
+                        "LOG_DCKODE",
+                        "LOG_TOK_KODE",
+                        "LOG_NAMAFILE",
+                        "TOK_NAME",
+                        "TOK_KIRIM",
+                        "LOG_TYPEFILE",
+                        "LOG_JENIS"
+                    };
+                    dtGrdNpPendingJsonByte.DataSource = bindNpLogPendingJsonByte;
+                    EnableCustomColumnOnly(dtGrdNpPendingJsonByte, columnToShow);
+                }
+                bindNpLogPendingJsonByte.ResetBindings();
+                dtGrdNpPendingJsonByte.ClearSelection();
+            }
+            catch (Exception ex) {
+                _logger.WriteError(ex);
+            }
+        }
+
         private async Task ProsesNPFileQrEmail() {
             bool kirimUlangGagal = chkKirimSemuaNpQrEmail.Checked;
             await Task.Run(async () => {
-                if (mut.WaitOne()) {
-                    timerBusy = true;
-                }
+                await _lock.WaitAsync();
+                timerBusy = true;
 
                 _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
                 List<MNpLog> listNpLogHeader = listNpLogPendingQrEmail;
@@ -315,7 +379,8 @@ namespace KirimNPFileQR.Panels {
                 string lastCharHeader = "-";
                 int versionQrHeader = 17;
                 int versionQrDetail = 25;
-                // string imageQrLogoPath = Path.Combine(_app.AppLocation, "Images", "domar.gif");
+                // string imageQrBgPath = Path.Combine(_app.AppLocation, "Images", "qrBgImg.jpg");
+                // string imageQrLogoPath = Path.Combine(_app.AppLocation, "Images", "qrLogoImg.png");
 
                 List<decimal> lsLogSeqNo = new List<decimal>();
 
@@ -382,6 +447,7 @@ namespace KirimNPFileQR.Panels {
                             string headerCreateUlangQrCodeHex = _converter.ByteToString(headerCreateUlangQrCodeByteZip) + lastCharHeader;
                             // -- QR Header
                             Image headerCreateUlangQrCodeQr = _qrBar.GenerateQrCodeDots(headerCreateUlangQrCodeHex, versionQrHeader);
+                            // headerCreateUlangQrCodeQr = _qrBar.AddBackground(headerCreateUlangQrCodeQr, Image.FromFile(imageQrBgPath));
                             // headerCreateUlangQrCodeQr = _qrBar.AddQrLogo(headerCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
                             headerCreateUlangQrCodeQr = _qrBar.AddQrCaption(headerCreateUlangQrCodeQr, $"{headerCreateUlangQrCodeFileName}.JPG");
                             string headerCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.JPG");
@@ -395,6 +461,7 @@ namespace KirimNPFileQR.Panels {
                                 string saltDetailHex = $"{idx}{npCreateUlangQrCodeHeader.NOSJ}{txtDvdr.ArrDevidedText[i]}{lastCharDetail}";
                                 string urutan = $"{idx}-{totalQr:0#}";
                                 Image detailCreateUlangQrCodeQr = _qrBar.GenerateQrCodeDots(saltDetailHex, versionQrDetail);
+                                // detailCreateUlangQrCodeQr = _qrBar.AddBackground(detailCreateUlangQrCodeQr, Image.FromFile(imageQrBgPath));
                                 // detailCreateUlangQrCodeQr = _qrBar.AddQrLogo(detailCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
                                 detailCreateUlangQrCodeQr = _qrBar.AddQrCaption(detailCreateUlangQrCodeQr, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
                                 string detailCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
@@ -493,15 +560,32 @@ namespace KirimNPFileQR.Panels {
 
                 _berkas.CleanUp();
 
-                mut.ReleaseMutex();
+                _lock.Release();
                 timerBusy = false;
             });
             chkKirimSemuaNpQrEmail.Checked = false;
         }
 
+        private async Task ProsesNPFileJsonByte() {
+            await Task.Run(async () => {
+                await _lock.WaitAsync();
+                timerBusy = true;
+
+                // TODO ::
+
+                _lock.Release();
+                timerBusy = false;
+            });
+        }
+
         private async void BtbReFreshQrEmail_Click(object sender, EventArgs e) {
             SetIdleBusyStatus(false);
             await RefreshDataTableQrEmail();
+            SetIdleBusyStatus(true);
+        }
+        private async void BtnReFreshJsonByte_Click(object sender, EventArgs e) {
+            SetIdleBusyStatus(false);
+            await RefreshDataTableJsonByte();
             SetIdleBusyStatus(true);
         }
 

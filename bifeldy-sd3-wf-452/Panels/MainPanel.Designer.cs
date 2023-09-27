@@ -38,9 +38,9 @@ namespace KirimNPFileQR.Panels {
             this.appInfo = new System.Windows.Forms.Label();
             this.dtGrdNpPendingQrEmail = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
-            this.lblCountDown = new System.Windows.Forms.Label();
+            this.lblCountDownQrEmail = new System.Windows.Forms.Label();
             this.tmrQrEmail = new System.Windows.Forms.Timer(this.components);
-            this.btbReFresh = new System.Windows.Forms.Button();
+            this.btbReFreshQrEmail = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.txtBxDaysRetentionFiles = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
@@ -52,10 +52,11 @@ namespace KirimNPFileQR.Panels {
             this.chkKirimSemuaNpQrEmail = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
+            this.btnReFreshJsonByte = new System.Windows.Forms.Button();
+            this.lblCountDownJsonByte = new System.Windows.Forms.Label();
             this.dtGrdNpPendingJsonByte = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tmrJsonByte = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.imgDomar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpPendingQrEmail)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtBxDaysRetentionFiles)).BeginInit();
@@ -178,34 +179,34 @@ namespace KirimNPFileQR.Panels {
             this.label1.Text = "Dokumen NP* Yang Perlu Di Kirim Ke Toko";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblCountDown
+            // lblCountDownQrEmail
             // 
-            this.lblCountDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblCountDown.AutoSize = true;
-            this.lblCountDown.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCountDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.lblCountDown.Location = new System.Drawing.Point(652, 17);
-            this.lblCountDown.Name = "lblCountDown";
-            this.lblCountDown.Size = new System.Drawing.Size(65, 20);
-            this.lblCountDown.TabIndex = 8;
-            this.lblCountDown.Text = "88:88:88";
-            this.lblCountDown.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblCountDownQrEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblCountDownQrEmail.AutoSize = true;
+            this.lblCountDownQrEmail.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCountDownQrEmail.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.lblCountDownQrEmail.Location = new System.Drawing.Point(652, 17);
+            this.lblCountDownQrEmail.Name = "lblCountDownQrEmail";
+            this.lblCountDownQrEmail.Size = new System.Drawing.Size(65, 20);
+            this.lblCountDownQrEmail.TabIndex = 8;
+            this.lblCountDownQrEmail.Text = "88:88:88";
+            this.lblCountDownQrEmail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // tmrQrEmail
             // 
             this.tmrQrEmail.Interval = 1000;
             this.tmrQrEmail.Tick += new System.EventHandler(this.TmrQrEmail_Tick);
             // 
-            // btbReFresh
+            // btbReFreshQrEmail
             // 
-            this.btbReFresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btbReFresh.Location = new System.Drawing.Point(571, 17);
-            this.btbReFresh.Name = "btbReFresh";
-            this.btbReFresh.Size = new System.Drawing.Size(75, 23);
-            this.btbReFresh.TabIndex = 9;
-            this.btbReFresh.Text = "ReFresh";
-            this.btbReFresh.UseVisualStyleBackColor = true;
-            this.btbReFresh.Click += new System.EventHandler(this.BtbReFreshQrEmail_Click);
+            this.btbReFreshQrEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btbReFreshQrEmail.Location = new System.Drawing.Point(571, 17);
+            this.btbReFreshQrEmail.Name = "btbReFreshQrEmail";
+            this.btbReFreshQrEmail.Size = new System.Drawing.Size(75, 23);
+            this.btbReFreshQrEmail.TabIndex = 9;
+            this.btbReFreshQrEmail.Text = "ReFresh";
+            this.btbReFreshQrEmail.UseVisualStyleBackColor = true;
+            this.btbReFreshQrEmail.Click += new System.EventHandler(this.BtbReFreshQrEmail_Click);
             // 
             // label2
             // 
@@ -350,8 +351,8 @@ namespace KirimNPFileQR.Panels {
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.button1);
-            this.tabPage1.Controls.Add(this.label3);
+            this.tabPage1.Controls.Add(this.btnReFreshJsonByte);
+            this.tabPage1.Controls.Add(this.lblCountDownJsonByte);
             this.tabPage1.Controls.Add(this.dtGrdNpPendingJsonByte);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
@@ -361,28 +362,29 @@ namespace KirimNPFileQR.Panels {
             this.tabPage1.Text = "Json Byte";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btnReFreshJsonByte
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(571, 17);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 11;
-            this.button1.Text = "ReFresh";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnReFreshJsonByte.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnReFreshJsonByte.Location = new System.Drawing.Point(571, 17);
+            this.btnReFreshJsonByte.Name = "btnReFreshJsonByte";
+            this.btnReFreshJsonByte.Size = new System.Drawing.Size(75, 23);
+            this.btnReFreshJsonByte.TabIndex = 11;
+            this.btnReFreshJsonByte.Text = "ReFresh";
+            this.btnReFreshJsonByte.UseVisualStyleBackColor = true;
+            this.btnReFreshJsonByte.Click += new System.EventHandler(this.BtnReFreshJsonByte_Click);
             // 
-            // label3
+            // lblCountDownJsonByte
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.label3.Location = new System.Drawing.Point(652, 17);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(65, 20);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "88:88:88";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblCountDownJsonByte.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblCountDownJsonByte.AutoSize = true;
+            this.lblCountDownJsonByte.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCountDownJsonByte.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.lblCountDownJsonByte.Location = new System.Drawing.Point(652, 17);
+            this.lblCountDownJsonByte.Name = "lblCountDownJsonByte";
+            this.lblCountDownJsonByte.Size = new System.Drawing.Size(65, 20);
+            this.lblCountDownJsonByte.TabIndex = 10;
+            this.lblCountDownJsonByte.Text = "88:88:88";
+            this.lblCountDownJsonByte.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // dtGrdNpPendingJsonByte
             // 
@@ -410,13 +412,14 @@ namespace KirimNPFileQR.Panels {
             this.dtGrdNpPendingJsonByte.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dtGrdNpPendingJsonByte.Size = new System.Drawing.Size(726, 266);
             this.dtGrdNpPendingJsonByte.TabIndex = 6;
+            this.dtGrdNpPendingJsonByte.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DtGrd_DataError);
             // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.tbNpQrEmail);
             this.tabPage2.Controls.Add(this.chkKirimSemuaNpQrEmail);
-            this.tabPage2.Controls.Add(this.btbReFresh);
-            this.tabPage2.Controls.Add(this.lblCountDown);
+            this.tabPage2.Controls.Add(this.btbReFreshQrEmail);
+            this.tabPage2.Controls.Add(this.lblCountDownQrEmail);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -424,6 +427,11 @@ namespace KirimNPFileQR.Panels {
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "QR Email";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tmrJsonByte
+            // 
+            this.tmrJsonByte.Interval = 1000;
+            this.tmrJsonByte.Tick += new System.EventHandler(this.TmrJsonByte_Tick);
             // 
             // CMainPanel
             // 
@@ -472,9 +480,9 @@ namespace KirimNPFileQR.Panels {
         private System.Windows.Forms.Label appInfo;
         private System.Windows.Forms.DataGridView dtGrdNpPendingQrEmail;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label lblCountDown;
+        private System.Windows.Forms.Label lblCountDownQrEmail;
         private System.Windows.Forms.Timer tmrQrEmail;
-        private System.Windows.Forms.Button btbReFresh;
+        private System.Windows.Forms.Button btbReFreshQrEmail;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown txtBxDaysRetentionFiles;
         private System.Windows.Forms.Label label4;
@@ -488,8 +496,9 @@ namespace KirimNPFileQR.Panels {
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.DataGridView dtGrdNpPendingJsonByte;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btnReFreshJsonByte;
+        private System.Windows.Forms.Label lblCountDownJsonByte;
+        private System.Windows.Forms.Timer tmrJsonByte;
     }
 
 }

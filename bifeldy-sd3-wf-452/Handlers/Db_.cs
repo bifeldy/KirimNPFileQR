@@ -27,6 +27,7 @@ namespace KirimNPFileQR.Handlers {
 
     public interface IDb : IDbHandler {
         Task<DataTable> GetNpLogHeaderQrEmail();
+        Task<DataTable> GetNpLogHeaderJsonByte();
         Task<DataTable> GetNpLogDetailQrEmail(string log_namafile);
         Task<DataTable> GetNpCreateUlangQrCodeDetail(decimal log_seqno);
         Task<DataTable> GetNpCreateUlangQrCodeHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
@@ -55,7 +56,8 @@ namespace KirimNPFileQR.Handlers {
                         b.tok_kirim,
                         b.tok_email,
                         a.LOG_TYPEFILE,
-                        a.LOG_JENIS
+                        a.LOG_JENIS,
+                        a.log_stat_rcv
                     FROM
                         DC_NPBTOKO_LOG a,
                         DC_TOKO_T b,
@@ -69,10 +71,8 @@ namespace KirimNPFileQR.Handlers {
                         AND b.tok_email IS NOT NULL
                         AND (
                             UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
-                            OR (
-                                a.log_stat_rcv NOT LIKE '%- 00 -%'
-                                AND a.log_stat_rcv NOT LIKE '%- 01 -%'
-                            )
+                            AND a.log_stat_rcv NOT LIKE '%- 00 -%'
+                            AND a.log_stat_rcv NOT LIKE '%- 01 -%'
                         )
                         AND (
                             a.status_kirim_email IS NULL
@@ -80,6 +80,50 @@ namespace KirimNPFileQR.Handlers {
                                 a.status_kirim_email NOT LIKE '%SUKSES%'
                                 AND a.kode_stat_krim_mail NOT LIKE '%00%'
                             )
+                        )
+                        AND a.LOG_TYPEFILE = 'WEB'
+                        AND a.LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
+                "
+            );
+        }
+
+        public async Task<DataTable> GetNpLogHeaderJsonByte() {
+            return await OraPg.GetDataTableAsync(
+                $@"
+                    SELECT
+                    DISTINCT
+                        a.log_dckode,
+                        a.log_tok_kode,
+                        a.log_namafile,
+                        b.tok_name,
+                        b.tok_kirim,
+                        a.LOG_TYPEFILE,
+                        a.LOG_JENIS,
+                        a.log_stat_rcv
+                    FROM
+                        DC_NPBTOKO_LOG a,
+                        DC_TOKO_T b,
+                        DC_TABEL_DC_T c,
+                        DC_NPBTOKO_HDR d
+                    WHERE
+                        a.LOG_TOK_KODE = b.TOK_CODE 
+                        AND a.LOG_DCKODE = c.TBL_DC_KODE
+                        AND a.log_fk_id = d.hdr_id 
+                        AND b.tok_recid IS NULL
+                        AND (
+                            UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
+                            AND a.log_stat_rcv NOT LIKE '%- 00 -%'
+                            AND a.log_stat_rcv NOT LIKE '%- 01 -%'
+                        )
+                        AND NOT EXISTS (
+                            SELECT *
+                            FROM dc_npbtoko_log e
+                            WHERE 
+                                e.log_typefile = 'CSV'
+                                AND e.log_jenis IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
+                                AND e.log_dckode = a.log_dckode
+                                AND e.log_tok_kode = a.log_tok_kode
+                                AND e.log_namafile = a.log_namafile
                         )
                         AND a.LOG_TYPEFILE = 'WEB'
                         AND a.LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
