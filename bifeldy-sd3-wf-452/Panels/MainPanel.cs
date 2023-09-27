@@ -48,10 +48,8 @@ namespace KirimNPFileQR.Panels {
 
         private CMainForm mainForm;
 
-        bool timerBusy = false;
-
-        readonly int waitTime = 1 * 60;
-        int countDownSeconds = 0;
+        readonly int waitTimeQrEmail = 1 * 60;
+        int countDownSecondsQrEmail = 0;
 
         /* NP* Header */
 
@@ -122,13 +120,13 @@ namespace KirimNPFileQR.Panels {
             });
             userInfo.Text = $".: {dcKode} - {namaDc} :: {_db.LoggedInUsername} :.";
 
-            if (!timerBusy) {
-                SetIdleBusyStatus(true);
-            }
-
             // TestingQr();
 
             CheckTableColumn();
+
+            dtGrdNpPendingQrEmail.Refresh();
+            dtGrdNpGagalQrEmail.Refresh();
+            dtGrdNpPendingJsonByte.Refresh();
         }
 
         private void TestingQr() {
@@ -185,7 +183,7 @@ namespace KirimNPFileQR.Panels {
         }
 
         private void TxtBxDaysRetentionFiles_ValueChanged(object sender, EventArgs e) {
-            _berkas.MaxOldRetentionDay = (int)txtBxDaysRetentionFiles.Value;
+            _berkas.MaxOldRetentionDay = (int) txtBxDaysRetentionFiles.Value;
             _config.Set("MaxOldRetentionDay", _berkas.MaxOldRetentionDay);
         }
 
@@ -196,36 +194,34 @@ namespace KirimNPFileQR.Panels {
                     await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
                     await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
                 });
-                ReStartTimer();
+                ReStartTimerQrEmail();
             }
             catch (Exception ex) {
                 _logger.WriteError(ex);
             }
         }
 
-        private async void ReStartTimer() {
-            if (!tmrCountDown.Enabled && !timerBusy) {
-                timerBusy = true;
-                countDownSeconds = waitTime;
+        private async void ReStartTimerQrEmail() {
+            if (!tmrQrEmail.Enabled) {
+                countDownSecondsQrEmail = waitTimeQrEmail;
                 SetIdleBusyStatus(false);
-                await RefreshDataTable();
+                await RefreshDataTableQrEmail();
                 SetIdleBusyStatus(true);
-                tmrCountDown.Start();
+                tmrQrEmail.Start();
             }
         }
 
-        private async void TmrCountDown_Tick(object sender, EventArgs e) {
-            TimeSpan t = TimeSpan.FromSeconds(countDownSeconds);
+        private async void TmrQrEmail_Tick(object sender, EventArgs e) {
+            TimeSpan t = TimeSpan.FromSeconds(countDownSecondsQrEmail);
             lblCountDown.Text = $"{t.Hours.ToString().PadLeft(2, '0')}:{t.Minutes.ToString().PadLeft(2, '0')}:{t.Seconds.ToString().PadLeft(2, '0')}";
-            countDownSeconds--;
-            if (countDownSeconds < 0) {
-                tmrCountDown.Stop();
-                countDownSeconds = waitTime;
+            countDownSecondsQrEmail--;
+            if (countDownSecondsQrEmail < 0) {
+                tmrQrEmail.Stop();
+                countDownSecondsQrEmail = waitTimeQrEmail;
                 SetIdleBusyStatus(false);
                 await ProsesNPFileQrEmail();
                 SetIdleBusyStatus(true);
-                timerBusy = false;
-                ReStartTimer();
+                ReStartTimerQrEmail();
             }
         }
 
@@ -248,17 +244,13 @@ namespace KirimNPFileQR.Panels {
             }
         }
 
-        private async Task RefreshDataTable() {
-            await RefreshNPFileQrEmail();
-        }
-
-        private async Task RefreshNPFileQrEmail() {
+        private async Task RefreshDataTableQrEmail() {
             try {
                 listNpLogPendingQrEmail.Clear();
                 listNpLogGagalQrEmail.Clear();
                 DataTable dtNpLogHeader = new DataTable();
                 await Task.Run(async () => {
-                    dtNpLogHeader = await _db.GetNpLogHeader();
+                    dtNpLogHeader = await _db.GetNpLogHeaderQrEmail();
                 });
                 if (dtNpLogHeader.Rows.Count > 0) {
                     // Program Not Responding
@@ -300,7 +292,7 @@ namespace KirimNPFileQR.Panels {
         }
 
         private async Task ProsesNPFileQrEmail() {
-            bool kirimUlangGagal = chkKirimSemuaNp.Checked;
+            bool kirimUlangGagal = chkKirimSemuaNpQrEmail.Checked;
             await Task.Run(async () => {
                 _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
                 List<MNpLog> listNpLogHeader = listNpLogPendingQrEmail;
@@ -323,7 +315,7 @@ namespace KirimNPFileQR.Panels {
                         lsLogSeqNo.Clear();
                         List<string> lsAttachmentPath = new List<string>();
 
-                        DataTable dtNpLogDetail = await _db.GetNpLogDetail(npLogHeader.LOG_NAMAFILE);
+                        DataTable dtNpLogDetail = await _db.GetNpLogDetailQrEmail(npLogHeader.LOG_NAMAFILE);
                         List<MNpLog> lsNpLogDetail = _converter.DataTableToList<MNpLog>(dtNpLogDetail);
                         if (lsNpLogDetail.Count <= 0) {
                             throw new Exception($"Data {npLogHeader.LOG_NAMAFILE} Tidak Tersedia / Sudah Sukses Dari Service Sebelumnya");
@@ -491,18 +483,19 @@ namespace KirimNPFileQR.Panels {
                 }
                 _berkas.CleanUp();
             });
-            chkKirimSemuaNp.Checked = false;
+            chkKirimSemuaNpQrEmail.Checked = false;
         }
 
-        private async void BtbReFresh_Click(object sender, EventArgs e) {
+        private async void BtbReFreshQrEmail_Click(object sender, EventArgs e) {
             SetIdleBusyStatus(false);
-            await RefreshDataTable();
+            await RefreshDataTableQrEmail();
             SetIdleBusyStatus(true);
         }
 
         private void BtnOpenFolder_Click(object sender, EventArgs e) {
             Process.Start(new ProcessStartInfo { Arguments = _berkas.BackupFolderPath, FileName = "explorer.exe" });
         }
+
     }
 
 }

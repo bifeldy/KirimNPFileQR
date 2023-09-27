@@ -26,8 +26,8 @@ using KirimNPFileQR.Utilities;
 namespace KirimNPFileQR.Handlers {
 
     public interface IDb : IDbHandler {
-        Task<DataTable> GetNpLogHeader();
-        Task<DataTable> GetNpLogDetail(string log_namafile);
+        Task<DataTable> GetNpLogHeaderQrEmail();
+        Task<DataTable> GetNpLogDetailQrEmail(string log_namafile);
         Task<DataTable> GetNpCreateUlangQrCodeDetail(decimal log_seqno);
         Task<DataTable> GetNpCreateUlangQrCodeHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
         Task<DataTable> GetNpCreateUlangFileNp1(string log_jenis, decimal[] log_seqno, string tbl_dc_kode);
@@ -43,7 +43,7 @@ namespace KirimNPFileQR.Handlers {
             _app = app;
         }
 
-        public async Task<DataTable> GetNpLogHeader() {
+        public async Task<DataTable> GetNpLogHeaderQrEmail() {
             return await OraPg.GetDataTableAsync(
                 $@"
                     SELECT
@@ -87,7 +87,7 @@ namespace KirimNPFileQR.Handlers {
             );
         }
 
-        public async Task<DataTable> GetNpLogDetail(string log_namafile) {
+        public async Task<DataTable> GetNpLogDetailQrEmail(string log_namafile) {
             return await OraPg.GetDataTableAsync(
                 $@"
                     SELECT
