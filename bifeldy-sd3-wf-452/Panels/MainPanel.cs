@@ -47,6 +47,9 @@ namespace KirimNPFileQR.Panels {
         private readonly ISurel _surel;
 
         private CMainForm mainForm;
+        
+        Mutex mut = new Mutex();
+        bool timerBusy = false;
 
         readonly int waitTimeQrEmail = 1 * 60;
         int countDownSecondsQrEmail = 0;
@@ -119,6 +122,10 @@ namespace KirimNPFileQR.Panels {
                 namaDc = await _db.GetNamaDc();
             });
             userInfo.Text = $".: {dcKode} - {namaDc} :: {_db.LoggedInUsername} :.";
+
+            if (!timerBusy) {
+                SetIdleBusyStatus(true);
+            }
 
             // TestingQr();
 
@@ -194,19 +201,16 @@ namespace KirimNPFileQR.Panels {
                     await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
                     await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
                 });
-                ReStartTimerQrEmail();
+                SetupTimer();
             }
             catch (Exception ex) {
                 _logger.WriteError(ex);
             }
         }
-
-        private async void ReStartTimerQrEmail() {
+        private async void SetupTimer() {
             if (!tmrQrEmail.Enabled) {
-                countDownSecondsQrEmail = waitTimeQrEmail;
-                SetIdleBusyStatus(false);
                 await RefreshDataTableQrEmail();
-                SetIdleBusyStatus(true);
+                countDownSecondsQrEmail = waitTimeQrEmail;
                 tmrQrEmail.Start();
             }
         }
@@ -217,11 +221,12 @@ namespace KirimNPFileQR.Panels {
             countDownSecondsQrEmail--;
             if (countDownSecondsQrEmail < 0) {
                 tmrQrEmail.Stop();
-                countDownSecondsQrEmail = waitTimeQrEmail;
                 SetIdleBusyStatus(false);
                 await ProsesNPFileQrEmail();
+                await RefreshDataTableQrEmail();
+                countDownSecondsQrEmail = waitTimeQrEmail;
                 SetIdleBusyStatus(true);
-                ReStartTimerQrEmail();
+                tmrQrEmail.Start();
             }
         }
 
@@ -294,6 +299,10 @@ namespace KirimNPFileQR.Panels {
         private async Task ProsesNPFileQrEmail() {
             bool kirimUlangGagal = chkKirimSemuaNpQrEmail.Checked;
             await Task.Run(async () => {
+                if (mut.WaitOne()) {
+                    timerBusy = true;
+                }
+
                 _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
                 List<MNpLog> listNpLogHeader = listNpLogPendingQrEmail;
                 if (kirimUlangGagal) {
@@ -481,7 +490,11 @@ namespace KirimNPFileQR.Panels {
                         Thread.Sleep(250);
                     }
                 }
+
                 _berkas.CleanUp();
+
+                mut.ReleaseMutex();
+                timerBusy = false;
             });
             chkKirimSemuaNpQrEmail.Checked = false;
         }
