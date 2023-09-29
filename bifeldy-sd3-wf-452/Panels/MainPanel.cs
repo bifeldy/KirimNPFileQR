@@ -601,8 +601,10 @@ namespace KirimNPFileQR.Panels {
 
         private async Task ProsesNPFileJsonByte() {
             await Task.Run(async () => {
+                List<decimal> lsLogSeqNo = new List<decimal>();
                 foreach (MNpLog npLogHeader in listNpLogPendingJsonByte) {
                     try {
+                        lsLogSeqNo.Clear();
                         string sysDateKodeDc = string.Empty;
                         decimal count = await _db.CheckCreateUlangJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
                         if (count == 0) {
@@ -614,6 +616,9 @@ namespace KirimNPFileQR.Panels {
                                     sysDateKodeDc = lsNpHeader.First().SYSDATEKODEDC;
                                     List<Dictionary<string, object>> lsDictHdr = new List<Dictionary<string, object>>();
                                     foreach (MNpCreateUlangJsonByteHeader npHeader in lsNpHeader) {
+                                        if (!lsLogSeqNo.Contains(npHeader.LOG_SEQNO)) {
+                                            lsLogSeqNo.Add(npHeader.LOG_SEQNO);
+                                        }
                                         Dictionary<string, object> dictHeader = npHeader.GetType()
                                             .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                                                  .ToDictionary(prop => prop.Name, prop => prop.GetValue(npHeader, null));
@@ -636,14 +641,27 @@ namespace KirimNPFileQR.Panels {
                                     }
                                     string jsonText = _converter.ObjectToJson(lsDictHdr);
                                     byte[] textByte = _stream.GZipCompressString(jsonText);
-                                    // TODO :: Kirim Ke Web Service SOAP
-                                    string byteText = _stream.GZipDecompressString(textByte);
-                                    bool test = jsonText == byteText;
+                                    // string byteText = _stream.GZipDecompressString(textByte);
+                                    // bool test = jsonText == byteText;
+                                    if (_app.DebugMode) {
+                                        MessageBox.Show(jsonText, "SIMULASI", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    }
+                                    else {
+                                        wsNPLtoko.NPB_Service ws = new wsNPLtoko.NPB_Service {
+                                            Url = url,
+                                            Timeout = 30 * 1000 // 30 detik
+                                        };
+                                        ws.Receive(textByte, sysDateKodeDc);
+                                    }
+                                    await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
                                 }
                             }
                         }
                     }
                     catch (Exception ex) {
+                        if (lsLogSeqNo.Count > 0) {
+                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), ex.Message);
+                        }
                         _logger.WriteError(ex);
                     }
                     finally {

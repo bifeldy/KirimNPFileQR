@@ -38,6 +38,7 @@ namespace KirimNPFileQR.Handlers {
         Task<string> GetURLWRC(string log_tok_kode);
         Task<DataTable> GetNpHeaderJsonByte(string log_dckode, string log_tok_kode, string log_namafile);
         Task<DataTable> GetNpDetailJsonByte(decimal log_seqno);
+        Task<bool> UpdateAfterSendWebService(decimal[] log_seqno, string errMessage = null);
     }
 
     public sealed class CDb : CDbHandler, IDb {
@@ -74,7 +75,8 @@ namespace KirimNPFileQR.Handlers {
                         AND b.tok_recid IS NULL
                         AND b.tok_email IS NOT NULL
                         AND (
-                            UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
+                            a.log_stat_rcv IS NOT NULL
+                            AND UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
                             AND a.log_stat_rcv NOT LIKE '%- 00 -%'
                             AND a.log_stat_rcv NOT LIKE '%- 01 -%'
                         )
@@ -115,7 +117,8 @@ namespace KirimNPFileQR.Handlers {
                         AND a.log_fk_id = d.hdr_id 
                         AND b.tok_recid IS NULL
                         AND (
-                            UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
+                            a.log_stat_rcv IS NOT NULL
+                            AND UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
                             AND a.log_stat_rcv NOT LIKE '%- 00 -%'
                             AND a.log_stat_rcv NOT LIKE '%- 01 -%'
                         )
@@ -585,7 +588,7 @@ namespace KirimNPFileQR.Handlers {
                                 STATUS_KIRIM_EMAIL = 'SUKSES',
                                 KODE_STAT_KRIM_MAIL = '00' 
                             " : $@"
-                                STATUS_KIRIM_EMAIL = '{(errMessage.Length < 100 ? errMessage : errMessage.Substring(0, 99))}',
+                                STATUS_KIRIM_EMAIL = 'ERROR - {(errMessage.Length <= 90 ? errMessage : errMessage.Substring(0, 90))}',
                                 KODE_STAT_KRIM_MAIL = '-1'
                             "
                         )}
@@ -671,7 +674,8 @@ namespace KirimNPFileQR.Handlers {
                         a.LOG_TOK_KODE = b.TOK_CODE 
                         AND a.LOG_DCKODE = c.TBL_DC_KODE 
                         AND (
-                            UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
+                            a.log_stat_rcv IS NOT NULL
+                            AND UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
                             AND a.log_stat_rcv NOT LIKE '%- 00 -%'
                             AND a.log_stat_rcv NOT LIKE '%- 01 -%'
                         )
@@ -732,6 +736,29 @@ namespace KirimNPFileQR.Handlers {
                     ORDER BY
                         log_fk_seqno ASC,
                         seqno ASC
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno }
+                }
+            );
+        }
+
+        public async Task<bool> UpdateAfterSendWebService(decimal[] log_seqno, string errMessage = null) {
+            return await OraPg.ExecQueryAsync(
+                $@"
+                    UPDATE
+                        DC_NPBTOKO_LOG
+                    SET
+                        LOG_STAT_RCV = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend '
+                        {(
+                            string.IsNullOrEmpty(errMessage) ? $@"
+                                || ' SUKSES -'
+                            " : $@"
+                                || ' ERROR - {(errMessage.Length <= 450 ? errMessage : errMessage.Substring(0, 450))}'
+                            "
+                        )}
+                    WHERE
+                        LOG_SEQNO IN (:log_seqno)
                 ",
                 new List<CDbQueryParamBind> {
                     new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno }

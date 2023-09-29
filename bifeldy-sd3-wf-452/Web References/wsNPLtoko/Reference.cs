@@ -55,7 +55,7 @@ namespace KirimNPFileQR.wsNPLtoko {
         
         /// <remarks/>
         public NPB_Service() {
-            this.Url = global::KirimNPFileQR.Properties.Settings.Default.KirimNPFileQR_wsNPLtoko1_NPB_Service;
+            this.Url = global::KirimNPFileQR.Properties.Settings.Default.KirimNPFileQR_wsNPLtoko_NPB_Service;
             if ((this.IsLocalFileSystemWebService(this.Url) == true)) {
                 this.UseDefaultCredentials = true;
                 this.useDefaultCredentialsSetExplicitly = false;
