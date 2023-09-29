@@ -32,6 +32,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="ReceiveOverStock">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Request" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="CabangKirim" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveOverStockResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveOverStockResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveStatus">
         <s:complexType>
           <s:sequence>
@@ -91,6 +106,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="ReceiveOverStock2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Request" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CabangKirim" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveOverStock2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveOverStock2Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveStatus2">
         <s:complexType>
           <s:sequence>
@@ -117,6 +147,20 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="ReceiveFinger2Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveNPS">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Data" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveNPSResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveNPSResult" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -148,6 +192,12 @@
   <wsdl:message name="ReceiveItemDepoSoapOut">
     <wsdl:part name="parameters" element="tns:ReceiveItemDepoResponse" />
   </wsdl:message>
+  <wsdl:message name="ReceiveOverStockSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveOverStock" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveOverStockSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveOverStockResponse" />
+  </wsdl:message>
   <wsdl:message name="RetrieveStatusSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveStatus" />
   </wsdl:message>
@@ -172,6 +222,12 @@
   <wsdl:message name="ReceiveItemDepo2SoapOut">
     <wsdl:part name="parameters" element="tns:ReceiveItemDepo2Response" />
   </wsdl:message>
+  <wsdl:message name="ReceiveOverStock2SoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveOverStock2" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveOverStock2SoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveOverStock2Response" />
+  </wsdl:message>
   <wsdl:message name="RetrieveStatus2SoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveStatus2" />
   </wsdl:message>
@@ -183,6 +239,12 @@
   </wsdl:message>
   <wsdl:message name="ReceiveFinger2SoapOut">
     <wsdl:part name="parameters" element="tns:ReceiveFinger2Response" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveNPSSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveNPS" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveNPSSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveNPSResponse" />
   </wsdl:message>
   <wsdl:message name="ReceiveHttpGetIn">
     <wsdl:part name="NotaKirim" type="s1:StringArray" />
@@ -196,6 +258,13 @@
     <wsdl:part name="CabangKirim" type="s:string" />
   </wsdl:message>
   <wsdl:message name="ReceiveItemDepoHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveOverStockHttpGetIn">
+    <wsdl:part name="Request" type="s1:StringArray" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveOverStockHttpGetOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
   <wsdl:message name="RetrieveStatusHttpGetIn">
@@ -225,6 +294,13 @@
   <wsdl:message name="ReceiveItemDepo2HttpGetOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
+  <wsdl:message name="ReceiveOverStock2HttpGetIn">
+    <wsdl:part name="Request" type="s:string" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveOverStock2HttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
   <wsdl:message name="RetrieveStatus2HttpGetIn">
     <wsdl:part name="TempRequest" type="s:string" />
   </wsdl:message>
@@ -236,6 +312,12 @@
     <wsdl:part name="CabangKirim" type="s:string" />
   </wsdl:message>
   <wsdl:message name="ReceiveFinger2HttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveNPSHttpGetIn">
+    <wsdl:part name="Data" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveNPSHttpGetOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
   <wsdl:message name="ReceiveHttpPostIn">
@@ -250,6 +332,13 @@
     <wsdl:part name="CabangKirim" type="s:string" />
   </wsdl:message>
   <wsdl:message name="ReceiveItemDepoHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveOverStockHttpPostIn">
+    <wsdl:part name="Request" type="s1:StringArray" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveOverStockHttpPostOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
   <wsdl:message name="RetrieveStatusHttpPostIn">
@@ -279,6 +368,13 @@
   <wsdl:message name="ReceiveItemDepo2HttpPostOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
+  <wsdl:message name="ReceiveOverStock2HttpPostIn">
+    <wsdl:part name="Request" type="s:string" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveOverStock2HttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
   <wsdl:message name="RetrieveStatus2HttpPostIn">
     <wsdl:part name="TempRequest" type="s:string" />
   </wsdl:message>
@@ -292,15 +388,25 @@
   <wsdl:message name="ReceiveFinger2HttpPostOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
+  <wsdl:message name="ReceiveNPSHttpPostIn">
+    <wsdl:part name="Data" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveNPSHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
   <wsdl:portType name="NPB_ServiceSoap">
     <wsdl:operation name="Receive">
-      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Version : 1.0.0.42; Date Modified : 21-01-2021; Type : CLOSE;</wsdl:documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Version : 1.0.0.72; Date Modified : 21-09-2023; Type : CLOSE;</wsdl:documentation>
       <wsdl:input message="tns:ReceiveSoapIn" />
       <wsdl:output message="tns:ReceiveSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ReceiveItemDepo">
       <wsdl:input message="tns:ReceiveItemDepoSoapIn" />
       <wsdl:output message="tns:ReceiveItemDepoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock">
+      <wsdl:input message="tns:ReceiveOverStockSoapIn" />
+      <wsdl:output message="tns:ReceiveOverStockSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveStatus">
       <wsdl:input message="tns:RetrieveStatusSoapIn" />
@@ -318,6 +424,10 @@
       <wsdl:input message="tns:ReceiveItemDepo2SoapIn" />
       <wsdl:output message="tns:ReceiveItemDepo2SoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock2">
+      <wsdl:input message="tns:ReceiveOverStock2SoapIn" />
+      <wsdl:output message="tns:ReceiveOverStock2SoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="RetrieveStatus2">
       <wsdl:input message="tns:RetrieveStatus2SoapIn" />
       <wsdl:output message="tns:RetrieveStatus2SoapOut" />
@@ -326,16 +436,24 @@
       <wsdl:input message="tns:ReceiveFinger2SoapIn" />
       <wsdl:output message="tns:ReceiveFinger2SoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="ReceiveNPS">
+      <wsdl:input message="tns:ReceiveNPSSoapIn" />
+      <wsdl:output message="tns:ReceiveNPSSoapOut" />
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="NPB_ServiceHttpGet">
     <wsdl:operation name="Receive">
-      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Version : 1.0.0.42; Date Modified : 21-01-2021; Type : CLOSE;</wsdl:documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Version : 1.0.0.72; Date Modified : 21-09-2023; Type : CLOSE;</wsdl:documentation>
       <wsdl:input message="tns:ReceiveHttpGetIn" />
       <wsdl:output message="tns:ReceiveHttpGetOut" />
     </wsdl:operation>
     <wsdl:operation name="ReceiveItemDepo">
       <wsdl:input message="tns:ReceiveItemDepoHttpGetIn" />
       <wsdl:output message="tns:ReceiveItemDepoHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock">
+      <wsdl:input message="tns:ReceiveOverStockHttpGetIn" />
+      <wsdl:output message="tns:ReceiveOverStockHttpGetOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveStatus">
       <wsdl:input message="tns:RetrieveStatusHttpGetIn" />
@@ -353,6 +471,10 @@
       <wsdl:input message="tns:ReceiveItemDepo2HttpGetIn" />
       <wsdl:output message="tns:ReceiveItemDepo2HttpGetOut" />
     </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock2">
+      <wsdl:input message="tns:ReceiveOverStock2HttpGetIn" />
+      <wsdl:output message="tns:ReceiveOverStock2HttpGetOut" />
+    </wsdl:operation>
     <wsdl:operation name="RetrieveStatus2">
       <wsdl:input message="tns:RetrieveStatus2HttpGetIn" />
       <wsdl:output message="tns:RetrieveStatus2HttpGetOut" />
@@ -361,16 +483,24 @@
       <wsdl:input message="tns:ReceiveFinger2HttpGetIn" />
       <wsdl:output message="tns:ReceiveFinger2HttpGetOut" />
     </wsdl:operation>
+    <wsdl:operation name="ReceiveNPS">
+      <wsdl:input message="tns:ReceiveNPSHttpGetIn" />
+      <wsdl:output message="tns:ReceiveNPSHttpGetOut" />
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="NPB_ServiceHttpPost">
     <wsdl:operation name="Receive">
-      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Version : 1.0.0.42; Date Modified : 21-01-2021; Type : CLOSE;</wsdl:documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Version : 1.0.0.72; Date Modified : 21-09-2023; Type : CLOSE;</wsdl:documentation>
       <wsdl:input message="tns:ReceiveHttpPostIn" />
       <wsdl:output message="tns:ReceiveHttpPostOut" />
     </wsdl:operation>
     <wsdl:operation name="ReceiveItemDepo">
       <wsdl:input message="tns:ReceiveItemDepoHttpPostIn" />
       <wsdl:output message="tns:ReceiveItemDepoHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock">
+      <wsdl:input message="tns:ReceiveOverStockHttpPostIn" />
+      <wsdl:output message="tns:ReceiveOverStockHttpPostOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveStatus">
       <wsdl:input message="tns:RetrieveStatusHttpPostIn" />
@@ -388,6 +518,10 @@
       <wsdl:input message="tns:ReceiveItemDepo2HttpPostIn" />
       <wsdl:output message="tns:ReceiveItemDepo2HttpPostOut" />
     </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock2">
+      <wsdl:input message="tns:ReceiveOverStock2HttpPostIn" />
+      <wsdl:output message="tns:ReceiveOverStock2HttpPostOut" />
+    </wsdl:operation>
     <wsdl:operation name="RetrieveStatus2">
       <wsdl:input message="tns:RetrieveStatus2HttpPostIn" />
       <wsdl:output message="tns:RetrieveStatus2HttpPostOut" />
@@ -395,6 +529,10 @@
     <wsdl:operation name="ReceiveFinger2">
       <wsdl:input message="tns:ReceiveFinger2HttpPostIn" />
       <wsdl:output message="tns:ReceiveFinger2HttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveNPS">
+      <wsdl:input message="tns:ReceiveNPSHttpPostIn" />
+      <wsdl:output message="tns:ReceiveNPSHttpPostOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="NPB_ServiceSoap" type="tns:NPB_ServiceSoap">
@@ -410,6 +548,15 @@
     </wsdl:operation>
     <wsdl:operation name="ReceiveItemDepo">
       <soap:operation soapAction="http://tempuri.org/ReceiveItemDepo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock">
+      <soap:operation soapAction="http://tempuri.org/ReceiveOverStock" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -453,6 +600,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock2">
+      <soap:operation soapAction="http://tempuri.org/ReceiveOverStock2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveStatus2">
       <soap:operation soapAction="http://tempuri.org/RetrieveStatus2" style="document" />
       <wsdl:input>
@@ -464,6 +620,15 @@
     </wsdl:operation>
     <wsdl:operation name="ReceiveFinger2">
       <soap:operation soapAction="http://tempuri.org/ReceiveFinger2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveNPS">
+      <soap:operation soapAction="http://tempuri.org/ReceiveNPS" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -485,6 +650,15 @@
     </wsdl:operation>
     <wsdl:operation name="ReceiveItemDepo">
       <soap12:operation soapAction="http://tempuri.org/ReceiveItemDepo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveOverStock" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -528,6 +702,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock2">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveOverStock2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveStatus2">
       <soap12:operation soapAction="http://tempuri.org/RetrieveStatus2" style="document" />
       <wsdl:input>
@@ -539,6 +722,15 @@
     </wsdl:operation>
     <wsdl:operation name="ReceiveFinger2">
       <soap12:operation soapAction="http://tempuri.org/ReceiveFinger2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveNPS">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveNPS" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -567,6 +759,15 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock">
+      <http:operation location="/ReceiveOverStock" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveStatus">
       <http:operation location="/RetrieveStatus" />
       <wsdl:input>
@@ -603,6 +804,15 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock2">
+      <http:operation location="/ReceiveOverStock2" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveStatus2">
       <http:operation location="/RetrieveStatus2" />
       <wsdl:input>
@@ -614,6 +824,15 @@
     </wsdl:operation>
     <wsdl:operation name="ReceiveFinger2">
       <http:operation location="/ReceiveFinger2" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveNPS">
+      <http:operation location="/ReceiveNPS" />
       <wsdl:input>
         <http:urlEncoded />
       </wsdl:input>
@@ -642,6 +861,15 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock">
+      <http:operation location="/ReceiveOverStock" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveStatus">
       <http:operation location="/RetrieveStatus" />
       <wsdl:input>
@@ -678,6 +906,15 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ReceiveOverStock2">
+      <http:operation location="/ReceiveOverStock2" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveStatus2">
       <http:operation location="/RetrieveStatus2" />
       <wsdl:input>
@@ -696,19 +933,28 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ReceiveNPS">
+      <http:operation location="/ReceiveNPS" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="NPB_Service">
     <wsdl:port name="NPB_ServiceSoap" binding="tns:NPB_ServiceSoap">
-      <soap:address location="http://192.168.10.230:1414/service.asmx" />
+      <soap:address location="http://172.24.16.201:1414/service.asmx" />
     </wsdl:port>
     <wsdl:port name="NPB_ServiceSoap12" binding="tns:NPB_ServiceSoap12">
-      <soap12:address location="http://192.168.10.230:1414/service.asmx" />
+      <soap12:address location="http://172.24.16.201:1414/service.asmx" />
     </wsdl:port>
     <wsdl:port name="NPB_ServiceHttpGet" binding="tns:NPB_ServiceHttpGet">
-      <http:address location="http://192.168.10.230:1414/service.asmx" />
+      <http:address location="http://172.24.16.201:1414/service.asmx" />
     </wsdl:port>
     <wsdl:port name="NPB_ServiceHttpPost" binding="tns:NPB_ServiceHttpPost">
-      <http:address location="http://192.168.10.230:1414/service.asmx" />
+      <http:address location="http://172.24.16.201:1414/service.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
