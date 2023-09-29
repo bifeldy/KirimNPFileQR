@@ -33,7 +33,11 @@ namespace KirimNPFileQR.Handlers {
         Task<DataTable> GetNpCreateUlangQrCodeHeader(string log_jenis, decimal log_no_npb, DateTime log_tgl_npb);
         Task<DataTable> GetNpCreateUlangFileNp1(string log_jenis, decimal[] log_seqno, string tbl_dc_kode);
         Task<DataTable> GetNpCreateUlangFileNp2(string log_jenis, decimal[] log_seqno, string log_tok_kode, string log_typefile);
-        Task UpdateAfterSendEmail(decimal[] log_seqno, string errMessage = null);
+        Task<bool> UpdateAfterSendEmail(decimal[] log_seqno, string errMessage = null);
+        Task<decimal> CheckCreateUlangJsonByte(string log_dckode, string log_tok_kode, string log_namafile);
+        Task<string> GetURLWRC(string log_tok_kode);
+        Task<DataTable> GetNpHeaderJsonByte(string log_dckode, string log_tok_kode, string log_namafile);
+        Task<DataTable> GetNpDetailJsonByte(decimal log_seqno);
     }
 
     public sealed class CDb : CDbHandler, IDb {
@@ -570,8 +574,8 @@ namespace KirimNPFileQR.Handlers {
             return await OraPg_GetDataTable(query, param);
         }
 
-        public Task UpdateAfterSendEmail(decimal[] log_seqno, string errMessage = null) {
-            return OraPg.ExecQueryAsync(
+        public async Task<bool> UpdateAfterSendEmail(decimal[] log_seqno, string errMessage = null) {
+            return await OraPg.ExecQueryAsync(
                 $@"
                     UPDATE DC_NPBTOKO_LOG
                     SET
@@ -587,6 +591,147 @@ namespace KirimNPFileQR.Handlers {
                         )}
                     WHERE
                         LOG_SEQNO IN (:log_seqno)
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno }
+                }
+            );
+        }
+
+        public async Task<decimal> CheckCreateUlangJsonByte(string log_dckode, string log_tok_kode, string log_namafile) {
+            return await OraPg.ExecScalarAsync<decimal>(
+                $@"
+                    SELECT
+                        COUNT(1)
+                    FROM
+                        dc_npbtoko_log
+                    WHERE 
+                        LOG_TYPEFILE = 'CSV'
+                        AND LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
+                        AND log_dckode = :log_dckode
+                        AND log_tok_kode = :log_tok_kode
+                        AND log_namafile = :log_namafile
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_dckode", VALUE = log_dckode },
+                    new CDbQueryParamBind { NAME = "log_tok_kode", VALUE = log_tok_kode },
+                    new CDbQueryParamBind { NAME = "log_namafile", VALUE = log_namafile }
+                }
+            );
+        }
+
+        public async Task<string> GetURLWRC(string log_tok_kode) {
+            return await OraPg.ExecScalarAsync<string>(
+                $@"
+                    SELECT
+                        URL
+                    FROM
+                        TOKO_WSSETTING 
+                    WHERE
+                        TIPE = 'NPL'
+                        AND {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(
+                            TBL_DC_KODE, (
+                                SELECT
+                                    TBL_DC_KODE
+                                FROM
+                                    DC_TABEL_DC_T
+                            )
+                        ) = (
+                            SELECT
+                                {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(TOK_KIRIM_SEKUNDER, TOK_KIRIM)
+                            FROM
+                                DC_TOKO_T
+                            WHERE
+                                TOK_CODE = :log_tok_kode
+                        )
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_tok_kode", VALUE = log_tok_kode }
+                }
+            );
+        }
+
+        public async Task<DataTable> GetNpHeaderJsonByte(string log_dckode, string log_tok_kode, string log_namafile) {
+            return await OraPg.GetDataTableAsync(
+                $@"
+                    SELECT
+                        a.log_seqno,
+                        a.log_dckode AS KIRIM,
+                        a.log_tok_kode AS toko,
+                        a.log_no_npb AS DOCNO,
+                        TO_CHAR(a.log_tgl_npb, 'dd-mm-yyyy') AS PICTGL,
+                        a.log_namafile AS NAMAFILE,
+                        a.log_item AS ITEM,
+                        TO_CHAR({(_app.IsUsingPostgres ? "CURRENT_DATE" : "TRUNC(SYSDATE)")}, 'yyyymmdd') || {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(b.TOK_KIRIM_SEKUNDER, {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(c.TBL_DC_INDUK, c.TBL_DC_KODE)) AS sysDatekodeDC
+                    FROM
+                        DC_NPBTOKO_LOG a,
+                        DC_TOKO_T b,
+                        DC_TABEL_DC_T c 
+                    WHERE
+                        a.LOG_TOK_KODE = b.TOK_CODE 
+                        AND a.LOG_DCKODE = c.TBL_DC_KODE 
+                        AND (
+                            UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
+                            AND a.log_stat_rcv NOT LIKE '%- 00 -%'
+                            AND a.log_stat_rcv NOT LIKE '%- 01 -%'
+                        )
+                        AND a.LOG_TYPEFILE = 'WEB'
+                        AND a.LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
+                        AND a.log_dckode = :log_dckode
+                        AND a.log_tok_kode = :log_tok_kode
+                        AND a.log_namafile = :log_namafile
+                    ORDER BY
+                        a.log_seqno ASC
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_dckode", VALUE = log_dckode },
+                    new CDbQueryParamBind { NAME = "log_tok_kode", VALUE = log_tok_kode },
+                    new CDbQueryParamBind { NAME = "log_namafile", VALUE = log_namafile }
+                }
+            );
+        }
+
+        public async Task<DataTable> GetNpDetailJsonByte(decimal log_seqno) {
+            return await OraPg.GetDataTableAsync(
+                $@"
+                    SELECT
+                        RECID,
+                        RTYPE,
+                        DOCNO,
+                        SEQNO,
+                        PICNO,
+                        PICNOT,
+                        PICTGL,
+                        PRDCD,
+                        NAMA,
+                        DIV,
+                        QTY,
+                        SJ_QTY,
+                        ROUND(PRICE,3) AS PRICE,
+                        ROUND(GROSS,3) AS GROSS,
+                        ROUND(PPNRP,3) AS PPNRP,
+                        ROUND(HPP,3) AS HPP,
+                        TOKO,
+                        KETER,
+                        TANGGAL1,
+                        TANGGAL2,
+                        DOCNO2,
+                        LT,
+                        RAK,
+                        BAR,
+                        KIRIM,
+                        DUS_NO,
+                        TGLEXP,
+                        PPN_RATE,
+                        BKP,
+                        SUB_BKP
+                    FROM
+                        DC_NPBTOKO_FILE 
+                    WHERE
+                        log_fk_seqno = :log_seqno
+                    ORDER BY
+                        log_fk_seqno ASC,
+                        seqno ASC
                 ",
                 new List<CDbQueryParamBind> {
                     new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno }

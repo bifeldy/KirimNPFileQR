@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://tempuri.org/AbstractTypes" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="Receive">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="NotaKirim" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="CabangKirim" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveItemDepo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Request" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="CabangKirim" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveItemDepoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveItemDepoResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveStatus">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Request" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveStatusResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveStatusResult" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFinger">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="NotaKirim" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="CabangKirim" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFingerResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveFingerResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Receive2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="NotaKirim" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CabangKirim" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Receive2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Receive2Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveItemDepo2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Request" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CabangKirim" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveItemDepo2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveItemDepo2Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveStatus2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TempRequest" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveStatus2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveStatus2Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFinger2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="NotaKirim" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CabangKirim" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFinger2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveFinger2Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+      <s:element name="base64Binary" nillable="true" type="s:base64Binary" />
+    </s:schema>
+    <s:schema targetNamespace="http://tempuri.org/AbstractTypes">
+      <s:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <s:complexType name="StringArray">
+        <s:complexContent mixed="false">
+          <s:restriction base="soapenc:Array">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="String" type="s:string" />
+            </s:sequence>
+          </s:restriction>
+        </s:complexContent>
+      </s:complexType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="ReceiveSoapIn">
+    <wsdl:part name="parameters" element="tns:Receive" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepoSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveItemDepo" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepoSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveItemDepoResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatusSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveStatus" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatusSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFingerSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveFinger" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFingerSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveFingerResponse" />
+  </wsdl:message>
+  <wsdl:message name="Receive2SoapIn">
+    <wsdl:part name="parameters" element="tns:Receive2" />
+  </wsdl:message>
+  <wsdl:message name="Receive2SoapOut">
+    <wsdl:part name="parameters" element="tns:Receive2Response" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepo2SoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveItemDepo2" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepo2SoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveItemDepo2Response" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatus2SoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveStatus2" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatus2SoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveStatus2Response" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFinger2SoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveFinger2" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFinger2SoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveFinger2Response" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveHttpGetIn">
+    <wsdl:part name="NotaKirim" type="s1:StringArray" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepoHttpGetIn">
+    <wsdl:part name="Request" type="s1:StringArray" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepoHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatusHttpGetIn">
+    <wsdl:part name="Request" type="s1:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatusHttpGetOut">
+    <wsdl:part name="Body" element="tns:base64Binary" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFingerHttpGetIn">
+    <wsdl:part name="NotaKirim" type="s1:StringArray" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFingerHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="Receive2HttpGetIn">
+    <wsdl:part name="NotaKirim" type="s:string" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="Receive2HttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepo2HttpGetIn">
+    <wsdl:part name="Request" type="s:string" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepo2HttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatus2HttpGetIn">
+    <wsdl:part name="TempRequest" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatus2HttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFinger2HttpGetIn">
+    <wsdl:part name="NotaKirim" type="s:string" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFinger2HttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveHttpPostIn">
+    <wsdl:part name="NotaKirim" type="s1:StringArray" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepoHttpPostIn">
+    <wsdl:part name="Request" type="s1:StringArray" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepoHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatusHttpPostIn">
+    <wsdl:part name="Request" type="s1:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatusHttpPostOut">
+    <wsdl:part name="Body" element="tns:base64Binary" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFingerHttpPostIn">
+    <wsdl:part name="NotaKirim" type="s1:StringArray" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFingerHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="Receive2HttpPostIn">
+    <wsdl:part name="NotaKirim" type="s:string" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="Receive2HttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepo2HttpPostIn">
+    <wsdl:part name="Request" type="s:string" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveItemDepo2HttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatus2HttpPostIn">
+    <wsdl:part name="TempRequest" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveStatus2HttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFinger2HttpPostIn">
+    <wsdl:part name="NotaKirim" type="s:string" />
+    <wsdl:part name="CabangKirim" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFinger2HttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:portType name="NPB_ServiceSoap">
+    <wsdl:operation name="Receive">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Version : 1.0.0.42; Date Modified : 21-01-2021; Type : CLOSE;</wsdl:documentation>
+      <wsdl:input message="tns:ReceiveSoapIn" />
+      <wsdl:output message="tns:ReceiveSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo">
+      <wsdl:input message="tns:ReceiveItemDepoSoapIn" />
+      <wsdl:output message="tns:ReceiveItemDepoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus">
+      <wsdl:input message="tns:RetrieveStatusSoapIn" />
+      <wsdl:output message="tns:RetrieveStatusSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger">
+      <wsdl:input message="tns:ReceiveFingerSoapIn" />
+      <wsdl:output message="tns:ReceiveFingerSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Receive2">
+      <wsdl:input message="tns:Receive2SoapIn" />
+      <wsdl:output message="tns:Receive2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo2">
+      <wsdl:input message="tns:ReceiveItemDepo2SoapIn" />
+      <wsdl:output message="tns:ReceiveItemDepo2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus2">
+      <wsdl:input message="tns:RetrieveStatus2SoapIn" />
+      <wsdl:output message="tns:RetrieveStatus2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger2">
+      <wsdl:input message="tns:ReceiveFinger2SoapIn" />
+      <wsdl:output message="tns:ReceiveFinger2SoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="NPB_ServiceHttpGet">
+    <wsdl:operation name="Receive">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Version : 1.0.0.42; Date Modified : 21-01-2021; Type : CLOSE;</wsdl:documentation>
+      <wsdl:input message="tns:ReceiveHttpGetIn" />
+      <wsdl:output message="tns:ReceiveHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo">
+      <wsdl:input message="tns:ReceiveItemDepoHttpGetIn" />
+      <wsdl:output message="tns:ReceiveItemDepoHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus">
+      <wsdl:input message="tns:RetrieveStatusHttpGetIn" />
+      <wsdl:output message="tns:RetrieveStatusHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger">
+      <wsdl:input message="tns:ReceiveFingerHttpGetIn" />
+      <wsdl:output message="tns:ReceiveFingerHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Receive2">
+      <wsdl:input message="tns:Receive2HttpGetIn" />
+      <wsdl:output message="tns:Receive2HttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo2">
+      <wsdl:input message="tns:ReceiveItemDepo2HttpGetIn" />
+      <wsdl:output message="tns:ReceiveItemDepo2HttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus2">
+      <wsdl:input message="tns:RetrieveStatus2HttpGetIn" />
+      <wsdl:output message="tns:RetrieveStatus2HttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger2">
+      <wsdl:input message="tns:ReceiveFinger2HttpGetIn" />
+      <wsdl:output message="tns:ReceiveFinger2HttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="NPB_ServiceHttpPost">
+    <wsdl:operation name="Receive">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Version : 1.0.0.42; Date Modified : 21-01-2021; Type : CLOSE;</wsdl:documentation>
+      <wsdl:input message="tns:ReceiveHttpPostIn" />
+      <wsdl:output message="tns:ReceiveHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo">
+      <wsdl:input message="tns:ReceiveItemDepoHttpPostIn" />
+      <wsdl:output message="tns:ReceiveItemDepoHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus">
+      <wsdl:input message="tns:RetrieveStatusHttpPostIn" />
+      <wsdl:output message="tns:RetrieveStatusHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger">
+      <wsdl:input message="tns:ReceiveFingerHttpPostIn" />
+      <wsdl:output message="tns:ReceiveFingerHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Receive2">
+      <wsdl:input message="tns:Receive2HttpPostIn" />
+      <wsdl:output message="tns:Receive2HttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo2">
+      <wsdl:input message="tns:ReceiveItemDepo2HttpPostIn" />
+      <wsdl:output message="tns:ReceiveItemDepo2HttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus2">
+      <wsdl:input message="tns:RetrieveStatus2HttpPostIn" />
+      <wsdl:output message="tns:RetrieveStatus2HttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger2">
+      <wsdl:input message="tns:ReceiveFinger2HttpPostIn" />
+      <wsdl:output message="tns:ReceiveFinger2HttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="NPB_ServiceSoap" type="tns:NPB_ServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Receive">
+      <soap:operation soapAction="http://tempuri.org/Receive" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo">
+      <soap:operation soapAction="http://tempuri.org/ReceiveItemDepo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus">
+      <soap:operation soapAction="http://tempuri.org/RetrieveStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger">
+      <soap:operation soapAction="http://tempuri.org/ReceiveFinger" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Receive2">
+      <soap:operation soapAction="http://tempuri.org/Receive2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo2">
+      <soap:operation soapAction="http://tempuri.org/ReceiveItemDepo2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus2">
+      <soap:operation soapAction="http://tempuri.org/RetrieveStatus2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger2">
+      <soap:operation soapAction="http://tempuri.org/ReceiveFinger2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="NPB_ServiceSoap12" type="tns:NPB_ServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Receive">
+      <soap12:operation soapAction="http://tempuri.org/Receive" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveItemDepo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus">
+      <soap12:operation soapAction="http://tempuri.org/RetrieveStatus" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveFinger" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Receive2">
+      <soap12:operation soapAction="http://tempuri.org/Receive2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo2">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveItemDepo2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus2">
+      <soap12:operation soapAction="http://tempuri.org/RetrieveStatus2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger2">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveFinger2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="NPB_ServiceHttpGet" type="tns:NPB_ServiceHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="Receive">
+      <http:operation location="/Receive" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo">
+      <http:operation location="/ReceiveItemDepo" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus">
+      <http:operation location="/RetrieveStatus" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger">
+      <http:operation location="/ReceiveFinger" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Receive2">
+      <http:operation location="/Receive2" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo2">
+      <http:operation location="/ReceiveItemDepo2" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus2">
+      <http:operation location="/RetrieveStatus2" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger2">
+      <http:operation location="/ReceiveFinger2" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="NPB_ServiceHttpPost" type="tns:NPB_ServiceHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="Receive">
+      <http:operation location="/Receive" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo">
+      <http:operation location="/ReceiveItemDepo" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus">
+      <http:operation location="/RetrieveStatus" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger">
+      <http:operation location="/ReceiveFinger" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Receive2">
+      <http:operation location="/Receive2" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveItemDepo2">
+      <http:operation location="/ReceiveItemDepo2" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveStatus2">
+      <http:operation location="/RetrieveStatus2" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFinger2">
+      <http:operation location="/ReceiveFinger2" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="NPB_Service">
+    <wsdl:port name="NPB_ServiceSoap" binding="tns:NPB_ServiceSoap">
+      <soap:address location="http://192.168.10.230:1414/service.asmx" />
+    </wsdl:port>
+    <wsdl:port name="NPB_ServiceSoap12" binding="tns:NPB_ServiceSoap12">
+      <soap12:address location="http://192.168.10.230:1414/service.asmx" />
+    </wsdl:port>
+    <wsdl:port name="NPB_ServiceHttpGet" binding="tns:NPB_ServiceHttpGet">
+      <http:address location="http://192.168.10.230:1414/service.asmx" />
+    </wsdl:port>
+    <wsdl:port name="NPB_ServiceHttpPost" binding="tns:NPB_ServiceHttpPost">
+      <http:address location="http://192.168.10.230:1414/service.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

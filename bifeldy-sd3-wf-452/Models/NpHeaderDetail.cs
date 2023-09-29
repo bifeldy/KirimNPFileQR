@@ -136,4 +136,50 @@ namespace KirimNPFileQR.Models {
         public string NOSJ { get; set; }
     }
 
+    public sealed class MNpCreateUlangJsonByteHeader {
+        public decimal LOG_SEQNO { get; set; }
+        public string KIRIM { get; set; }
+        public string TOKO { get; set; }
+        public decimal DOCNO { get; set; }
+        public string PICTGL { get; set; }
+        public string NAMAFILE { get; set; }
+        public decimal ITEM { get; set; }
+        public string SYSDATEKODEDC { get; set; }
+    }
+
+    public sealed class MNpCreateUlangJsonByteDetail : DC_NPBTOKO_FILE {
+        public string RECID { get; set; }
+        public string RTYPE { get; set; }
+        public string DOCNO { get; set; }
+        public decimal SEQNO { get; set; }
+        public decimal PICNO { get; set; }
+        public string PICNOT { get; set; }
+        public string PICTGL { get; set; }
+        public string PRDCD { get; set; }
+        public string NAMA { get; set; }
+        public string DIV { get; set; }
+        public decimal QTY { get; set; }
+        public decimal SJ_QTY { get; set; }
+        public decimal PRICE { get; set; }
+        public decimal GROSS { get; set; }
+        public decimal PPNRP { get; set; }
+        public decimal HPP { get; set; }
+        public string TOKO { get; set; }
+        public string KETER { get; set; }
+        public string TANGGAL1 { get; set; }
+        public string TANGGAL2 { get; set; }
+        public string DOCNO2 { get; set; }
+        public string LT { get; set; }
+        public string RAK { get; set; }
+        public string BAR { get; set; }
+        public string KIRIM { get; set; }
+        public string DUS_NO { get; set; }
+        public decimal LOG_FK_SEQNO { get; set; }
+        public string TGLEXP { get; set; }
+        public decimal PPN_RATE { get; set; }
+        public string BKP { get; set; }
+        public string SUB_BKP { get; set; }
+        public decimal NL_QTY { get; set; }
+    }
+
 }

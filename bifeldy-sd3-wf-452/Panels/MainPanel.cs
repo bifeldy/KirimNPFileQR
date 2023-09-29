@@ -20,6 +20,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -581,9 +582,6 @@ namespace KirimNPFileQR.Panels {
                             await _db.UpdateAfterSendEmail(lsLogSeqNo.ToArray());
 
                         }
-                        else {
-                            throw new Exception("Tidak Memiliki Alamat Email");
-                        }
                     }
                     catch (Exception ex) {
                         if (lsLogSeqNo.Count > 0) {
@@ -602,10 +600,56 @@ namespace KirimNPFileQR.Panels {
         }
 
         private async Task ProsesNPFileJsonByte() {
-            await Task.Run(() => {
-                Thread.Sleep(60000);
-
-                // TODO ::
+            await Task.Run(async () => {
+                foreach (MNpLog npLogHeader in listNpLogPendingJsonByte) {
+                    try {
+                        string sysDateKodeDc = string.Empty;
+                        decimal count = await _db.CheckCreateUlangJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
+                        if (count == 0) {
+                            string url = await _db.GetURLWRC(npLogHeader.LOG_TOK_KODE);
+                            if (!string.IsNullOrEmpty(url)) {
+                                DataTable dtNpHeader = await _db.GetNpHeaderJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
+                                if (dtNpHeader.Rows.Count > 0) {
+                                    List<MNpCreateUlangJsonByteHeader> lsNpHeader = _converter.DataTableToList<MNpCreateUlangJsonByteHeader>(dtNpHeader);
+                                    sysDateKodeDc = lsNpHeader.First().SYSDATEKODEDC;
+                                    List<Dictionary<string, object>> lsDictHdr = new List<Dictionary<string, object>>();
+                                    foreach (MNpCreateUlangJsonByteHeader npHeader in lsNpHeader) {
+                                        Dictionary<string, object> dictHeader = npHeader.GetType()
+                                            .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                                                 .ToDictionary(prop => prop.Name, prop => prop.GetValue(npHeader, null));
+                                        dictHeader.Remove("LOG_SEQNO");
+                                        dictHeader.Remove("SYSDATEKODEDC");
+                                        List<Dictionary<string, object>> lsDictDtl = new List<Dictionary<string, object>>();
+                                        DataTable dtNpDetail = await _db.GetNpDetailJsonByte(npHeader.LOG_SEQNO);
+                                        if (dtNpDetail.Rows.Count > 0) {
+                                            List<MNpCreateUlangJsonByteDetail> lsNpDetail = _converter.DataTableToList<MNpCreateUlangJsonByteDetail>(dtNpDetail);
+                                            foreach (MNpCreateUlangJsonByteDetail npDetail in lsNpDetail) {
+                                                Dictionary<string, object> dictDetail = npDetail.GetType()
+                                                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                                                         .ToDictionary(prop => prop.Name, prop => prop.GetValue(npDetail, null));
+                                                dictDetail.Remove("LOG_FK_SEQNO");
+                                                lsDictDtl.Add(dictDetail);
+                                            }
+                                        }
+                                        dictHeader.Add("DC_NPBTOKO_FILE", lsDictDtl);
+                                        lsDictHdr.Add(dictHeader);
+                                    }
+                                    string jsonText = _converter.ObjectToJson(lsDictHdr);
+                                    byte[] textByte = _stream.GZipCompressString(jsonText);
+                                    // TODO :: Kirim Ke Web Service SOAP
+                                    string byteText = _stream.GZipDecompressString(textByte);
+                                    bool test = jsonText == byteText;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex) {
+                        _logger.WriteError(ex);
+                    }
+                    finally {
+                        Thread.Sleep(250);
+                    }
+                }
             });
         }
 
