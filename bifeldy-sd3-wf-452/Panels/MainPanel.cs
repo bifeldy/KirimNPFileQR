@@ -601,71 +601,74 @@ namespace KirimNPFileQR.Panels {
 
         private async Task ProsesNPFileJsonByte() {
             await Task.Run(async () => {
-                List<decimal> lsLogSeqNo = new List<decimal>();
-                foreach (MNpLog npLogHeader in listNpLogPendingJsonByte) {
-                    try {
-                        lsLogSeqNo.Clear();
-                        string sysDateKodeDc = string.Empty;
-                        decimal count = await _db.CheckCreateUlangJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
-                        if (count == 0) {
-                            string url = await _db.GetURLWRC(npLogHeader.LOG_TOK_KODE);
-                            if (!string.IsNullOrEmpty(url)) {
-                                DataTable dtNpHeader = await _db.GetNpHeaderJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
-                                if (dtNpHeader.Rows.Count > 0) {
-                                    List<MNpCreateUlangJsonByteHeader> lsNpHeader = _converter.DataTableToList<MNpCreateUlangJsonByteHeader>(dtNpHeader);
-                                    sysDateKodeDc = lsNpHeader.First().SYSDATEKODEDC;
-                                    List<Dictionary<string, object>> lsDictHdr = new List<Dictionary<string, object>>();
-                                    foreach (MNpCreateUlangJsonByteHeader npHeader in lsNpHeader) {
-                                        if (!lsLogSeqNo.Contains(npHeader.LOG_SEQNO)) {
-                                            lsLogSeqNo.Add(npHeader.LOG_SEQNO);
-                                        }
-                                        Dictionary<string, object> dictHeader = npHeader.GetType()
-                                            .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                                                 .ToDictionary(prop => prop.Name, prop => prop.GetValue(npHeader, null));
-                                        dictHeader.Remove("LOG_SEQNO");
-                                        dictHeader.Remove("SYSDATEKODEDC");
-                                        List<Dictionary<string, object>> lsDictDtl = new List<Dictionary<string, object>>();
-                                        DataTable dtNpDetail = await _db.GetNpDetailJsonByte(npHeader.LOG_SEQNO);
-                                        if (dtNpDetail.Rows.Count > 0) {
-                                            List<MNpCreateUlangJsonByteDetail> lsNpDetail = _converter.DataTableToList<MNpCreateUlangJsonByteDetail>(dtNpDetail);
-                                            foreach (MNpCreateUlangJsonByteDetail npDetail in lsNpDetail) {
-                                                Dictionary<string, object> dictDetail = npDetail.GetType()
-                                                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                                                         .ToDictionary(prop => prop.Name, prop => prop.GetValue(npDetail, null));
-                                                dictDetail.Remove("LOG_FK_SEQNO");
-                                                lsDictDtl.Add(dictDetail);
+                decimal isWrcMainTenis = await _db.CheckWrcMainTenis();
+                if (isWrcMainTenis <= 0) {
+                    List<decimal> lsLogSeqNo = new List<decimal>();
+                    foreach (MNpLog npLogHeader in listNpLogPendingJsonByte) {
+                        try {
+                            lsLogSeqNo.Clear();
+                            string sysDateKodeDc = string.Empty;
+                            decimal count = await _db.CheckCreateUlangJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
+                            if (count == 0) {
+                                string url = await _db.GetURLWRC(npLogHeader.LOG_TOK_KODE);
+                                if (!string.IsNullOrEmpty(url)) {
+                                    DataTable dtNpHeader = await _db.GetNpHeaderJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
+                                    if (dtNpHeader.Rows.Count > 0) {
+                                        List<MNpCreateUlangJsonByteHeader> lsNpHeader = _converter.DataTableToList<MNpCreateUlangJsonByteHeader>(dtNpHeader);
+                                        sysDateKodeDc = lsNpHeader.First().SYSDATEKODEDC;
+                                        List<Dictionary<string, object>> lsDictHdr = new List<Dictionary<string, object>>();
+                                        foreach (MNpCreateUlangJsonByteHeader npHeader in lsNpHeader) {
+                                            if (!lsLogSeqNo.Contains(npHeader.LOG_SEQNO)) {
+                                                lsLogSeqNo.Add(npHeader.LOG_SEQNO);
                                             }
+                                            Dictionary<string, object> dictHeader = npHeader.GetType()
+                                                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                                                     .ToDictionary(prop => prop.Name, prop => prop.GetValue(npHeader, null));
+                                            dictHeader.Remove("LOG_SEQNO");
+                                            dictHeader.Remove("SYSDATEKODEDC");
+                                            List<Dictionary<string, object>> lsDictDtl = new List<Dictionary<string, object>>();
+                                            DataTable dtNpDetail = await _db.GetNpDetailJsonByte(npHeader.LOG_SEQNO);
+                                            if (dtNpDetail.Rows.Count > 0) {
+                                                List<MNpCreateUlangJsonByteDetail> lsNpDetail = _converter.DataTableToList<MNpCreateUlangJsonByteDetail>(dtNpDetail);
+                                                foreach (MNpCreateUlangJsonByteDetail npDetail in lsNpDetail) {
+                                                    Dictionary<string, object> dictDetail = npDetail.GetType()
+                                                        .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                                                             .ToDictionary(prop => prop.Name, prop => prop.GetValue(npDetail, null));
+                                                    dictDetail.Remove("LOG_FK_SEQNO");
+                                                    lsDictDtl.Add(dictDetail);
+                                                }
+                                            }
+                                            dictHeader.Add("DC_NPBTOKO_FILE", lsDictDtl);
+                                            lsDictHdr.Add(dictHeader);
                                         }
-                                        dictHeader.Add("DC_NPBTOKO_FILE", lsDictDtl);
-                                        lsDictHdr.Add(dictHeader);
+                                        string jsonText = _converter.ObjectToJson(lsDictHdr);
+                                        byte[] textByte = _stream.GZipCompressString(jsonText);
+                                        // string byteText = _stream.GZipDecompressString(textByte);
+                                        // bool test = jsonText == byteText;
+                                        if (_app.DebugMode) {
+                                            MessageBox.Show(jsonText, "SIMULASI", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        }
+                                        else {
+                                            wsNPLtoko.NPB_Service ws = new wsNPLtoko.NPB_Service {
+                                                Url = url,
+                                                Timeout = 30 * 1000 // 30 detik
+                                            };
+                                            ws.Receive(textByte, sysDateKodeDc);
+                                        }
+                                        await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
                                     }
-                                    string jsonText = _converter.ObjectToJson(lsDictHdr);
-                                    byte[] textByte = _stream.GZipCompressString(jsonText);
-                                    // string byteText = _stream.GZipDecompressString(textByte);
-                                    // bool test = jsonText == byteText;
-                                    if (_app.DebugMode) {
-                                        MessageBox.Show(jsonText, "SIMULASI", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    }
-                                    else {
-                                        wsNPLtoko.NPB_Service ws = new wsNPLtoko.NPB_Service {
-                                            Url = url,
-                                            Timeout = 30 * 1000 // 30 detik
-                                        };
-                                        ws.Receive(textByte, sysDateKodeDc);
-                                    }
-                                    await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
                                 }
                             }
                         }
-                    }
-                    catch (Exception ex) {
-                        if (lsLogSeqNo.Count > 0) {
-                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), ex.Message);
+                        catch (Exception ex) {
+                            if (lsLogSeqNo.Count > 0) {
+                                await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), ex.Message);
+                            }
+                            _logger.WriteError(ex);
                         }
-                        _logger.WriteError(ex);
-                    }
-                    finally {
-                        Thread.Sleep(250);
+                        finally {
+                            Thread.Sleep(250);
+                        }
                     }
                 }
             });

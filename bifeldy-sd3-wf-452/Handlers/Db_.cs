@@ -26,6 +26,7 @@ using KirimNPFileQR.Utilities;
 namespace KirimNPFileQR.Handlers {
 
     public interface IDb : IDbHandler {
+        Task<decimal> CheckWrcMainTenis();
         Task<DataTable> GetNpLogHeaderQrEmail();
         Task<DataTable> GetNpLogHeaderJsonByte();
         Task<DataTable> GetNpLogDetailQrEmail(string log_namafile);
@@ -47,6 +48,33 @@ namespace KirimNPFileQR.Handlers {
 
         public CDb(IApp app, IOracle oracle, IPostgres postgres, IMsSQL mssql) : base(app, oracle, postgres, mssql) {
             _app = app;
+        }
+
+        public async Task<decimal> CheckWrcMainTenis() {
+            return await OraPg.ExecScalarAsync<decimal>(
+                _app.IsUsingPostgres ? $@"
+                    SELECT
+                        COALESCE(TAB.delayy, 0) AS DELAYY
+                    FROM
+                        dc_npweb_delay_v AS t1
+                        LEFT JOIN (
+                            SELECT
+                                COUNT(1) AS DELAYY 
+                            FROM
+                                dc_npweb_delay_v AS t2
+                            WHERE 
+                                jam_db BETWEEN jam_awal AND jam_akhir
+                            GROUP BY keter
+                        ) TAB ON t1.keter = TAB.keter
+                " : $@"
+                    SELECT
+                        COUNT(1) AS DELAYY
+                    FROM
+                        dc_npweb_delay_v
+                    WHERE
+                        jam_db BETWEEN jam_awal AND jam_akhir
+                "
+            );
         }
 
         public async Task<DataTable> GetNpLogHeaderQrEmail() {
