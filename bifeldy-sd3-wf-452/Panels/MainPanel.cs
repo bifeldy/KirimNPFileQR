@@ -140,8 +140,8 @@ namespace KirimNPFileQR.Panels {
             if (_app.DebugMode) {
                 waitTimeQrEmail = 15;
                 waitTimeJsonByte = 15;
+                // TestingQr();
             }
-            // TestingQr();
 
             CheckTableColumn();
         }
