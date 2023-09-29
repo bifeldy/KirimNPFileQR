@@ -54,12 +54,12 @@ namespace KirimNPFileQR.Handlers {
             return await OraPg.ExecScalarAsync<decimal>(
                 _app.IsUsingPostgres ? $@"
                     SELECT
-                        COALESCE(TAB.delayy, 0) AS DELAYY
+                        COALESCE(TAB.delayy, 0) AS DELAYY, t1.KETER
                     FROM
                         dc_npweb_delay_v AS t1
                         LEFT JOIN (
                             SELECT
-                                COUNT(1) AS DELAYY 
+                                COUNT(1) AS DELAYY, keter
                             FROM
                                 dc_npweb_delay_v AS t2
                             WHERE 
@@ -68,7 +68,7 @@ namespace KirimNPFileQR.Handlers {
                         ) TAB ON t1.keter = TAB.keter
                 " : $@"
                     SELECT
-                        COUNT(1) AS DELAYY
+                        COUNT(1) AS DELAYY, keter
                     FROM
                         dc_npweb_delay_v
                     WHERE
@@ -379,7 +379,7 @@ namespace KirimNPFileQR.Handlers {
                 $@"
                     SELECT
                         nokunci,
-                        pass || LPAD(TO_CHAR(nonpb), '6', '0') || TO_CHAR(tglnpb, 'ddmmyyyy') as norang,
+                        pass || LPAD({(_app.IsUsingPostgres ? "nonpb::TEXT" : "TO_CHAR(nonpb)")}, '6', '0') || TO_CHAR(tglnpb, 'ddmmyyyy') as norang,
                         nosj
                     FROM
                         {tblName1}
@@ -389,7 +389,7 @@ namespace KirimNPFileQR.Handlers {
                     UNION
                     SELECT
                         nokunci,
-                        pass || LPAD(TO_CHAR(nonpb), '6', '0') || TO_CHAR(tglnpb, 'ddmmyyyy') as norang,
+                        pass || LPAD({(_app.IsUsingPostgres ? "nonpb::TEXT" : "TO_CHAR(nonpb)")}, '6', '0') || TO_CHAR(tglnpb, 'ddmmyyyy') as norang,
                         nosj
                     FROM
                         {tblName2}
