@@ -780,7 +780,7 @@ namespace KirimNPFileQR.Handlers {
                         LOG_STAT_RCV = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend '
                         {(
                             string.IsNullOrEmpty(errMessage) ? $@"
-                                || ' SUKSES -'
+                                || ' - 00 - Sukses.'
                             " : $@"
                                 || ' ERROR - {(errMessage.Length <= 450 ? errMessage : errMessage.Substring(0, 450))}'
                             "
