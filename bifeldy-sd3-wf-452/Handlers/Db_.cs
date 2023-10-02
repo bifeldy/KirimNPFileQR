@@ -754,7 +754,7 @@ namespace KirimNPFileQR.Handlers {
                         KIRIM,
                         DUS_NO,
                         TGLEXP,
-                        ROUND(PPN_RATE, 3) PPN_RATE,
+                        PPN_RATE,
                         BKP,
                         SUB_BKP
                     FROM

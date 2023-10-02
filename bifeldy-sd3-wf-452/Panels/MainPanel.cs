@@ -646,7 +646,6 @@ namespace KirimNPFileQR.Panels {
                                                                  return val;
                                                              });
                                                     dictDetail.Remove("LOG_FK_SEQNO");
-                                                    dictDetail.Remove("NL_QTY");
                                                     lsDictDtl.Add(dictDetail);
                                                 }
                                             }
