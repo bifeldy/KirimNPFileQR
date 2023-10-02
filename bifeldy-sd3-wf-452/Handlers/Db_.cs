@@ -379,7 +379,7 @@ namespace KirimNPFileQR.Handlers {
                 $@"
                     SELECT
                         nokunci,
-                        pass || LPAD({(_app.IsUsingPostgres ? "nonpb::TEXT" : "TO_CHAR(nonpb)")}, '6', '0') || TO_CHAR(tglnpb, 'ddmmyyyy') as norang,
+                        pass || LPAD({(_app.IsUsingPostgres ? "nonpb::TEXT" : "TO_CHAR(nonpb)")}, '6', '0') || TO_CHAR(tglnpb, 'ddMMyyyy') as norang,
                         nosj
                     FROM
                         {tblName1}
@@ -389,7 +389,7 @@ namespace KirimNPFileQR.Handlers {
                     UNION
                     SELECT
                         nokunci,
-                        pass || LPAD({(_app.IsUsingPostgres ? "nonpb::TEXT" : "TO_CHAR(nonpb)")}, '6', '0') || TO_CHAR(tglnpb, 'ddmmyyyy') as norang,
+                        pass || LPAD({(_app.IsUsingPostgres ? "nonpb::TEXT" : "TO_CHAR(nonpb)")}, '6', '0') || TO_CHAR(tglnpb, 'ddMMyyyy') as norang,
                         nosj
                     FROM
                         {tblName2}
@@ -690,10 +690,10 @@ namespace KirimNPFileQR.Handlers {
                         a.log_dckode AS KIRIM,
                         a.log_tok_kode AS toko,
                         a.log_no_npb AS DOCNO,
-                        TO_CHAR(a.log_tgl_npb, 'dd-mm-yyyy') AS PICTGL,
+                        TO_CHAR(a.log_tgl_npb, 'dd-MM-yyyy') AS PICTGL,
                         a.log_namafile AS NAMAFILE,
                         a.log_item AS ITEM,
-                        TO_CHAR({(_app.IsUsingPostgres ? "CURRENT_DATE" : "TRUNC(SYSDATE)")}, 'yyyymmdd') || {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(b.TOK_KIRIM_SEKUNDER, {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(c.TBL_DC_INDUK, c.TBL_DC_KODE)) AS sysDatekodeDC
+                        TO_CHAR({(_app.IsUsingPostgres ? "CURRENT_DATE" : "TRUNC(SYSDATE)")}, 'yyyyMMdd') || {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(b.TOK_KIRIM_SEKUNDER, {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(c.TBL_DC_INDUK, c.TBL_DC_KODE)) AS sysDatekodeDC
                     FROM
                         DC_NPBTOKO_LOG a,
                         DC_TOKO_T b,
@@ -739,10 +739,10 @@ namespace KirimNPFileQR.Handlers {
                         DIV,
                         QTY,
                         SJ_QTY,
-                        ROUND(PRICE,3) AS PRICE,
-                        ROUND(GROSS,3) AS GROSS,
-                        ROUND(PPNRP,3) AS PPNRP,
-                        ROUND(HPP,3) AS HPP,
+                        ROUND(PRICE, 3) AS PRICE,
+                        ROUND(GROSS, 3) AS GROSS,
+                        ROUND(PPNRP, 3) AS PPNRP,
+                        ROUND(HPP, 3) AS HPP,
                         TOKO,
                         KETER,
                         TANGGAL1,
@@ -754,7 +754,7 @@ namespace KirimNPFileQR.Handlers {
                         KIRIM,
                         DUS_NO,
                         TGLEXP,
-                        PPN_RATE,
+                        ROUND(PPN_RATE, 3) PPN_RATE,
                         BKP,
                         SUB_BKP
                     FROM

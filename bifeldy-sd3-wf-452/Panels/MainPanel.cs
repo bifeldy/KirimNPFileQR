@@ -620,7 +620,14 @@ namespace KirimNPFileQR.Panels {
                                             }
                                             Dictionary<string, object> dictHeader = npHeader.GetType()
                                                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                                                     .ToDictionary(prop => prop.Name, prop => prop.GetValue(npHeader, null));
+                                                     .ToDictionary(prop => prop.Name, prop => {
+                                                         var val = prop.GetValue(npHeader, null);
+                                                         // SD7 Menyamakan NULL Dari Database Sebagai "" String Kosong :: Wkwk
+                                                         if (val == null) {
+                                                             val = "";
+                                                         }
+                                                         return val;
+                                                     });
                                             dictHeader.Remove("LOG_SEQNO");
                                             dictHeader.Remove("SYSDATEKODEDC");
                                             List<Dictionary<string, object>> lsDictDtl = new List<Dictionary<string, object>>();
@@ -630,8 +637,16 @@ namespace KirimNPFileQR.Panels {
                                                 foreach (MNpCreateUlangJsonByteDetail npDetail in lsNpDetail) {
                                                     Dictionary<string, object> dictDetail = npDetail.GetType()
                                                         .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                                                             .ToDictionary(prop => prop.Name, prop => prop.GetValue(npDetail, null));
+                                                             .ToDictionary(prop => prop.Name, prop => {
+                                                                 var val = prop.GetValue(npDetail, null);
+                                                                 // SD7 Menyamakan NULL Dari Database Sebagai "" String Kosong :: Wkwk
+                                                                 if (val == null) {
+                                                                     val = "";
+                                                                 }
+                                                                 return val;
+                                                             });
                                                     dictDetail.Remove("LOG_FK_SEQNO");
+                                                    dictDetail.Remove("NL_QTY");
                                                     lsDictDtl.Add(dictDetail);
                                                 }
                                             }
@@ -641,19 +656,22 @@ namespace KirimNPFileQR.Panels {
                                         string jsonText = _converter.ObjectToJson(lsDictHdr);
                                         _logger.WriteInfo("[JSON_TEXT]", jsonText);
                                         byte[] textByte = _stream.GZipCompressString(jsonText);
+                                        _logger.WriteInfo("[TEXT_BYTE]", BitConverter.ToString(textByte).Replace("-", ""));
+                                        // --
                                         // string byteText = _stream.GZipDecompressString(textByte);
                                         // bool test = jsonText == byteText;
+                                        // --
                                         wsNPLtoko.NPB_Service ws = new wsNPLtoko.NPB_Service {
                                             Url = url,
                                             Timeout = 30 * 1000 // 30 detik
                                         };
                                         string res = ws.Receive(textByte, sysDateKodeDc);
-                                        _logger.WriteInfo("[wsNPLtoko.NPB_Service]", res);
+                                        _logger.WriteInfo($"[wsNPLtoko.NPB_Service] {sysDateKodeDc}", res);
                                         if (_app.DebugMode) {
                                             MessageBox.Show(jsonText, "SIMULASI :: jsonText", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                             MessageBox.Show(res, "SIMULASI :: wsNPLtoko.NPB_Service", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         }
-                                        if (res.ToUpper().Contains("SUKSES") || res.ToUpper().Contains("00")) {
+                                        if (res.ToUpper().Contains("SUKSES")) {
                                             await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
                                         }
                                         else {
