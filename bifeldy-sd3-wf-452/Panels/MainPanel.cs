@@ -674,7 +674,8 @@ namespace KirimNPFileQR.Panels {
                                             await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
                                         }
                                         else {
-                                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), res);
+                                            string[] rez = res.Split('|');
+                                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), $"{rez[0]} - {rez[1]}");
                                         }
                                     }
                                 }
@@ -682,7 +683,7 @@ namespace KirimNPFileQR.Panels {
                         }
                         catch (Exception ex) {
                             if (lsLogSeqNo.Count > 0) {
-                                await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), ex.Message);
+                                await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), $"ERROR - {ex.Message}");
                             }
                             _logger.WriteError(ex);
                         }

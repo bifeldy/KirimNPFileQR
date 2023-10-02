@@ -777,12 +777,12 @@ namespace KirimNPFileQR.Handlers {
                     UPDATE
                         DC_NPBTOKO_LOG
                     SET
-                        LOG_STAT_RCV = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend '
+                        LOG_STAT_RCV = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend - '
                         {(
                             string.IsNullOrEmpty(errMessage) ? $@"
-                                || ' - 00 - Sukses.'
+                                || '00 - Sukses.'
                             " : $@"
-                                || ' ERROR - {(errMessage.Length <= 450 ? errMessage : errMessage.Substring(0, 450))}'
+                                || '{(errMessage.Length <= 450 ? errMessage : errMessage.Substring(0, 450))}'
                             "
                         )}
                     WHERE
