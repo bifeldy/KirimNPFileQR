@@ -137,11 +137,8 @@ namespace KirimNPFileQR.Panels {
                 SetIdleBusyStatus(true);
             }
 
-            if (_app.DebugMode) {
-                waitTimeQrEmail = 15;
-                waitTimeJsonByte = 15;
-                // TestingQr();
-            }
+            waitTimeQrEmail = _config.Get<int>("WaitTimeQrEmail", _app.GetConfig("wait_time_qr_email"));
+            waitTimeJsonByte = _config.Get<int>("WaitTimeJsonByte", _app.GetConfig("wait_json_byte"));
 
             CheckTableColumn();
         }
@@ -642,20 +639,26 @@ namespace KirimNPFileQR.Panels {
                                             lsDictHdr.Add(dictHeader);
                                         }
                                         string jsonText = _converter.ObjectToJson(lsDictHdr);
+                                        _logger.WriteInfo("[JSON_TEXT]", jsonText);
                                         byte[] textByte = _stream.GZipCompressString(jsonText);
                                         // string byteText = _stream.GZipDecompressString(textByte);
                                         // bool test = jsonText == byteText;
+                                        wsNPLtoko.NPB_Service ws = new wsNPLtoko.NPB_Service {
+                                            Url = url,
+                                            Timeout = 30 * 1000 // 30 detik
+                                        };
+                                        string res = ws.Receive(textByte, sysDateKodeDc);
+                                        _logger.WriteInfo("[wsNPLtoko.NPB_Service]", res);
                                         if (_app.DebugMode) {
-                                            MessageBox.Show(jsonText, "SIMULASI", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                            MessageBox.Show(jsonText, "SIMULASI :: jsonText", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                            MessageBox.Show(res, "SIMULASI :: wsNPLtoko.NPB_Service", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        }
+                                        if (res.ToUpper().Contains("SUKSES") || res.ToUpper().Contains("00")) {
+                                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
                                         }
                                         else {
-                                            wsNPLtoko.NPB_Service ws = new wsNPLtoko.NPB_Service {
-                                                Url = url,
-                                                Timeout = 30 * 1000 // 30 detik
-                                            };
-                                            ws.Receive(textByte, sysDateKodeDc);
+                                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), res);
                                         }
-                                        await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
                                     }
                                 }
                             }
@@ -671,6 +674,8 @@ namespace KirimNPFileQR.Panels {
                         }
                     }
                 }
+
+                _berkas.CleanUp();
             });
         }
 
