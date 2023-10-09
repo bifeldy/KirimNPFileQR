@@ -62,7 +62,7 @@ namespace KirimNPFileQR.Handlers {
                                 COUNT(1) AS DELAYY, keter
                             FROM
                                 dc_npweb_delay_v AS t2
-                            WHERE 
+                            WHERE
                                 jam_db BETWEEN jam_awal AND jam_akhir
                             GROUP BY keter
                         ) TAB ON t1.keter = TAB.keter
@@ -97,9 +97,9 @@ namespace KirimNPFileQR.Handlers {
                         DC_TABEL_DC_T c,
                         DC_NPBTOKO_HDR d
                     WHERE
-                        a.LOG_TOK_KODE = b.TOK_CODE 
+                        a.LOG_TOK_KODE = b.TOK_CODE
                         AND a.LOG_DCKODE = c.TBL_DC_KODE
-                        AND a.log_fk_id = d.hdr_id 
+                        AND a.log_fk_id = d.hdr_id
                         AND b.tok_recid IS NULL
                         AND b.tok_email IS NOT NULL
                         AND (
@@ -140,9 +140,9 @@ namespace KirimNPFileQR.Handlers {
                         DC_TABEL_DC_T c,
                         DC_NPBTOKO_HDR d
                     WHERE
-                        a.LOG_TOK_KODE = b.TOK_CODE 
+                        a.LOG_TOK_KODE = b.TOK_CODE
                         AND a.LOG_DCKODE = c.TBL_DC_KODE
-                        AND a.log_fk_id = d.hdr_id 
+                        AND a.log_fk_id = d.hdr_id
                         AND b.tok_recid IS NULL
                         AND (
                             a.log_stat_rcv IS NOT NULL
@@ -153,7 +153,7 @@ namespace KirimNPFileQR.Handlers {
                         AND NOT EXISTS (
                             SELECT *
                             FROM dc_npbtoko_log e
-                            WHERE 
+                            WHERE
                                 e.log_typefile = 'CSV'
                                 AND e.log_dckode = a.log_dckode
                                 AND e.log_tok_kode = a.log_tok_kode
@@ -287,9 +287,9 @@ namespace KirimNPFileQR.Handlers {
                         DC_TABEL_DC_T c,
                         DC_NPBTOKO_HDR d
                     WHERE
-                        a.LOG_TOK_KODE = b.TOK_CODE 
+                        a.LOG_TOK_KODE = b.TOK_CODE
                         AND a.LOG_DCKODE = c.TBL_DC_KODE
-                        AND a.log_fk_id = d.hdr_id 
+                        AND a.log_fk_id = d.hdr_id
                         AND b.tok_recid IS NULL
                         AND b.tok_email IS NOT NULL
                         AND (
@@ -321,7 +321,7 @@ namespace KirimNPFileQR.Handlers {
         public async Task<DataTable> GetNpCreateUlangQrCodeDetail(decimal log_seqno) {
             return await OraPg_GetDataTable(
                 $@"
-                    SELECT 
+                    SELECT
                         docno,
                         picno,
                         pictgl,
@@ -341,7 +341,7 @@ namespace KirimNPFileQR.Handlers {
                         sub_bkp
                     FROM
                         dc_npbtoko_file
-                    WHERE 
+                    WHERE
                          log_fk_seqno = :log_seqno
                 ",
                 new List<CDbQueryParamBind> {
@@ -437,7 +437,7 @@ namespace KirimNPFileQR.Handlers {
                             tglexp AS tgl_exp,
                             ppn_rate, bkp, sub_bkp
                         FROM
-                            dc_npbtoko_file a 
+                            dc_npbtoko_file a
                         WHERE
                             log_fk_seqno IN (:log_seqno)
                         ORDER BY
@@ -504,7 +504,7 @@ namespace KirimNPFileQR.Handlers {
                             toko,
                             kirim AS gudang,
                             COUNT(*) AS item,
-                            SUM(sj_qty) AS qty, 
+                            SUM(sj_qty) AS qty,
                             ROUND(SUM(gross), 6) AS gross,
                             NULL AS koli,
                             NULL AS kubikasi,
@@ -612,7 +612,7 @@ namespace KirimNPFileQR.Handlers {
                         {(
                             string.IsNullOrEmpty(errMessage) ? $@"
                                 STATUS_KIRIM_EMAIL = 'SUKSES',
-                                KODE_STAT_KRIM_MAIL = '00' 
+                                KODE_STAT_KRIM_MAIL = '00'
                             " : $@"
                                 STATUS_KIRIM_EMAIL = 'ERROR - {(errMessage.Length <= 90 ? errMessage : errMessage.Substring(0, 90))}',
                                 KODE_STAT_KRIM_MAIL = '-1'
@@ -634,7 +634,7 @@ namespace KirimNPFileQR.Handlers {
                         COUNT(1)
                     FROM
                         dc_npbtoko_log
-                    WHERE 
+                    WHERE
                         LOG_TYPEFILE = 'CSV'
                         AND log_dckode = :log_dckode
                         AND log_tok_kode = :log_tok_kode
@@ -654,7 +654,7 @@ namespace KirimNPFileQR.Handlers {
                     SELECT
                         URL
                     FROM
-                        TOKO_WSSETTING 
+                        TOKO_WSSETTING
                     WHERE
                         TIPE = 'NPL'
                         AND {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(
@@ -690,14 +690,14 @@ namespace KirimNPFileQR.Handlers {
                         TO_CHAR(a.log_tgl_npb, 'dd-MM-yyyy') AS PICTGL,
                         a.log_namafile AS NAMAFILE,
                         a.log_item AS ITEM,
-                        TO_CHAR({(_app.IsUsingPostgres ? "CURRENT_DATE" : "TRUNC(SYSDATE)")}, 'yyyyMMdd') || {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(b.TOK_KIRIM_SEKUNDER, {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(c.TBL_DC_INDUK, c.TBL_DC_KODE)) AS sysDatekodeDC
+                        TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'yyyyMMdd') || {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(b.TOK_KIRIM_SEKUNDER, {(_app.IsUsingPostgres ? "COALESCE" : "NVL")}(c.TBL_DC_INDUK, c.TBL_DC_KODE)) AS sysDatekodeDC
                     FROM
                         DC_NPBTOKO_LOG a,
                         DC_TOKO_T b,
-                        DC_TABEL_DC_T c 
+                        DC_TABEL_DC_T c
                     WHERE
-                        a.LOG_TOK_KODE = b.TOK_CODE 
-                        AND a.LOG_DCKODE = c.TBL_DC_KODE 
+                        a.LOG_TOK_KODE = b.TOK_CODE
+                        AND a.LOG_DCKODE = c.TBL_DC_KODE
                         AND (
                             a.log_stat_rcv IS NOT NULL
                             AND UPPER(a.log_stat_rcv) NOT LIKE '%SUKSES%'
@@ -754,7 +754,7 @@ namespace KirimNPFileQR.Handlers {
                         BKP,
                         SUB_BKP
                     FROM
-                        DC_NPBTOKO_FILE 
+                        DC_NPBTOKO_FILE
                     WHERE
                         log_fk_seqno = :log_seqno
                     ORDER BY
