@@ -155,13 +155,11 @@ namespace KirimNPFileQR.Handlers {
                             FROM dc_npbtoko_log e
                             WHERE 
                                 e.log_typefile = 'CSV'
-                                AND e.log_jenis IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
                                 AND e.log_dckode = a.log_dckode
                                 AND e.log_tok_kode = a.log_tok_kode
                                 AND e.log_namafile = a.log_namafile
                         )
                         AND a.LOG_TYPEFILE = 'WEB'
-                        AND a.LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
                 "
             );
         }
@@ -638,7 +636,6 @@ namespace KirimNPFileQR.Handlers {
                         dc_npbtoko_log
                     WHERE 
                         LOG_TYPEFILE = 'CSV'
-                        AND LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
                         AND log_dckode = :log_dckode
                         AND log_tok_kode = :log_tok_kode
                         AND log_namafile = :log_namafile
@@ -708,7 +705,6 @@ namespace KirimNPFileQR.Handlers {
                             AND a.log_stat_rcv NOT LIKE '%- 01 -%'
                         )
                         AND a.LOG_TYPEFILE = 'WEB'
-                        AND a.LOG_JENIS IN ( 'NPB', 'NPL', 'NPR', 'NPX' )
                         AND a.log_dckode = :log_dckode
                         AND a.log_tok_kode = :log_tok_kode
                         AND a.log_namafile = :log_namafile
