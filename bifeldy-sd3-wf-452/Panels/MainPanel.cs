@@ -253,6 +253,7 @@ namespace KirimNPFileQR.Panels {
                 timerBusy = true;
 
                 SetIdleBusyStatus(false);
+                await RefreshDataTableQrEmail();
                 await ProsesNPFileQrEmail();
                 await RefreshDataTableQrEmail();
                 countDownSecondsQrEmail = waitTimeQrEmail;
@@ -276,6 +277,7 @@ namespace KirimNPFileQR.Panels {
                 timerBusy = true;
 
                 SetIdleBusyStatus(false);
+                await RefreshDataTableJsonByte();
                 await ProsesNPFileJsonByte();
                 await RefreshDataTableJsonByte();
                 countDownSecondsJsonByte= waitTimeJsonByte;
