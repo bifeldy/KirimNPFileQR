@@ -21,7 +21,7 @@ namespace KirimNPFileQR.Models {
         decimal PICNO { get; set; }
         string PICNOT { get; set; }
         string PICTGL { get; set; }
-        decimal PRDCD { get; set; }
+        string PRDCD { get; set; }
         string NAMA { get; set; }
         string DIV { get; set; }
         decimal QTY { get; set; }

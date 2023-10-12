@@ -155,7 +155,7 @@ namespace KirimNPFileQR.Models {
         public decimal PICNO { get; set; }
         public string PICNOT { get; set; }
         public string PICTGL { get; set; }
-        public decimal PRDCD { get; set; }
+        public string PRDCD { get; set; }
         public string NAMA { get; set; }
         public string DIV { get; set; }
         public decimal QTY { get; set; }
