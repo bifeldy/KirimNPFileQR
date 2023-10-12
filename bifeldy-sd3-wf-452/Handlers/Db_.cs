@@ -730,7 +730,7 @@ namespace KirimNPFileQR.Handlers {
                         PICNO,
                         PICNOT,
                         PICTGL,
-                        {(_app.IsUsingPostgres ? "TO_CHAR(PRDCD)" : "PRDCD::TEXT")} AS PRDCD,
+                        {(_app.IsUsingPostgres ? "PRDCD::TEXT" : "TO_CHAR(PRDCD)")} AS PRDCD,
                         NAMA,
                         DIV,
                         QTY,
