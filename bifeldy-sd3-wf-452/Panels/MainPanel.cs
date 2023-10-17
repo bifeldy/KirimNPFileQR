@@ -658,6 +658,7 @@ namespace KirimNPFileQR.Panels {
                                         _logger.WriteInfo("[JSON_TEXT]", jsonText);
                                         byte[] textByte = _stream.GZipCompressString(jsonText);
                                         _logger.WriteInfo("[TEXT_BYTE]", BitConverter.ToString(textByte).Replace("-", ""));
+                                        await _db.UpdateBeforeSendWebService(lsLogSeqNo.ToArray());
                                         // --
                                         // string byteText = _stream.GZipDecompressString(textByte);
                                         // bool test = jsonText == byteText;
@@ -673,11 +674,11 @@ namespace KirimNPFileQR.Panels {
                                             MessageBox.Show(res, "SIMULASI :: wsNPLtoko.NPB_Service", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         }
                                         if (res.ToUpper().Contains("SUKSES")) {
-                                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
+                                            await _db.UpdateBalikanWebService(lsLogSeqNo.ToArray());
                                         }
                                         else {
                                             string[] rez = res.Split('|');
-                                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), $"{rez[0]} - {rez[1]}");
+                                            await _db.UpdateBalikanWebService(lsLogSeqNo.ToArray(), $"{rez[0]} - {rez[1]}");
                                         }
                                     }
                                 }
@@ -685,7 +686,7 @@ namespace KirimNPFileQR.Panels {
                         }
                         catch (Exception ex) {
                             if (lsLogSeqNo.Count > 0) {
-                                await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), $"ERROR - {ex.Message}");
+                                await _db.UpdateBeforeSendWebService(lsLogSeqNo.ToArray(), ex.Message);
                             }
                             _logger.WriteError(ex);
                         }

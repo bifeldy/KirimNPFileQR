@@ -39,7 +39,8 @@ namespace KirimNPFileQR.Handlers {
         Task<string> GetURLWRC(string log_tok_kode);
         Task<DataTable> GetNpHeaderJsonByte(string log_dckode, string log_tok_kode, string log_namafile);
         Task<DataTable> GetNpDetailJsonByte(decimal log_seqno);
-        Task<bool> UpdateAfterSendWebService(decimal[] log_seqno, string errMessage = null);
+        Task<bool> UpdateBalikanWebService(decimal[] log_seqno, string errMessage = null);
+        Task<bool> UpdateBeforeSendWebService(decimal[] log_seqno, string errMessage = null);
     }
 
     public sealed class CDb : CDbHandler, IDb {
@@ -767,20 +768,41 @@ namespace KirimNPFileQR.Handlers {
             );
         }
 
-        public async Task<bool> UpdateAfterSendWebService(decimal[] log_seqno, string errMessage = null) {
+        public async Task<bool> UpdateBalikanWebService(decimal[] log_seqno, string errMessage = null) {
             return await OraPg.ExecQueryAsync(
                 $@"
                     UPDATE
                         DC_NPBTOKO_LOG
                     SET
-                        LOG_STAT_RCV = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend - '
-                        {(
-                            string.IsNullOrEmpty(errMessage) ? $@"
-                                || '00 - Sukses.'
-                            " : $@"
-                                || '{(errMessage.Length <= 450 ? errMessage : errMessage.Substring(0, 450))}'
-                            "
-                        )}
+                        LOG_STAT_RCV = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend - {(
+                            string.IsNullOrEmpty(errMessage) ?
+                                "00 - Sukses." : $@"ERROR :: {(
+                                    errMessage.Length < 90 ?
+                                        errMessage : errMessage.Substring(0, 90)
+                                )}"
+                        )}'
+                    WHERE
+                        LOG_SEQNO IN (:log_seqno)
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno }
+                }
+            );
+        }
+
+        public async Task<bool> UpdateBeforeSendWebService(decimal[] log_seqno, string errMessage = null) {
+            return await OraPg.ExecQueryAsync(
+                $@"
+                    UPDATE
+                        DC_NPBTOKO_LOG
+                    SET
+                        LOG_STAT_SEND = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend - {(
+                            string.IsNullOrEmpty(errMessage) ?
+                                "OK" : $@"ERROR :: {(
+                                    errMessage.Length < 90 ?
+                                        errMessage : errMessage.Substring(0, 90)
+                                )}"
+                        )}'
                     WHERE
                         LOG_SEQNO IN (:log_seqno)
                 ",
