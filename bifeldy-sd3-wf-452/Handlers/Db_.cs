@@ -777,8 +777,8 @@ namespace KirimNPFileQR.Handlers {
                         LOG_STAT_RCV = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend - {(
                             string.IsNullOrEmpty(errMessage) ?
                                 "00 - Sukses." : $@"ERROR :: {(
-                                    errMessage.Length < 50 ?
-                                        errMessage : errMessage.Substring(0, 50)
+                                    errMessage.Length < 40 ?
+                                        errMessage : errMessage.Substring(0, 40)
                                 )}"
                         )}'
                     WHERE
@@ -799,8 +799,8 @@ namespace KirimNPFileQR.Handlers {
                         LOG_STAT_SEND = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend - {(
                             string.IsNullOrEmpty(errMessage) ?
                                 "OK" : $@"ERROR :: {(
-                                    errMessage.Length < 50 ?
-                                        errMessage : errMessage.Substring(0, 50)
+                                    errMessage.Length < 40 ?
+                                        errMessage : errMessage.Substring(0, 40)
                                 )}"
                         )}'
                     WHERE
