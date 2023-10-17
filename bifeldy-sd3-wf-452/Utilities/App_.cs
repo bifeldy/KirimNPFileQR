@@ -35,7 +35,7 @@ namespace KirimNPFileQR.Utilities {
         public CApp() {
             ScreenWidth = Screen.PrimaryScreen.WorkingArea.Width;
             ScreenHeight = Screen.PrimaryScreen.WorkingArea.Height;
-            ListDcCanUse = new List<string> { "HO", "INDUK", "DEPO", "SEWA" };
+            ListDcCanUse = new List<string> { /* SEMUA DC BISA */ };
         }
 
         public void Exit() => Application.Exit();
