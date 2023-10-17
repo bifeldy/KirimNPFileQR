@@ -674,11 +674,11 @@ namespace KirimNPFileQR.Panels {
                                             MessageBox.Show(res, "SIMULASI :: wsNPLtoko.NPB_Service", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         }
                                         if (res.ToUpper().Contains("SUKSES")) {
-                                            await _db.UpdateBalikanWebService(lsLogSeqNo.ToArray());
+                                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
                                         }
                                         else {
                                             string[] rez = res.Split('|');
-                                            await _db.UpdateBalikanWebService(lsLogSeqNo.ToArray(), $"{rez[0]} - {rez[1]}");
+                                            await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray(), $"{rez[0]} - {rez[1]}");
                                         }
                                     }
                                 }

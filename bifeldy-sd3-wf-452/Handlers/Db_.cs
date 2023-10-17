@@ -39,7 +39,7 @@ namespace KirimNPFileQR.Handlers {
         Task<string> GetURLWRC(string log_tok_kode);
         Task<DataTable> GetNpHeaderJsonByte(string log_dckode, string log_tok_kode, string log_namafile);
         Task<DataTable> GetNpDetailJsonByte(decimal log_seqno);
-        Task<bool> UpdateBalikanWebService(decimal[] log_seqno, string errMessage = null);
+        Task<bool> UpdateAfterSendWebService(decimal[] log_seqno, string errMessage = null);
         Task<bool> UpdateBeforeSendWebService(decimal[] log_seqno, string errMessage = null);
     }
 
@@ -768,7 +768,7 @@ namespace KirimNPFileQR.Handlers {
             );
         }
 
-        public async Task<bool> UpdateBalikanWebService(decimal[] log_seqno, string errMessage = null) {
+        public async Task<bool> UpdateAfterSendWebService(decimal[] log_seqno, string errMessage = null) {
             return await OraPg.ExecQueryAsync(
                 $@"
                     UPDATE
