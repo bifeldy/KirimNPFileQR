@@ -86,9 +86,6 @@ namespace KirimNPFileQR.Panels {
             if (dbAvailable) {
                 mainForm.StatusStripContainer.Items["statusStripDbName"].Text = _db.DbName;
                 mainForm.Text = $"[{(_app.IsUsingPostgres ? "PG" : "ORCL")}+MSSQL] " + mainForm.Text;
-                if (autoRunMode) {
-                    mainForm.Text += " ~ (AutoRun)";
-                }
 
                 if (_app.ListDcCanUse.Count == 0 || _app.ListDcCanUse.Contains(jenisDc)) {
 
