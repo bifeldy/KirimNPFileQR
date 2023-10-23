@@ -49,6 +49,8 @@ namespace KirimNPFileQR.Panels {
 
         private CMainForm mainForm;
 
+        private bool AutoRunMode = false;
+
         private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
         private bool timerBusy = false;
 
@@ -133,6 +135,8 @@ namespace KirimNPFileQR.Panels {
             });
             userInfo.Text = $".: {dcKode} - {namaDc} :: {_db.LoggedInUsername} :.";
 
+            AutoRunMode = _config.Get<bool>("AutoRunMode", bool.Parse(_app.GetConfig("auto_run_mode")));
+
             if (!timerBusy) {
                 SetIdleBusyStatus(true);
             }
@@ -183,6 +187,10 @@ namespace KirimNPFileQR.Panels {
             LabelStatus.Text = $"Program {(isIdle ? "Idle" : "Sibuk")} ...";
             ProgressBarStatus.Style = isIdle ? ProgressBarStyle.Continuous : ProgressBarStyle.Marquee;
             EnableDisableControl(Controls, isIdle);
+            if (AutoRunMode) {
+                btnStartStopQrEmail.Enabled = false;
+                btnStartStopJsonByte.Enabled = false;
+            }
         }
 
         private void EnableDisableControl(ControlCollection controls, bool isIdle) {
@@ -213,6 +221,10 @@ namespace KirimNPFileQR.Panels {
                 countDownSecondsQrEmail = waitTimeQrEmail;
                 await RefreshDataTableJsonByte();
                 countDownSecondsJsonByte = waitTimeJsonByte;
+                if (AutoRunMode) {
+                    btnStartStopQrEmail_Click(this, EventArgs.Empty);
+                    BtnStartStopJsonByte_Click(this, EventArgs.Empty);
+                }
                 SetIdleBusyStatus(true);
             }
             catch (Exception ex) {
