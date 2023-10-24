@@ -20,6 +20,8 @@ namespace KirimNPFileQR.Forms {
 
     public sealed partial class CReportLaporan : Form {
 
+        private bool isInitialized = false;
+
         public CReportLaporan() {
             InitializeComponent();
         }
@@ -54,7 +56,12 @@ namespace KirimNPFileQR.Forms {
         }
 
         private void CReportLaporan_Load(object sender, System.EventArgs e) {
-            rptViewer.RefreshReport();
+            if (!isInitialized) {
+
+                rptViewer.RefreshReport();
+
+                isInitialized = true;
+            }
         }
 
     }

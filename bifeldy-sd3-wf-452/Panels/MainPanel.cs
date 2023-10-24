@@ -50,11 +50,11 @@ namespace KirimNPFileQR.Panels {
 
         private CMainForm mainForm;
 
-        private bool AutoRun = false;
-        private bool Initialized = false;
+        private bool isAutoRun = false;
+        private bool isInitialized = false;
+        private bool isBusy = false;
 
         private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
-        private bool timerBusy = false;
 
         private int waitTimeQrEmail = 15 * 60;
         private int countDownSecondsQrEmail = 0;
@@ -125,35 +125,37 @@ namespace KirimNPFileQR.Panels {
         }
 
         private async void CMainPanel_Load(object sender, EventArgs e) {
-            mainForm = (CMainForm) Parent.Parent;
-            mainForm.FormBorderStyle = FormBorderStyle.Sizable;
-            mainForm.MaximizeBox = true;
-            mainForm.MinimizeBox = true;
+            if (!isInitialized) {
 
-            appInfo.Text = _app.AppName;
-            string dcKode = null;
-            string namaDc = null;
-            await Task.Run(async () => {
-                dcKode = await _db.GetKodeDc();
-                namaDc = await _db.GetNamaDc();
-            });
-            userInfo.Text = $".: {dcKode} - {namaDc} :: {_db.LoggedInUsername} :.";
+                mainForm = (CMainForm) Parent.Parent;
+                mainForm.FormBorderStyle = FormBorderStyle.Sizable;
+                mainForm.MaximizeBox = true;
+                mainForm.MinimizeBox = true;
 
-            bool windowsStartup = _config.Get<bool>("WindowsStartup", bool.Parse(_app.GetConfig("windows_startup")));
-            chkWindowsStartup.Checked = windowsStartup;
+                appInfo.Text = _app.AppName;
+                string dcKode = null;
+                string namaDc = null;
+                await Task.Run(async () => {
+                    dcKode = await _db.GetKodeDc();
+                    namaDc = await _db.GetNamaDc();
+                });
+                userInfo.Text = $".: {dcKode} - {namaDc} :: {_db.LoggedInUsername} :.";
 
-            AutoRun = _config.Get<bool>("AutoRun", bool.Parse(_app.GetConfig("auto_run")));
+                bool windowsStartup = _config.Get<bool>("WindowsStartup", bool.Parse(_app.GetConfig("windows_startup")));
+                chkWindowsStartup.Checked = windowsStartup;
 
-            if (!timerBusy) {
-                SetIdleBusyStatus(true);
+                isAutoRun = _config.Get<bool>("AutoRun", bool.Parse(_app.GetConfig("auto_run")));
+
+                waitTimeQrEmail = _config.Get<int>("WaitTimeQrEmail", _app.GetConfig("wait_time_qr_email"));
+                waitTimeJsonByte = _config.Get<int>("WaitTimeJsonByte", _app.GetConfig("wait_json_byte"));
+
+                FirstSingleRunOnly();
+
+                isInitialized = true;
             }
 
-            waitTimeQrEmail = _config.Get<int>("WaitTimeQrEmail", _app.GetConfig("wait_time_qr_email"));
-            waitTimeJsonByte = _config.Get<int>("WaitTimeJsonByte", _app.GetConfig("wait_json_byte"));
-
-            if (!Initialized) {
-                FirstSingleRunOnly();
-                Initialized = true;
+            if (!isBusy) {
+                SetIdleBusyStatus(true);
             }
         }
 
@@ -200,10 +202,11 @@ namespace KirimNPFileQR.Panels {
         }
 
         public void SetIdleBusyStatus(bool isIdle) {
+            isBusy = !isIdle;
             LabelStatus.Text = $"Program {(isIdle ? "Idle" : "Sibuk")} ...";
             ProgressBarStatus.Style = isIdle ? ProgressBarStyle.Continuous : ProgressBarStyle.Marquee;
             EnableDisableControl(Controls, isIdle);
-            if (AutoRun && !_app.DebugMode) {
+            if (isAutoRun && !_app.DebugMode) {
                 chkWindowsStartup.Enabled = false;
                 btnStartStopQrEmail.Enabled = false;
                 btnStartStopJsonByte.Enabled = false;
@@ -238,7 +241,7 @@ namespace KirimNPFileQR.Panels {
                 countDownSecondsQrEmail = waitTimeQrEmail;
                 await RefreshDataTableJsonByte();
                 countDownSecondsJsonByte = waitTimeJsonByte;
-                if (AutoRun) {
+                if (isAutoRun) {
                     btnStartStopQrEmail_Click(this, EventArgs.Empty);
                     BtnStartStopJsonByte_Click(this, EventArgs.Empty);
                 }
@@ -279,7 +282,6 @@ namespace KirimNPFileQR.Panels {
                 tmrQrEmail.Stop();
 
                 await _lock.WaitAsync(-1);
-                timerBusy = true;
 
                 SetIdleBusyStatus(false);
                 await RefreshDataTableQrEmail();
@@ -289,7 +291,6 @@ namespace KirimNPFileQR.Panels {
                 SetIdleBusyStatus(true);
 
                 _lock.Release();
-                timerBusy = false;
 
                 tmrQrEmail.Start();
             }
@@ -303,7 +304,6 @@ namespace KirimNPFileQR.Panels {
                 tmrJsonByte.Stop();
 
                 await _lock.WaitAsync(-1);
-                timerBusy = true;
 
                 SetIdleBusyStatus(false);
                 await RefreshDataTableJsonByte();
@@ -313,7 +313,6 @@ namespace KirimNPFileQR.Panels {
                 SetIdleBusyStatus(true);
 
                 _lock.Release();
-                timerBusy = false;
 
                 tmrJsonByte.Start();
             }

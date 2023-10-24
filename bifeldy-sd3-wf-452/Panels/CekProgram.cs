@@ -33,6 +33,8 @@ namespace KirimNPFileQR.Panels {
 
         private CMainForm mainForm;
 
+        private bool isInitialized = false;
+
         public CCekProgram(IUpdater updater, IConfig config, IApp app, IDb db) {
             _updater = updater;
             _config = config;
@@ -51,8 +53,14 @@ namespace KirimNPFileQR.Panels {
         }
 
         private void CCekProgram_Load(object sender, EventArgs e) {
-            mainForm = (CMainForm) Parent.Parent;
-            CheckProgram();
+            if (!isInitialized) {
+
+                mainForm = (CMainForm) Parent.Parent;
+                
+                CheckProgram();
+
+                isInitialized = true;
+            }
         }
 
         private async void CheckProgram() {
