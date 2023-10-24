@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("KirimNPFileQR")]
 [assembly: AssemblyDescription("Kirim Ulang NP* QR CSV Zip Via Email + Json Byte Web Service")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("S/SD3 - PT. Indomarco Prismatama")]
+[assembly: AssemblyCompany("IT S/SD 03 - PT. Indomarco Prismatama")]
 [assembly: AssemblyProduct("KirimNPFileQR")]
 [assembly: AssemblyCopyright("Bifeldy © 2023")]
 [assembly: AssemblyTrademark("IT S/SD 03 - IDMR")]
