@@ -27,9 +27,9 @@ namespace KirimNPFileQR.Panels {
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CMainPanel));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.chkSemuaKolom = new System.Windows.Forms.CheckBox();
             this.userInfo = new System.Windows.Forms.Label();
             this.imgDomar = new System.Windows.Forms.PictureBox();
@@ -52,13 +52,14 @@ namespace KirimNPFileQR.Panels {
             this.chkKirimSemuaNpQrEmail = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.btnStartStopJsonByte = new System.Windows.Forms.Button();
             this.btnReFreshJsonByte = new System.Windows.Forms.Button();
             this.lblCountDownJsonByte = new System.Windows.Forms.Label();
             this.dtGrdNpPendingJsonByte = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.btnStartStopQrEmail = new System.Windows.Forms.Button();
             this.tmrJsonByte = new System.Windows.Forms.Timer(this.components);
-            this.btnStartStopJsonByte = new System.Windows.Forms.Button();
+            this.chkWindowsStartup = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.imgDomar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtGrdNpPendingQrEmail)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtBxDaysRetentionFiles)).BeginInit();
@@ -76,7 +77,7 @@ namespace KirimNPFileQR.Panels {
             // 
             this.chkSemuaKolom.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkSemuaKolom.AutoSize = true;
-            this.chkSemuaKolom.Location = new System.Drawing.Point(572, 69);
+            this.chkSemuaKolom.Location = new System.Drawing.Point(571, 90);
             this.chkSemuaKolom.Name = "chkSemuaKolom";
             this.chkSemuaKolom.Size = new System.Drawing.Size(143, 17);
             this.chkSemuaKolom.TabIndex = 0;
@@ -155,14 +156,14 @@ namespace KirimNPFileQR.Panels {
             this.dtGrdNpPendingQrEmail.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dtGrdNpPendingQrEmail.Location = new System.Drawing.Point(3, 3);
             this.dtGrdNpPendingQrEmail.Name = "dtGrdNpPendingQrEmail";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtGrdNpPendingQrEmail.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 10F);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtGrdNpPendingQrEmail.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.dtGrdNpPendingQrEmail.RowHeadersVisible = false;
             this.dtGrdNpPendingQrEmail.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dtGrdNpPendingQrEmail.Size = new System.Drawing.Size(706, 242);
@@ -314,14 +315,14 @@ namespace KirimNPFileQR.Panels {
             this.dtGrdNpGagalQrEmail.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dtGrdNpGagalQrEmail.Location = new System.Drawing.Point(3, 3);
             this.dtGrdNpGagalQrEmail.Name = "dtGrdNpGagalQrEmail";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtGrdNpGagalQrEmail.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 10F);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtGrdNpGagalQrEmail.RowHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dtGrdNpGagalQrEmail.RowHeadersVisible = false;
             this.dtGrdNpGagalQrEmail.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dtGrdNpGagalQrEmail.Size = new System.Drawing.Size(706, 242);
@@ -365,6 +366,17 @@ namespace KirimNPFileQR.Panels {
             this.tabPage1.Text = "Json Byte";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // btnStartStopJsonByte
+            // 
+            this.btnStartStopJsonByte.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnStartStopJsonByte.Location = new System.Drawing.Point(490, 17);
+            this.btnStartStopJsonByte.Name = "btnStartStopJsonByte";
+            this.btnStartStopJsonByte.Size = new System.Drawing.Size(75, 23);
+            this.btnStartStopJsonByte.TabIndex = 46;
+            this.btnStartStopJsonByte.Text = "Start";
+            this.btnStartStopJsonByte.UseVisualStyleBackColor = true;
+            this.btnStartStopJsonByte.Click += new System.EventHandler(this.BtnStartStopJsonByte_Click);
+            // 
             // btnReFreshJsonByte
             // 
             this.btnReFreshJsonByte.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -403,14 +415,14 @@ namespace KirimNPFileQR.Panels {
             this.dtGrdNpPendingJsonByte.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtGrdNpPendingJsonByte.Location = new System.Drawing.Point(3, 57);
             this.dtGrdNpPendingJsonByte.Name = "dtGrdNpPendingJsonByte";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 10F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtGrdNpPendingJsonByte.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 10F);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtGrdNpPendingJsonByte.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.dtGrdNpPendingJsonByte.RowHeadersVisible = false;
             this.dtGrdNpPendingJsonByte.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dtGrdNpPendingJsonByte.Size = new System.Drawing.Size(726, 266);
@@ -448,21 +460,23 @@ namespace KirimNPFileQR.Panels {
             this.tmrJsonByte.Interval = 1000;
             this.tmrJsonByte.Tick += new System.EventHandler(this.TmrJsonByte_Tick);
             // 
-            // btnStartStopJsonByte
+            // chkWindowsStartup
             // 
-            this.btnStartStopJsonByte.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStartStopJsonByte.Location = new System.Drawing.Point(490, 17);
-            this.btnStartStopJsonByte.Name = "btnStartStopJsonByte";
-            this.btnStartStopJsonByte.Size = new System.Drawing.Size(75, 23);
-            this.btnStartStopJsonByte.TabIndex = 46;
-            this.btnStartStopJsonByte.Text = "Start";
-            this.btnStartStopJsonByte.UseVisualStyleBackColor = true;
-            this.btnStartStopJsonByte.Click += new System.EventHandler(this.BtnStartStopJsonByte_Click);
+            this.chkWindowsStartup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkWindowsStartup.AutoSize = true;
+            this.chkWindowsStartup.Location = new System.Drawing.Point(571, 71);
+            this.chkWindowsStartup.Name = "chkWindowsStartup";
+            this.chkWindowsStartup.Size = new System.Drawing.Size(143, 17);
+            this.chkWindowsStartup.TabIndex = 46;
+            this.chkWindowsStartup.Text = "Run After Windows Start";
+            this.chkWindowsStartup.UseVisualStyleBackColor = true;
+            this.chkWindowsStartup.CheckedChanged += new System.EventHandler(this.ChkWindowsStartup_CheckedChanged);
             // 
             // CMainPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.chkWindowsStartup);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnOpenFolder);
             this.Controls.Add(this.label2);
@@ -527,6 +541,7 @@ namespace KirimNPFileQR.Panels {
         private System.Windows.Forms.Timer tmrJsonByte;
         private System.Windows.Forms.Button btnStartStopQrEmail;
         private System.Windows.Forms.Button btnStartStopJsonByte;
+        private System.Windows.Forms.CheckBox chkWindowsStartup;
     }
 
 }

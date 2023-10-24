@@ -41,6 +41,7 @@ namespace KirimNPFileQR.Panels {
         private readonly ILogger _logger;
         private readonly IDb _db;
         private readonly IConfig _config;
+        private readonly IWinReg _winreg;
         private readonly IConverter _converter;
         private readonly IBerkas _berkas;
         private readonly IStream _stream;
@@ -49,7 +50,7 @@ namespace KirimNPFileQR.Panels {
 
         private CMainForm mainForm;
 
-        private bool AutoRunMode = false;
+        private bool AutoRun = false;
 
         private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
         private bool timerBusy = false;
@@ -76,6 +77,7 @@ namespace KirimNPFileQR.Panels {
             ILogger logger,
             IDb db,
             IConfig config,
+            IWinReg winreg,
             IConverter converter,
             IBerkas berkas,
             IStream stream,
@@ -86,6 +88,7 @@ namespace KirimNPFileQR.Panels {
             _logger = logger;
             _db = db;
             _config = config;
+            _winreg = winreg;
             _converter = converter;
             _berkas = berkas;
             _stream = stream;
@@ -135,7 +138,10 @@ namespace KirimNPFileQR.Panels {
             });
             userInfo.Text = $".: {dcKode} - {namaDc} :: {_db.LoggedInUsername} :.";
 
-            AutoRunMode = _config.Get<bool>("AutoRunMode", bool.Parse(_app.GetConfig("auto_run_mode")));
+            bool windowsStartup = _config.Get<bool>("WindowsStartup", bool.Parse(_app.GetConfig("windows_startup")));
+            chkWindowsStartup.Checked = windowsStartup;
+
+            AutoRun = _config.Get<bool>("AutoRun", bool.Parse(_app.GetConfig("auto_run")));
 
             if (!timerBusy) {
                 SetIdleBusyStatus(true);
@@ -145,6 +151,12 @@ namespace KirimNPFileQR.Panels {
             waitTimeJsonByte = _config.Get<int>("WaitTimeJsonByte", _app.GetConfig("wait_json_byte"));
 
             CheckTableColumn();
+        }
+
+        private void ChkWindowsStartup_CheckedChanged(object sender, EventArgs e) {
+            CheckBox cb = (CheckBox)sender;
+            _config.Set("WindowsStartup", cb.Checked);
+            _winreg.SetWindowsStartup(cb.Checked);
         }
 
         private void TestingQr() {
@@ -187,7 +199,8 @@ namespace KirimNPFileQR.Panels {
             LabelStatus.Text = $"Program {(isIdle ? "Idle" : "Sibuk")} ...";
             ProgressBarStatus.Style = isIdle ? ProgressBarStyle.Continuous : ProgressBarStyle.Marquee;
             EnableDisableControl(Controls, isIdle);
-            if (AutoRunMode) {
+            if (AutoRun) {
+                chkWindowsStartup.Enabled = false;
                 btnStartStopQrEmail.Enabled = false;
                 btnStartStopJsonByte.Enabled = false;
             }
@@ -221,7 +234,7 @@ namespace KirimNPFileQR.Panels {
                 countDownSecondsQrEmail = waitTimeQrEmail;
                 await RefreshDataTableJsonByte();
                 countDownSecondsJsonByte = waitTimeJsonByte;
-                if (AutoRunMode) {
+                if (AutoRun) {
                     btnStartStopQrEmail_Click(this, EventArgs.Empty);
                     BtnStartStopJsonByte_Click(this, EventArgs.Empty);
                 }
