@@ -693,7 +693,7 @@ namespace KirimNPFileQR.Panels {
                                             Timeout = 30 * 1000 // 30 detik
                                         };
                                         string res = ws.Receive(textByte, sysDateKodeDc);
-                                        _logger.WriteInfo($"[wsNPLtoko.NPB_Service] {sysDateKodeDc}", res);
+                                        _logger.WriteInfo($"[wsNPLtoko.NPB_Service] {sysDateKodeDc}", res, force: true);
                                         if (_app.DebugMode) {
                                             MessageBox.Show(jsonText, "SIMULASI :: jsonText", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                             MessageBox.Show(res, "SIMULASI :: wsNPLtoko.NPB_Service", MessageBoxButtons.OK, MessageBoxIcon.Information);
