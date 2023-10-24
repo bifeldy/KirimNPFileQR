@@ -149,15 +149,12 @@ namespace KirimNPFileQR.Panels {
                 waitTimeJsonByte = _config.Get<int>("WaitTimeJsonByte", _app.GetConfig("wait_json_byte"));
 
                 FirstSingleRunOnlyAsync();
-
-                SetIdleBusyStatus(true);
+                // TestingQr();
 
                 isInitialized = true;
             }
 
-            if (_app.IsIdle) {
-                SetIdleBusyStatus(true);
-            }
+            SetIdleBusyStatus(_app.IsIdle);
         }
 
         private void ChkWindowsStartup_CheckedChanged(object sender, EventArgs e) {
