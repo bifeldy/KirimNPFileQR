@@ -199,10 +199,8 @@ namespace KirimNPFileQR.Panels {
             LabelStatus.Text = $"Program {(isIdle ? "Idle" : "Sibuk")} ...";
             ProgressBarStatus.Style = isIdle ? ProgressBarStyle.Continuous : ProgressBarStyle.Marquee;
             EnableDisableControl(Controls, isIdle);
-            if (AutoRun) {
-                if (!_app.DebugMode) {
-                    chkWindowsStartup.Enabled = false;
-                }
+            if (AutoRun && !_app.DebugMode) {
+                chkWindowsStartup.Enabled = false;
                 btnStartStopQrEmail.Enabled = false;
                 btnStartStopJsonByte.Enabled = false;
             }
