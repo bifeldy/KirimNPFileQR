@@ -200,7 +200,9 @@ namespace KirimNPFileQR.Panels {
             ProgressBarStatus.Style = isIdle ? ProgressBarStyle.Continuous : ProgressBarStyle.Marquee;
             EnableDisableControl(Controls, isIdle);
             if (AutoRun) {
-                chkWindowsStartup.Enabled = false;
+                if (!_app.DebugMode) {
+                    chkWindowsStartup.Enabled = false;
+                }
                 btnStartStopQrEmail.Enabled = false;
                 btnStartStopJsonByte.Enabled = false;
             }
