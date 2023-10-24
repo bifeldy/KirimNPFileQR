@@ -51,7 +51,7 @@ namespace KirimNPFileQR.Panels {
         private CMainForm mainForm;
 
         private bool AutoRun = false;
-        private bool _FirstSingleRunOnly = false;
+        private bool Initialized = false;
 
         private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
         private bool timerBusy = false;
@@ -151,7 +151,10 @@ namespace KirimNPFileQR.Panels {
             waitTimeQrEmail = _config.Get<int>("WaitTimeQrEmail", _app.GetConfig("wait_time_qr_email"));
             waitTimeJsonByte = _config.Get<int>("WaitTimeJsonByte", _app.GetConfig("wait_json_byte"));
 
-            FirstSingleRunOnly();
+            if (!Initialized) {
+                FirstSingleRunOnly();
+                Initialized = true;
+            }
         }
 
         private void ChkWindowsStartup_CheckedChanged(object sender, EventArgs e) {
@@ -224,28 +227,25 @@ namespace KirimNPFileQR.Panels {
         }
 
         private async void FirstSingleRunOnly() {
-            if (!_FirstSingleRunOnly) {
-                try {
-                    await Task.Run(async () => {
-                        await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KIRIM_EMAIL", _app.IsUsingPostgres ? "TIMESTAMP" : "DATE");
-                        await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
-                        await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
-                    });
-                    SetIdleBusyStatus(false);
-                    await RefreshDataTableQrEmail();
-                    countDownSecondsQrEmail = waitTimeQrEmail;
-                    await RefreshDataTableJsonByte();
-                    countDownSecondsJsonByte = waitTimeJsonByte;
-                    if (AutoRun) {
-                        btnStartStopQrEmail_Click(this, EventArgs.Empty);
-                        BtnStartStopJsonByte_Click(this, EventArgs.Empty);
-                    }
-                    SetIdleBusyStatus(true);
-                    _FirstSingleRunOnly = true;
+            try {
+                await Task.Run(async () => {
+                    await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KIRIM_EMAIL", _app.IsUsingPostgres ? "TIMESTAMP" : "DATE");
+                    await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
+                    await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
+                });
+                SetIdleBusyStatus(false);
+                await RefreshDataTableQrEmail();
+                countDownSecondsQrEmail = waitTimeQrEmail;
+                await RefreshDataTableJsonByte();
+                countDownSecondsJsonByte = waitTimeJsonByte;
+                if (AutoRun) {
+                    btnStartStopQrEmail_Click(this, EventArgs.Empty);
+                    BtnStartStopJsonByte_Click(this, EventArgs.Empty);
                 }
-                catch (Exception ex) {
-                    _logger.WriteError(ex);
-                }
+                SetIdleBusyStatus(true);
+            }
+            catch (Exception ex) {
+                _logger.WriteError(ex);
             }
         }
 
