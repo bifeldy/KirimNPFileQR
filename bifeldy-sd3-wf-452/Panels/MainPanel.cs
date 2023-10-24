@@ -148,7 +148,9 @@ namespace KirimNPFileQR.Panels {
                 waitTimeQrEmail = _config.Get<int>("WaitTimeQrEmail", _app.GetConfig("wait_time_qr_email"));
                 waitTimeJsonByte = _config.Get<int>("WaitTimeJsonByte", _app.GetConfig("wait_json_byte"));
 
-                FirstSingleRunOnly();
+                FirstSingleRunOnlyAsync();
+
+                SetIdleBusyStatus(true);
 
                 isInitialized = true;
             }
@@ -228,7 +230,7 @@ namespace KirimNPFileQR.Panels {
             _config.Set("MaxOldRetentionDay", _berkas.MaxOldRetentionDay);
         }
 
-        private async void FirstSingleRunOnly() {
+        private async void FirstSingleRunOnlyAsync() {
             try {
                 await Task.Run(async () => {
                     await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KIRIM_EMAIL", _app.IsUsingPostgres ? "TIMESTAMP" : "DATE");
