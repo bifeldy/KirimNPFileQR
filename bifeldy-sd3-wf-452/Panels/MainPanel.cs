@@ -699,7 +699,7 @@ namespace KirimNPFileQR.Panels {
                                             MessageBox.Show(jsonText, "SIMULASI :: jsonText", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                             MessageBox.Show(res, "SIMULASI :: wsNPLtoko.NPB_Service", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         }
-                                        if (res.ToUpper().Contains("SUKSES")) {
+                                        if (res.ToUpper().Contains("SUKSES") || res.ToUpper().Contains("BERHASIL") || res.ToUpper().Contains("SELESAI")) {
                                             await _db.UpdateAfterSendWebService(lsLogSeqNo.ToArray());
                                         }
                                         else {
