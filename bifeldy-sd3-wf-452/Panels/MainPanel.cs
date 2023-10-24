@@ -158,7 +158,7 @@ namespace KirimNPFileQR.Panels {
         }
 
         private void ChkWindowsStartup_CheckedChanged(object sender, EventArgs e) {
-            CheckBox cb = (CheckBox)sender;
+            CheckBox cb = (CheckBox) sender;
             _config.Set("WindowsStartup", cb.Checked);
             _winreg.SetWindowsStartup(cb.Checked);
         }
