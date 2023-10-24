@@ -52,7 +52,6 @@ namespace KirimNPFileQR.Panels {
 
         private bool isAutoRun = false;
         private bool isInitialized = false;
-        private bool isBusy = false;
 
         private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
 
@@ -154,7 +153,7 @@ namespace KirimNPFileQR.Panels {
                 isInitialized = true;
             }
 
-            if (!isBusy) {
+            if (_app.IsIdle) {
                 SetIdleBusyStatus(true);
             }
         }
@@ -202,10 +201,10 @@ namespace KirimNPFileQR.Panels {
         }
 
         public void SetIdleBusyStatus(bool isIdle) {
-            isBusy = !isIdle;
+            _app.IsIdle = isIdle;
             LabelStatus.Text = $"Program {(isIdle ? "Idle" : "Sibuk")} ...";
             ProgressBarStatus.Style = isIdle ? ProgressBarStyle.Continuous : ProgressBarStyle.Marquee;
-            EnableDisableControl(Controls, isIdle);
+            EnableDisableControl(Controls);
             if (isAutoRun && !_app.DebugMode) {
                 chkWindowsStartup.Enabled = false;
                 btnStartStopQrEmail.Enabled = false;
@@ -213,13 +212,13 @@ namespace KirimNPFileQR.Panels {
             }
         }
 
-        private void EnableDisableControl(ControlCollection controls, bool isIdle) {
+        private void EnableDisableControl(ControlCollection controls) {
             foreach (Control control in controls) {
                 if (control is Button || control is CheckBox || control is DateTimePicker || control is DataGridView) {
-                    control.Enabled = isIdle;
+                    control.Enabled = _app.IsIdle;
                 }
                 else {
-                    EnableDisableControl(control.Controls, isIdle);
+                    EnableDisableControl(control.Controls);
                 }
             }
         }
