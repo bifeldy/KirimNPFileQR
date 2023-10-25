@@ -206,7 +206,7 @@ namespace KirimNPFileQR.Panels {
             EnableDisableControl(Controls);
             if (isAutoRun && !_app.DebugMode) {
                 chkWindowsStartup.Enabled = false;
-                btnStartStopQrEmail.Enabled = false;
+                // btnStartStopQrEmail.Enabled = false;
                 btnStartStopJsonByte.Enabled = false;
             }
         }
@@ -240,7 +240,7 @@ namespace KirimNPFileQR.Panels {
                 await RefreshDataTableJsonByte();
                 countDownSecondsJsonByte = waitTimeJsonByte;
                 if (isAutoRun) {
-                    btnStartStopQrEmail_Click(this, EventArgs.Empty);
+                    // btnStartStopQrEmail_Click(this, EventArgs.Empty);
                     BtnStartStopJsonByte_Click(this, EventArgs.Empty);
                 }
                 SetIdleBusyStatus(true);
