@@ -229,17 +229,6 @@ namespace KirimNPFileQR.Panels {
 
         private async void FirstSingleRunOnlyAsync() {
             SetIdleBusyStatus(false);
-            try {
-                // TODO :: Kayaknya Fitur Ini Mending Tidak Dipakai ?? Jadi Alter Manual Tembak Via Database
-                await Task.Run(async () => {
-                    await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KIRIM_EMAIL", _app.IsUsingPostgres ? "TIMESTAMP" : "DATE");
-                    await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
-                    await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
-                });
-            }
-            catch (Exception ex) {
-                _logger.WriteError(ex);
-            }
             countDownSecondsQrEmail = waitTimeQrEmail;
             countDownSecondsJsonByte = waitTimeJsonByte;
             try {
