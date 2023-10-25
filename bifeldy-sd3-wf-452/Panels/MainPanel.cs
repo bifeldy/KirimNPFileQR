@@ -228,26 +228,32 @@ namespace KirimNPFileQR.Panels {
         }
 
         private async void FirstSingleRunOnlyAsync() {
+            SetIdleBusyStatus(false);
             try {
+                // TODO :: Kayaknya Fitur Ini Mending Tidak Dipakai ?? Jadi Alter Manual Tembak Via Database
                 await Task.Run(async () => {
                     await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KIRIM_EMAIL", _app.IsUsingPostgres ? "TIMESTAMP" : "DATE");
                     await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "STATUS_KIRIM_EMAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(100)");
                     await _db.OraPg_AlterTable_AddColumnIfNotExist("DC_NPBTOKO_LOG", "KODE_STAT_KRIM_MAIL", $"VARCHAR{(_app.IsUsingPostgres ? "" : "2")}(10)");
                 });
-                SetIdleBusyStatus(false);
-                await RefreshDataTableQrEmail();
-                countDownSecondsQrEmail = waitTimeQrEmail;
-                await RefreshDataTableJsonByte();
-                countDownSecondsJsonByte = waitTimeJsonByte;
-                if (isAutoRun) {
-                    // btnStartStopQrEmail_Click(this, EventArgs.Empty);
-                    BtnStartStopJsonByte_Click(this, EventArgs.Empty);
-                }
-                SetIdleBusyStatus(true);
             }
             catch (Exception ex) {
                 _logger.WriteError(ex);
             }
+            countDownSecondsQrEmail = waitTimeQrEmail;
+            countDownSecondsJsonByte = waitTimeJsonByte;
+            try {
+                await RefreshDataTableQrEmail();
+                await RefreshDataTableJsonByte();
+            }
+            catch (Exception ex) {
+                _logger.WriteError(ex);
+            }
+            if (isAutoRun) {
+                // btnStartStopQrEmail_Click(this, EventArgs.Empty);
+                BtnStartStopJsonByte_Click(this, EventArgs.Empty);
+            }
+            SetIdleBusyStatus(true);
         }
 
         private void btnStartStopQrEmail_Click(object sender, EventArgs e) {
