@@ -593,11 +593,11 @@ namespace KirimNPFileQR.Panels {
                             await _surel.CreateAndSend(
                                 title,
                                 $"{npLogHeader.LOG_TOK_KODE} :: {npLogHeader.TOK_NAME}",
-                                _surel.CreateEmailAddress("sd3@indomaret.co.id", $"[SD3_BOT] 📧 {_app.AppName} v{_app.AppVersion}"),
                                 _surel.CreateEmailAddress(to),
                                 _surel.CreateEmailAddress(cc),
                                 _surel.CreateEmailAddress(bcc),
-                                attachments: _surel.CreateEmailAttachment(lsAttachmentPath.ToArray())
+                                _surel.CreateEmailAttachment(lsAttachmentPath.ToArray()),
+                                _surel.GetDefaultBotSenderFromAddress()
                             );
                             await _db.UpdateAfterSendEmail(lsLogSeqNo.ToArray());
 
