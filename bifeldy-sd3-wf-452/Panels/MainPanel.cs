@@ -41,6 +41,7 @@ namespace KirimNPFileQR.Panels {
         private readonly ILogger _logger;
         private readonly IDb _db;
         private readonly IConfig _config;
+        private readonly ILocker _locker;
         private readonly IWinReg _winreg;
         private readonly IConverter _converter;
         private readonly IBerkas _berkas;
@@ -52,8 +53,6 @@ namespace KirimNPFileQR.Panels {
 
         private bool isAutoRun = false;
         private bool isInitialized = false;
-
-        private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
 
         private int waitTimeQrEmail = 15 * 60;
         private int countDownSecondsQrEmail = 0;
@@ -77,6 +76,7 @@ namespace KirimNPFileQR.Panels {
             ILogger logger,
             IDb db,
             IConfig config,
+            ILocker locker,
             IWinReg winreg,
             IConverter converter,
             IBerkas berkas,
@@ -88,6 +88,7 @@ namespace KirimNPFileQR.Panels {
             _logger = logger;
             _db = db;
             _config = config;
+            _locker = locker;
             _winreg = winreg;
             _converter = converter;
             _berkas = berkas;
@@ -274,7 +275,7 @@ namespace KirimNPFileQR.Panels {
             if (countDownSecondsQrEmail < 0) {
                 tmrQrEmail.Stop();
 
-                await _lock.WaitAsync(-1);
+                await _locker.MutexGlobalApp.WaitAsync(-1);
 
                 SetIdleBusyStatus(false);
                 await RefreshDataTableQrEmail();
@@ -283,7 +284,7 @@ namespace KirimNPFileQR.Panels {
                 countDownSecondsQrEmail = waitTimeQrEmail;
                 SetIdleBusyStatus(true);
 
-                _lock.Release();
+                _locker.MutexGlobalApp.Release();
 
                 tmrQrEmail.Start();
             }
@@ -296,7 +297,7 @@ namespace KirimNPFileQR.Panels {
             if (countDownSecondsJsonByte< 0) {
                 tmrJsonByte.Stop();
 
-                await _lock.WaitAsync(-1);
+                await _locker.MutexGlobalApp.WaitAsync(-1);
 
                 SetIdleBusyStatus(false);
                 await RefreshDataTableJsonByte();
@@ -305,7 +306,7 @@ namespace KirimNPFileQR.Panels {
                 countDownSecondsJsonByte= waitTimeJsonByte;
                 SetIdleBusyStatus(true);
 
-                _lock.Release();
+                _locker.MutexGlobalApp.Release();
 
                 tmrJsonByte.Start();
             }
