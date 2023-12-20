@@ -151,15 +151,17 @@ namespace KirimNPFileQR.Handlers {
                             AND a.log_stat_rcv NOT LIKE '%- 00 -%'
                             AND a.log_stat_rcv NOT LIKE '%- 01 -%'
                         )
-                        AND NOT EXISTS (
-                            SELECT *
-                            FROM dc_npbtoko_log e
-                            WHERE
-                                e.log_typefile = 'CSV'
-                                AND e.log_dckode = a.log_dckode
-                                AND e.log_tok_kode = a.log_tok_kode
-                                AND e.log_namafile = a.log_namafile
-                        )
+                        /*
+                            AND NOT EXISTS (
+                                SELECT *
+                                FROM dc_npbtoko_log e
+                                WHERE
+                                    e.log_typefile = 'CSV'
+                                    AND e.log_dckode = a.log_dckode
+                                    AND e.log_tok_kode = a.log_tok_kode
+                                    AND e.log_namafile = a.log_namafile
+                            )
+                        */
                         AND a.LOG_TYPEFILE = 'WEB'
                 "
             );
