@@ -36,7 +36,7 @@ namespace KirimNPFileQR.Panels {
 
         private bool isInitialized = false;
 
-        public CCekProgram(IUpdater updater, IConfig config, IApp app, IDb db) {
+        public CCekProgram(IUpdater updater, IApp app, IDb db, IConfig config) {
             _updater = updater;
             _config = config;
             _app = app;
@@ -93,8 +93,10 @@ namespace KirimNPFileQR.Panels {
                 }
             });
             if (dbAvailable) {
+                string dbInfo = _db.LocalDbOnly ? "[SQLT]" : $"[{(_app.IsUsingPostgres ? "PG" : "ORCL")}+MSSQL]";
+
                 mainForm.StatusStripContainer.Items["statusStripDbName"].Text = _db.DbName;
-                mainForm.Text = $"[{(_app.IsUsingPostgres ? "PG" : "ORCL")}+MSSQL] " + mainForm.Text;
+                mainForm.Text = $"{dbInfo} {mainForm.Text}";
 
                 if (_app.ListDcCanUse.Count == 0 || _app.ListDcCanUse.Contains(jenisDc)) {
 
@@ -152,7 +154,7 @@ namespace KirimNPFileQR.Panels {
             try {
                 CLogin login = CProgram.Bifeldyz.ResolveClass<CLogin>();
                 if (!mainForm.PanelContainer.Controls.ContainsKey("CLogin")) {
-                    mainForm.PanelContainer.Controls.Add(login);
+                    mainForm.PanelContainer.Controls.Add(CProgram.Bifeldyz.ResolveClass<CLogin>());
                 }
                 mainForm.PanelContainer.Controls["CLogin"].BringToFront();
                 bool bypassLogin = _config.Get<bool>("BypassLogin", bool.Parse(_app.GetConfig("bypass_login")));

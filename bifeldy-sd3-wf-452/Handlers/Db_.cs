@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using bifeldy_sd3_lib_452.Databases;
 using bifeldy_sd3_lib_452.Handlers;
 using bifeldy_sd3_lib_452.Models;
+using bifeldy_sd3_lib_452.Utilities;
 
 using KirimNPFileQR.Utilities;
 
@@ -47,7 +48,14 @@ namespace KirimNPFileQR.Handlers {
 
         private readonly IApp _app;
 
-        public CDb(IApp app, IOracle oracle, IPostgres postgres, IMsSQL mssql) : base(app, oracle, postgres, mssql) {
+        public CDb(
+            IApp app,
+            IConfig config,
+            IOracle oracle,
+            IPostgres postgres,
+            IMsSQL mssql,
+            ISqlite sqlite
+        ) : base(app, config, oracle, postgres, mssql, sqlite) {
             _app = app;
         }
 
