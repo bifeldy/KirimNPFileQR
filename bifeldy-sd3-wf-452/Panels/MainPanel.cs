@@ -472,7 +472,7 @@ namespace KirimNPFileQR.Panels {
                                 );
                                 string detailCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{detailCreateUlangQrCodeFileName}.ZIP");
                                 byte[] detailCreateUlangQrCodeByteZip = null;
-                                using (MemoryStream ms = _stream.ReadFileAsBinaryByte(detailCreateUlangQrCodePathZip)) {
+                                using (MemoryStream ms = _stream.ReadFileAsBinaryStream(detailCreateUlangQrCodePathZip)) {
                                     detailCreateUlangQrCodeByteZip = ms.ToArray();
                                 }
                                 string detailCreateUlangQrCodeHex = _converter.ByteToString(detailCreateUlangQrCodeByteZip);
@@ -496,7 +496,7 @@ namespace KirimNPFileQR.Panels {
                                 );
                                 string headerCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{headerCreateUlangQrCodeFileName}.ZIP");
                                 byte[] headerCreateUlangQrCodeByteZip = null;
-                                using (MemoryStream ms = _stream.ReadFileAsBinaryByte(headerCreateUlangQrCodePathZip)) {
+                                using (MemoryStream ms = _stream.ReadFileAsBinaryStream(headerCreateUlangQrCodePathZip)) {
                                     headerCreateUlangQrCodeByteZip = ms.ToArray();
                                 }
                                 string headerCreateUlangQrCodeHex = _converter.ByteToString(headerCreateUlangQrCodeByteZip) + lastCharHeader;
