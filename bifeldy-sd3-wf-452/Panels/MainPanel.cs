@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using bifeldy_sd3_lib_452.Extensions;
 using bifeldy_sd3_lib_452.Utilities;
 
 using KirimNPFileQR.Forms;
@@ -342,7 +343,7 @@ namespace KirimNPFileQR.Panels {
                 if (dtNpLogHeader.Rows.Count > 0) {
                     // Program Not Responding
                     // Jangan Di Masukkin Ke Thread
-                    List<MNpLog> lsNpLog = _converter.DataTableToList<MNpLog>(dtNpLogHeader);
+                    List<MNpLog> lsNpLog = dtNpLogHeader.ToList<MNpLog>();
                     // Sekalian Buat Nahan Window Message Queuenya
                     // Biar Timer Ke Tunda
                     foreach (MNpLog npLog in lsNpLog) {
@@ -390,7 +391,7 @@ namespace KirimNPFileQR.Panels {
                 if (dtNpLogHeader.Rows.Count > 0) {
                     // Program Not Responding
                     // Jangan Di Masukkin Ke Thread
-                    List<MNpLog> lsNpLog = _converter.DataTableToList<MNpLog>(dtNpLogHeader);
+                    List<MNpLog> lsNpLog = dtNpLogHeader.ToList<MNpLog>();
                     // Sekalian Buat Nahan Window Message Queuenya
                     // Biar Timer Ke Tunda
                     foreach (MNpLog npLog in lsNpLog) {
@@ -445,7 +446,7 @@ namespace KirimNPFileQR.Panels {
                             List<string> lsAttachmentPath = new List<string>();
 
                             DataTable dtNpLogDetail = await _db.GetNpLogDetailQrEmail(npLogHeader.LOG_NAMAFILE);
-                            List<MNpLog> lsNpLogDetail = _converter.DataTableToList<MNpLog>(dtNpLogDetail);
+                            List<MNpLog> lsNpLogDetail = dtNpLogDetail.ToList<MNpLog>();
                             if (lsNpLogDetail.Count <= 0) {
                                 throw new Exception($"Data {npLogHeader.LOG_NAMAFILE} Tidak Tersedia / Sudah Sukses Dari Service Sebelumnya");
                             }
@@ -475,7 +476,7 @@ namespace KirimNPFileQR.Panels {
                                 using (MemoryStream ms = _stream.ReadFileAsBinaryStream(detailCreateUlangQrCodePathZip)) {
                                     detailCreateUlangQrCodeByteZip = ms.ToArray();
                                 }
-                                string detailCreateUlangQrCodeHex = _converter.ByteToString(detailCreateUlangQrCodeByteZip);
+                                string detailCreateUlangQrCodeHex = detailCreateUlangQrCodeByteZip.ToStringHex();
                                 TextDevider txtDvdr = new TextDevider(detailCreateUlangQrCodeHex, maxQrChar - 9 - 1);
                                 txtDvdr.Devide();
                                 // -- Header
@@ -484,7 +485,7 @@ namespace KirimNPFileQR.Panels {
                                 StringBuilder sb = new StringBuilder();
                                 sb.AppendLine("TOKO|KIRIM|GEMBOK|NOSJ|NORANG|JMLPART|JMLRECORD");
                                 DataTable dtNpCreateUlangQrCodeHeader = await _db.GetNpCreateUlangQrCodeHeader(npLogDetail.LOG_JENIS, npLogDetail.LOG_NO_NPB, npLogDetail.LOG_TGL_NPB);
-                                MNpCreateUlangQrCodeHeader npCreateUlangQrCodeHeader = _converter.DataTableToList<MNpCreateUlangQrCodeHeader>(dtNpCreateUlangQrCodeHeader).First();
+                                MNpCreateUlangQrCodeHeader npCreateUlangQrCodeHeader = dtNpCreateUlangQrCodeHeader.ToList<MNpCreateUlangQrCodeHeader>().First();
                                 sb.AppendLine($"{npLogDetail.LOG_TOK_KODE}|{await _db.GetKodeDc()}|{npCreateUlangQrCodeHeader.NOKUNCI}|{npCreateUlangQrCodeHeader.NOSJ}|{npCreateUlangQrCodeHeader.NORANG}|{txtDvdr.JumlahPart}|{dtNpCreateUlangQrCodeDetail.Rows.Count}");
                                 string headerCreateUlangQrCodePathCsv = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.CSV");
                                 File.WriteAllText(headerCreateUlangQrCodePathCsv, sb.ToString());
@@ -499,7 +500,7 @@ namespace KirimNPFileQR.Panels {
                                 using (MemoryStream ms = _stream.ReadFileAsBinaryStream(headerCreateUlangQrCodePathZip)) {
                                     headerCreateUlangQrCodeByteZip = ms.ToArray();
                                 }
-                                string headerCreateUlangQrCodeHex = _converter.ByteToString(headerCreateUlangQrCodeByteZip) + lastCharHeader;
+                                string headerCreateUlangQrCodeHex = headerCreateUlangQrCodeByteZip.ToStringHex() + lastCharHeader;
                                 // -- QR Header
                                 Image headerCreateUlangQrCodeQr = _qrBar.GenerateQrCodeDots(headerCreateUlangQrCodeHex, versionQrHeader);
                                 // headerCreateUlangQrCodeQr = _qrBar.AddBackground(headerCreateUlangQrCodeQr, Image.FromFile(imageQrBgPath));
@@ -635,7 +636,7 @@ namespace KirimNPFileQR.Panels {
                                 if (!string.IsNullOrEmpty(url)) {
                                     DataTable dtNpHeader = await _db.GetNpHeaderJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
                                     if (dtNpHeader.Rows.Count > 0) {
-                                        List<MNpCreateUlangJsonByteHeader> lsNpHeader = _converter.DataTableToList<MNpCreateUlangJsonByteHeader>(dtNpHeader);
+                                        List<MNpCreateUlangJsonByteHeader> lsNpHeader = dtNpHeader.ToList<MNpCreateUlangJsonByteHeader>();
                                         sysDateKodeDc = lsNpHeader.First().SYSDATEKODEDC;
                                         List<Dictionary<string, object>> lsDictHdr = new List<Dictionary<string, object>>();
                                         foreach (MNpCreateUlangJsonByteHeader npHeader in lsNpHeader) {
@@ -657,7 +658,7 @@ namespace KirimNPFileQR.Panels {
                                             List<Dictionary<string, object>> lsDictDtl = new List<Dictionary<string, object>>();
                                             DataTable dtNpDetail = await _db.GetNpDetailJsonByte(npHeader.LOG_SEQNO);
                                             if (dtNpDetail.Rows.Count > 0) {
-                                                List<MNpCreateUlangJsonByteDetail> lsNpDetail = _converter.DataTableToList<MNpCreateUlangJsonByteDetail>(dtNpDetail);
+                                                List<MNpCreateUlangJsonByteDetail> lsNpDetail = dtNpDetail.ToList<MNpCreateUlangJsonByteDetail>();
                                                 foreach (MNpCreateUlangJsonByteDetail npDetail in lsNpDetail) {
                                                     Dictionary<string, object> dictDetail = npDetail.GetType()
                                                         .GetProperties(BindingFlags.Instance | BindingFlags.Public)
