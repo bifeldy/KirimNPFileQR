@@ -39,7 +39,7 @@ namespace KirimNPFileQR.Utilities {
             ScreenWidth = Screen.PrimaryScreen.WorkingArea.Width;
             ScreenHeight = Screen.PrimaryScreen.WorkingArea.Height;
             Author = "B. Bias A. Ch. :: bias@indomaret.co.id";
-            ListDcCanUse = new List<string> { /* "HO", */ "INDUK", "DEPO", "SEWA", "FROZEN", "PERISHABLE", "LPG" };
+            ListDcCanUse = new List<string> { /* "HO", "INDUK", "DEPO", "SEWA", "FROZEN", "PERISHABLE", "LPG" */ };
         }
 
         public void Exit() => Application.Exit();
