@@ -838,7 +838,7 @@ namespace KirimNPFileQR.Handlers {
                         AND LOG_TYPEFILE = 'WEB'
                         AND (
                             LOG_STAT_GET IS NOT NULL
-                            AND LOG_STAT_PROSES  IS NOT NULL
+                            AND LOG_STAT_PROSES IS NOT NULL
                         )
                 ",
                 new List<CDbQueryParamBind> {
