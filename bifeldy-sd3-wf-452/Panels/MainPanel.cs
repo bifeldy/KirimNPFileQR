@@ -344,16 +344,20 @@ namespace KirimNPFileQR.Panels {
                     // Program Not Responding
                     // Jangan Di Masukkin Ke Thread
                     List<MNpLog> lsNpLog = dtNpLogHeader.ToList<MNpLog>();
-                    // Sekalian Buat Nahan Window Message Queuenya
-                    // Biar Timer Ke Tunda
+                    List<MNpLog> lsNpLogPendingQrEmail = new List<MNpLog>();
+                    List<MNpLog> lsNpLogGagalQrEmail = new List<MNpLog>();
                     foreach (MNpLog npLog in lsNpLog) {
                         if (string.IsNullOrEmpty(npLog.STATUS_KIRIM_EMAIL)) {
-                            listNpLogPendingQrEmail.Add(npLog);
+                            lsNpLogPendingQrEmail.Add(npLog);
                         }
                         else {
-                            listNpLogGagalQrEmail.Add(npLog);
+                            lsNpLogGagalQrEmail.Add(npLog);
                         }
                     }
+                    listNpLogPendingQrEmail.AddRange(lsNpLogPendingQrEmail);
+                    listNpLogGagalQrEmail.AddRange(lsNpLogGagalQrEmail);
+                    // Sekalian Buat Nahan Window Message Queuenya
+                    // Biar Timer Ke Tunda
                     List<string> columnToShow = new List<string> {
                         "LOG_DCKODE",
                         "LOG_TOK_KODE",
@@ -392,11 +396,9 @@ namespace KirimNPFileQR.Panels {
                     // Program Not Responding
                     // Jangan Di Masukkin Ke Thread
                     List<MNpLog> lsNpLog = dtNpLogHeader.ToList<MNpLog>();
+                    listNpLogPendingJsonByte.AddRange(lsNpLog);
                     // Sekalian Buat Nahan Window Message Queuenya
                     // Biar Timer Ke Tunda
-                    foreach (MNpLog npLog in lsNpLog) {
-                        listNpLogPendingJsonByte.Add(npLog);
-                    }
                     List<string> columnToShow = new List<string> {
                         "LOG_DCKODE",
                         "LOG_TOK_KODE",
