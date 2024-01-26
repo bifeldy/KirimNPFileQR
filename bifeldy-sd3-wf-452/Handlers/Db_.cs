@@ -42,6 +42,7 @@ namespace KirimNPFileQR.Handlers {
         Task<DataTable> GetNpDetailJsonByte(decimal log_seqno);
         Task<bool> UpdateAfterSendWebService(decimal[] log_seqno, string errMessage = null);
         Task<bool> UpdateBeforeSendWebService(decimal[] log_seqno, string errMessage = null);
+        Task<bool> UpdateSudahDiProsesDuluan(string log_namafile, decimal log_no_npb);
     }
 
     public sealed class CDb : CDbHandler, IDb {
@@ -142,7 +143,9 @@ namespace KirimNPFileQR.Handlers {
                         b.tok_kirim,
                         a.LOG_TYPEFILE,
                         a.LOG_JENIS,
-                        a.log_stat_rcv
+                        a.log_stat_rcv,
+                        a.LOG_STAT_GET,
+                        a.LOG_STAT_PROSES
                     FROM
                         DC_NPBTOKO_LOG a,
                         DC_TOKO_T b,
@@ -818,6 +821,29 @@ namespace KirimNPFileQR.Handlers {
                 ",
                 new List<CDbQueryParamBind> {
                     new CDbQueryParamBind { NAME = "log_seqno", VALUE = log_seqno }
+                }
+            );
+        }
+
+        public async Task<bool> UpdateSudahDiProsesDuluan(string log_namafile, decimal log_no_npb) {
+            return await OraPg.ExecQueryAsync(
+                $@"
+                    UPDATE
+                        DC_NPBTOKO_LOG
+                    SET
+                        LOG_STAT_RCV = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend - 00 - Sukses.'
+                    WHERE
+                        LOG_NAMAFILE = :log_namafile
+                        AND LOG_NO_NPB = :log_no_npb
+                        AND LOG_TYPEFILE = 'WEB'
+                        AND (
+                            LOG_STAT_GET IS NOT NULL
+                            AND LOG_STAT_PROSES  IS NOT NULL
+                        )
+                ",
+                new List<CDbQueryParamBind> {
+                    new CDbQueryParamBind { NAME = "log_namafile", VALUE = log_namafile },
+                    new CDbQueryParamBind { NAME = "log_no_npb", VALUE = log_no_npb }
                 }
             );
         }

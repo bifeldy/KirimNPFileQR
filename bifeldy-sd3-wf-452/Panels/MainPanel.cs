@@ -628,10 +628,14 @@ namespace KirimNPFileQR.Panels {
                     List<decimal> lsLogSeqNo = new List<decimal>();
                     foreach (MNpLog npLogHeader in listNpLogPendingJsonByte) {
                         try {
+                            if (!string.IsNullOrEmpty(npLogHeader.LOG_STAT_GET) && !string.IsNullOrEmpty(npLogHeader.LOG_STAT_PROSES)) {
+                                await _db.UpdateSudahDiProsesDuluan(npLogHeader.LOG_NAMAFILE, npLogHeader.LOG_NO_NPB);
+                                continue;
+                            }
                             lsLogSeqNo.Clear();
                             string sysDateKodeDc = string.Empty;
-                            decimal count = await _db.CheckCreateUlangJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
-                            if (count == 0) {
+                            decimal countSudahCreateUlang = 0; // await _db.CheckCreateUlangJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
+                            if (countSudahCreateUlang == 0) {
                                 string url = await _db.GetURLWRC(npLogHeader.LOG_TOK_KODE);
                                 if (!string.IsNullOrEmpty(url)) {
                                     DataTable dtNpHeader = await _db.GetNpHeaderJsonByte(npLogHeader.LOG_DCKODE, npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_NAMAFILE);
