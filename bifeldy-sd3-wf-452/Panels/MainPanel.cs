@@ -46,6 +46,8 @@ namespace KirimNPFileQR.Panels {
         private readonly IWinReg _winreg;
         private readonly IConverter _converter;
         private readonly IBerkas _berkas;
+        private readonly ICsv _csv;
+        private readonly IZip _zip;
         private readonly IStream _stream;
         private readonly IQrBar _qrBar;
         private readonly ISurel _surel;
@@ -81,6 +83,8 @@ namespace KirimNPFileQR.Panels {
             IWinReg winreg,
             IConverter converter,
             IBerkas berkas,
+            ICsv csv,
+            IZip zip,
             IStream stream,
             IQrBar qrBar,
             ISurel surel
@@ -93,6 +97,8 @@ namespace KirimNPFileQR.Panels {
             _winreg = winreg;
             _converter = converter;
             _berkas = berkas;
+            _csv = csv;
+            _zip = zip;
             _stream = stream;
             _qrBar = qrBar;
             _surel = surel;
@@ -423,7 +429,7 @@ namespace KirimNPFileQR.Panels {
         private async Task ProsesNPFileQrEmail() {
             bool kirimUlangGagal = chkKirimSemuaNpQrEmail.Checked;
             await Task.Run(async () => {
-                _berkas.DeleteOldFilesInFolder(_berkas.TempFolderPath, 0);
+                _berkas.DeleteOldFilesInFolder(_csv.CsvFolderPath, 0);
                 List<MNpLog> listNpLogHeader = listNpLogPendingQrEmail;
                 if (kirimUlangGagal) {
                     listNpLogHeader.AddRange(listNpLogGagalQrEmail);
@@ -464,16 +470,17 @@ namespace KirimNPFileQR.Panels {
                                 string detailCreateUlangQrCodeFileName = $"{npLogDetail.LOG_SEQNO}_{npLogDetail.LOG_NAMAFILE}_DETAIL";
                                 DataTable dtNpCreateUlangQrCodeDetail = await _db.GetNpCreateUlangQrCodeDetail(npLogDetail.LOG_SEQNO);
                                 // -- Detail CSV
-                                if (!_berkas.DataTable2CSV(dtNpCreateUlangQrCodeDetail, $"{detailCreateUlangQrCodeFileName}.CSV", "|")) {
+                                if (!_csv.DataTable2CSV(dtNpCreateUlangQrCodeDetail, $"{detailCreateUlangQrCodeFileName}.CSV", "|")) {
                                     throw new Exception($"Gagal Membuat {detailCreateUlangQrCodeFileName}.CSV");
                                 }
                                 // -- Detail ZIP
-                                _berkas.ZipListFileInFolder(
+                                _zip.ZipListFileInFolder(
                                     $"{detailCreateUlangQrCodeFileName}.ZIP",
+                                    _csv.CsvFolderPath,
                                     new List<string> { $"{detailCreateUlangQrCodeFileName}.CSV" },
                                     password: zipPassword
                                 );
-                                string detailCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{detailCreateUlangQrCodeFileName}.ZIP");
+                                string detailCreateUlangQrCodePathZip = Path.Combine(_zip.ZipFolderPath, $"{detailCreateUlangQrCodeFileName}.ZIP");
                                 byte[] detailCreateUlangQrCodeByteZip = null;
                                 using (MemoryStream ms = _stream.ReadFileAsBinaryStream(detailCreateUlangQrCodePathZip)) {
                                     detailCreateUlangQrCodeByteZip = ms.ToArray();
@@ -489,15 +496,16 @@ namespace KirimNPFileQR.Panels {
                                 DataTable dtNpCreateUlangQrCodeHeader = await _db.GetNpCreateUlangQrCodeHeader(npLogDetail.LOG_JENIS, npLogDetail.LOG_NO_NPB, npLogDetail.LOG_TGL_NPB);
                                 MNpCreateUlangQrCodeHeader npCreateUlangQrCodeHeader = dtNpCreateUlangQrCodeHeader.ToList<MNpCreateUlangQrCodeHeader>().First();
                                 sb.AppendLine($"{npLogDetail.LOG_TOK_KODE}|{await _db.GetKodeDc()}|{npCreateUlangQrCodeHeader.NOKUNCI}|{npCreateUlangQrCodeHeader.NOSJ}|{npCreateUlangQrCodeHeader.NORANG}|{txtDvdr.JumlahPart}|{dtNpCreateUlangQrCodeDetail.Rows.Count}");
-                                string headerCreateUlangQrCodePathCsv = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.CSV");
+                                string headerCreateUlangQrCodePathCsv = Path.Combine(_csv.CsvFolderPath, $"{headerCreateUlangQrCodeFileName}.CSV");
                                 File.WriteAllText(headerCreateUlangQrCodePathCsv, sb.ToString());
                                 // -- Header ZIP
-                                _berkas.ZipListFileInFolder(
+                                _zip.ZipListFileInFolder(
                                     $"{headerCreateUlangQrCodeFileName}.ZIP",
+                                    _csv.CsvFolderPath,
                                     new List<string> { $"{headerCreateUlangQrCodeFileName}.CSV" },
                                     password: zipPassword
                                 );
-                                string headerCreateUlangQrCodePathZip = Path.Combine(_berkas.ZipFolderPath, $"{headerCreateUlangQrCodeFileName}.ZIP");
+                                string headerCreateUlangQrCodePathZip = Path.Combine(_zip.ZipFolderPath, $"{headerCreateUlangQrCodeFileName}.ZIP");
                                 byte[] headerCreateUlangQrCodeByteZip = null;
                                 using (MemoryStream ms = _stream.ReadFileAsBinaryStream(headerCreateUlangQrCodePathZip)) {
                                     headerCreateUlangQrCodeByteZip = ms.ToArray();
@@ -508,7 +516,7 @@ namespace KirimNPFileQR.Panels {
                                 // headerCreateUlangQrCodeQr = _qrBar.AddBackground(headerCreateUlangQrCodeQr, Image.FromFile(imageQrBgPath));
                                 // headerCreateUlangQrCodeQr = _qrBar.AddQrLogo(headerCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
                                 headerCreateUlangQrCodeQr = _qrBar.AddQrCaption(headerCreateUlangQrCodeQr, $"{headerCreateUlangQrCodeFileName}.JPG");
-                                string headerCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{headerCreateUlangQrCodeFileName}.JPG");
+                                string headerCreateUlangQrCodeQrImgPath = Path.Combine(_csv.CsvFolderPath, $"{headerCreateUlangQrCodeFileName}.JPG");
                                 headerCreateUlangQrCodeQr.Save(headerCreateUlangQrCodeQrImgPath, ImageFormat.Jpeg);
                                 lsAttachmentPath.Add(headerCreateUlangQrCodeQrImgPath);
                                 // -- QR Detail
@@ -522,7 +530,7 @@ namespace KirimNPFileQR.Panels {
                                     // detailCreateUlangQrCodeQr = _qrBar.AddBackground(detailCreateUlangQrCodeQr, Image.FromFile(imageQrBgPath));
                                     // detailCreateUlangQrCodeQr = _qrBar.AddQrLogo(detailCreateUlangQrCodeQr, Image.FromFile(imageQrLogoPath));
                                     detailCreateUlangQrCodeQr = _qrBar.AddQrCaption(detailCreateUlangQrCodeQr, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
-                                    string detailCreateUlangQrCodeQrImgPath = Path.Combine(_berkas.TempFolderPath, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
+                                    string detailCreateUlangQrCodeQrImgPath = Path.Combine(_csv.CsvFolderPath, $"{detailCreateUlangQrCodeFileName}_{urutan}.JPG");
                                     detailCreateUlangQrCodeQr.Save(detailCreateUlangQrCodeQrImgPath, ImageFormat.Jpeg);
                                     lsAttachmentPath.Add(detailCreateUlangQrCodeQrImgPath);
                                 }
@@ -533,7 +541,7 @@ namespace KirimNPFileQR.Panels {
                             // -- File1 CSV -- Sama Sesuai Log
                             string createUlangFileNp1 = npLogHeader.LOG_NAMAFILE;
                             DataTable dtNpCreateUlangFileNp1 = await _db.GetNpCreateUlangFileNp1(npLogHeader.LOG_JENIS, lsLogSeqNo.ToArray(), npLogHeader.LOG_DCKODE);
-                            if (!_berkas.DataTable2CSV(dtNpCreateUlangFileNp1, $"{createUlangFileNp1}.CSV", "|")) {
+                            if (!_csv.DataTable2CSV(dtNpCreateUlangFileNp1, $"{createUlangFileNp1}.CSV", "|")) {
                                 throw new Exception($"Gagal Membuat {createUlangFileNp1}.CSV");
                             }
                             // -- File2 CSV -- Beda Huruf Depan
@@ -545,19 +553,20 @@ namespace KirimNPFileQR.Panels {
                                 createUlangFileNp2 = "R" + createUlangFileNp2.Substring(1);
                             }
                             DataTable dtNpCreateUlangFileNp2 = await _db.GetNpCreateUlangFileNp2(npLogHeader.LOG_JENIS, lsLogSeqNo.ToArray(), npLogHeader.LOG_TOK_KODE, npLogHeader.LOG_TYPEFILE);
-                            if (!_berkas.DataTable2CSV(dtNpCreateUlangFileNp2, $"{createUlangFileNp2}.CSV", "|")) {
+                            if (!_csv.DataTable2CSV(dtNpCreateUlangFileNp2, $"{createUlangFileNp2}.CSV", "|")) {
                                 throw new Exception($"Gagal Membuat {createUlangFileNp2}.CSV");
                             }
 
                             // -- File3 CSV ZIP
-                            _berkas.ZipListFileInFolder(
+                            _zip.ZipListFileInFolder(
                                 $"{npLogHeader.LOG_NAMAFILE}.ZIP",
+                                _csv.CsvFolderPath,
                                 new List<string> {
                                     $"{createUlangFileNp1}.CSV",
                                     $"{createUlangFileNp2}.CSV"
                                 }
                             );
-                            string createUlangFileNp1Path = Path.Combine(_berkas.ZipFolderPath, $"{createUlangFileNp1}.ZIP");
+                            string createUlangFileNp1Path = Path.Combine(_zip.ZipFolderPath, $"{createUlangFileNp1}.ZIP");
                             lsAttachmentPath.Add(createUlangFileNp1Path);
 
                             /* ** Kirim Email ** */
