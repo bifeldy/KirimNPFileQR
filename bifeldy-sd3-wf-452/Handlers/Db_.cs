@@ -829,17 +829,25 @@ namespace KirimNPFileQR.Handlers {
             return await OraPg.ExecQueryAsync(
                 $@"
                     UPDATE
-                        DC_NPBTOKO_LOG
+                        DC_NPBTOKO_LOG a
                     SET
                         LOG_STAT_RCV = TO_CHAR({(_app.IsUsingPostgres ? "NOW()" : "SYSDATE")}, 'dd/MM/yyyy HH24:mi:ss') || ' - AutoResend - 00 - Sukses.'
                     WHERE
                         LOG_NAMAFILE = :log_namafile
                         AND LOG_NO_NPB = :log_no_npb
                         AND LOG_TYPEFILE = 'WEB'
-                        AND (
-                            LOG_STAT_GET IS NOT NULL
-                            AND LOG_STAT_PROSES IS NOT NULL
-                        )
+                        AND EXISTS
+                        (
+                            SELECT 1
+                            FROM DC_NPBTOKO_LOG b 
+                            WHERE
+                                a.log_namafile = b.log_namafile 
+                                AND a.log_no_npb = b.log_no_npb 
+                                AND (
+                                    LOG_STAT_GET IS NOT NULL
+                                    AND LOG_STAT_PROSES  IS NOT NULL
+                                )
+                        )
                 ",
                 new List<CDbQueryParamBind> {
                     new CDbQueryParamBind { NAME = "log_namafile", VALUE = log_namafile },
