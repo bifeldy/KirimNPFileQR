@@ -162,17 +162,19 @@ namespace KirimNPFileQR.Handlers {
                             AND a.log_stat_rcv NOT LIKE '%- 00 -%'
                             AND a.log_stat_rcv NOT LIKE '%- 01 -%'
                         )
-                        /*
-                            AND NOT EXISTS (
-                                SELECT *
-                                FROM dc_npbtoko_log e
-                                WHERE
-                                    e.log_typefile = 'CSV'
-                                    AND e.log_dckode = a.log_dckode
-                                    AND e.log_tok_kode = a.log_tok_kode
-                                    AND e.log_namafile = a.log_namafile
-                            )
-                        */
+                        AND NOT EXISTS (
+                            SELECT *
+                            FROM dc_npbtoko_log e
+                            WHERE
+                                e.log_typefile = 'CSV'
+                                AND e.log_dckode = a.log_dckode
+                                AND e.log_tok_kode = a.log_tok_kode
+                                AND e.log_namafile = a.log_namafile
+                                AND (
+                                    e.log_stat_get IS NOT NULL
+                                    AND e.log_stat_proses IS NOT NULL
+                                )
+                        )
                         AND a.LOG_TYPEFILE = 'WEB'
                 "
             );
@@ -836,16 +838,15 @@ namespace KirimNPFileQR.Handlers {
                         LOG_NAMAFILE = :log_namafile
                         AND LOG_NO_NPB = :log_no_npb
                         AND LOG_TYPEFILE = 'WEB'
-                        AND EXISTS
-                        (
+                        AND EXISTS (
                             SELECT 1
-                            FROM DC_NPBTOKO_LOG b 
+                            FROM DC_NPBTOKO_LOG b
                             WHERE
-                                a.log_namafile = b.log_namafile 
-                                AND a.log_no_npb = b.log_no_npb 
+                                a.log_namafile = b.log_namafile
+                                AND a.log_no_npb = b.log_no_npb
                                 AND (
-                                    LOG_STAT_GET IS NOT NULL
-                                    AND LOG_STAT_PROSES  IS NOT NULL
+                                    b.LOG_STAT_GET IS NOT NULL
+                                    AND b.LOG_STAT_PROSES IS NOT NULL
                                 )
                         )
                 ",
