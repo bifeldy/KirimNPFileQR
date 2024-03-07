@@ -407,6 +407,7 @@ namespace KirimNPFileQR.Panels {
                     // Biar Timer Ke Tunda
                     List<string> columnToShow = new List<string> {
                         "LOG_DCKODE",
+                        "LOG_NO_NPB",
                         "LOG_TOK_KODE",
                         "LOG_NAMAFILE",
                         "TOK_NAME",

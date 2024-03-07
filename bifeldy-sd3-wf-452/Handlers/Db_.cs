@@ -137,6 +137,7 @@ namespace KirimNPFileQR.Handlers {
                     SELECT
                     DISTINCT
                         a.log_dckode,
+                        a.log_no_npb,
                         a.log_tok_kode,
                         a.log_namafile,
                         b.tok_name,
@@ -846,9 +847,9 @@ namespace KirimNPFileQR.Handlers {
                                 AND a.log_no_npb = b.log_no_npb
                                 AND (
                                     b.LOG_STAT_GET IS NOT NULL
-                                    AND b.LOG_STAT_PROSES IS NOT NULL
+                                    AND b.LOG_STAT_PROSES IS NOT NULL
                                 )
-                        )
+                        )
                 ",
                 new List<CDbQueryParamBind> {
                     new CDbQueryParamBind { NAME = "log_namafile", VALUE = log_namafile },
