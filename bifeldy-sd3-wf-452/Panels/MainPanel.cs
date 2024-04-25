@@ -212,6 +212,7 @@ namespace KirimNPFileQR.Panels {
 
         public void SetIdleBusyStatus(bool isIdle) {
             _app.IsIdle = isIdle;
+            _application.IsIdle = _app.IsIdle;
             LabelStatus.Text = $"Program {(isIdle ? "Idle" : "Sibuk")} ...";
             ProgressBarStatus.Style = isIdle ? ProgressBarStyle.Continuous : ProgressBarStyle.Marquee;
             EnableDisableControl(Controls);
