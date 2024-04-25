@@ -38,6 +38,7 @@ namespace KirimNPFileQR.Panels {
 
     public sealed partial class CMainPanel : UserControl {
 
+        private readonly IApplication _application;
         private readonly IApp _app;
         private readonly ILogger _logger;
         private readonly IDb _db;
@@ -75,6 +76,7 @@ namespace KirimNPFileQR.Panels {
         private BindingList<MNpLog> bindNpLogPendingJsonByte = null;
 
         public CMainPanel(
+            IApplication application,
             IApp app,
             ILogger logger,
             IDb db,
@@ -89,6 +91,7 @@ namespace KirimNPFileQR.Panels {
             IQrBar qrBar,
             ISurel surel
         ) {
+            _application = application;
             _app = app;
             _logger = logger;
             _db = db;
